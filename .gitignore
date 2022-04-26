@@ -6,3 +6,11 @@ build
 
 # Ignore idea setting directory
 .idea/
+
+# p6spy
+spy.log
+
+# project output
+app/out
+app/src/main/generated/
+log
