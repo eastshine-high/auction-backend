@@ -21,4 +21,16 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**");
     }
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry
+                .addMapping("/**")
+                .allowedMethods(
+                        "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"
+                )
+                .allowedOrigins(
+                        "http://localhost:3000"
+                );
+    }
 }
