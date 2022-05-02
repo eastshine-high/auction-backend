@@ -46,6 +46,26 @@ public class ControllerErrorAdvice {
     }
 
     /**
+     * request parameter 오류
+     */
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
+    public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
+        log.warn("[BaseException] eventId = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+
+        BindingResult bindingResult = e.getBindingResult();
+        FieldError fe = bindingResult.getFieldError();
+        if (fe == null) {
+            return ErrorResponse.of(ErrorCode.COMMON_INVALID_ARGUMENT.getErrorMsg(), ErrorCode.COMMON_INVALID_ARGUMENT.name());
+        }
+
+        String responseMessage = messageSource.getMessage(fe, LocaleContextHolder.getLocale());
+        return ErrorResponse.of(responseMessage, ErrorCode.COMMON_INVALID_ARGUMENT.name());
+    }
+
+    /**
      * 비즈니스 로직 처리에서 발생한 예외.
      */
     @ResponseBody
