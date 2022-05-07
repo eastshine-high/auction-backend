@@ -1,7 +1,7 @@
-package com.eastshine.auction.member.web;
+package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.common.test.IntegrationTest;
-import com.eastshine.auction.member.web.dto.MemberSignupDto;
+import com.eastshine.auction.user.web.dto.UserSignupDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,11 +12,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class MemberControllerTest extends IntegrationTest {
+class UserControllerTest extends IntegrationTest {
 
     @Nested
-    @DisplayName("signUpMember 메소드는")
-    class Describe_signUpMember{
+    @DisplayName("signUpUser 메소드는")
+    class Describe_signUpUser {
 
         @Nested
         class 유효한_정보를_통해_회원가입을_요청할_경우{
@@ -26,20 +26,20 @@ class MemberControllerTest extends IntegrationTest {
 
             @Test
             void 상태코드_201_Created_를_응답한다() throws Exception {
-                MemberSignupDto requestSignup = MemberSignupDto.builder()
+                UserSignupDto requestSignup = UserSignupDto.builder()
                         .nickname(nickname)
                         .email(validEmail)
                         .password(password)
                         .build();
 
                 mockMvc.perform(
-                                post("/api/members")
+                                post("/api/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
                         .andExpect(status().isCreated())
                         .andExpect(header().exists("location"))
-                        .andDo(document("post-members-201"));
+                        .andDo(document("post-users-201"));
             }
         }
 
@@ -51,19 +51,19 @@ class MemberControllerTest extends IntegrationTest {
 
             @Test
             void 상태코드_400_BadRequest_를_응답한다() throws Exception {
-                MemberSignupDto requestSignup = MemberSignupDto.builder()
+                UserSignupDto requestSignup = UserSignupDto.builder()
                         .nickname(nickname)
                         .email(wrongEmail)
                         .password(password)
                         .build();
 
                 mockMvc.perform(
-                                post("/api/members")
+                                post("/api/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
                         .andExpect(status().isBadRequest())
-                        .andDo(document("post-members-400"));
+                        .andDo(document("post-users-400"));
             }
         }
     }

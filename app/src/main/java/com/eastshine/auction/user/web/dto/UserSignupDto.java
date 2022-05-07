@@ -1,4 +1,4 @@
-package com.eastshine.auction.member.web.dto;
+package com.eastshine.auction.user.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberSignupDto {
+public class UserSignupDto {
 
     @NotBlank
     private String nickname;

@@ -12,10 +12,10 @@ public enum ErrorCode {
     COMMON_ENTITY_NOT_FOUND("요청한 정보를 찾을 수 없습니다."),
     COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
 
-    // Member
-    MEMBER_DUPLICATE_EMAIL("이미 등록된 이메일입니다."),
-    MEMBER_DUPLICATE_NICKNAME("사용 중인 닉네임입니다."),
-    MEMBER_NOT_FOUND("회원을 찾을 수 없습니다.");
+    // User
+    USER_DUPLICATE_EMAIL("이미 등록된 이메일입니다."),
+    USER_DUPLICATE_NICKNAME("사용 중인 닉네임입니다."),
+    USER_NOT_FOUND("사용자를 찾을 수 없습니다.");
 
     private final String errorMsg;
 

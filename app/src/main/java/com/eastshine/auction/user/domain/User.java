@@ -1,11 +1,12 @@
-package com.eastshine.auction.member.domain;
+package com.eastshine.auction.user.domain;
 
 import com.eastshine.auction.common.model.BaseTimeEntity;
-import com.eastshine.auction.member.domain.role.Role;
+import com.eastshine.auction.user.domain.role.Role;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.CascadeType;
@@ -23,16 +24,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 회원 도메인
+ * 사용자 도메인
  */
+@ToString
 @EqualsAndHashCode(callSuper=false, of = "id")
 @Getter
 @NoArgsConstructor
 @Entity
-public class Member extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id")
+    @Column(name = "user_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -44,7 +46,7 @@ public class Member extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "roleId.member", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "roleId.user", cascade = CascadeType.ALL)
     private List<Role> roles = new ArrayList<>();
 
     @Column(nullable = false)
@@ -59,12 +61,12 @@ public class Member extends BaseTimeEntity {
     @PrePersist
     public void prePersist() {
         if(Objects.isNull(this.status)){
-            this.status = Member.Status.SINGUP;
+            this.status = User.Status.SINGUP;
         }
     }
 
     @Builder
-    public Member(String email, String password, String nickname) {
+    public User(String email, String password, String nickname) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
