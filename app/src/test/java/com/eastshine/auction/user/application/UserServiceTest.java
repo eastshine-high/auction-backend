@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -20,12 +21,13 @@ class UserServiceTest extends IntegrationTest {
 
     @Autowired
     private UserService userService;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
 
     private static final String REGISTERED_EMAIL ="registered@email.com";
     private static final String REGISTERED_NICKNAME ="사용중";
@@ -77,7 +79,7 @@ class UserServiceTest extends IntegrationTest {
 
                 assertThat(signedUpUser.getNickname()).isEqualTo(newNickname);
                 assertThat(signedUpUser.getEmail()).isEqualTo(newEmail);
-                assertThat(signedUpUser.getPassword()).isEqualTo(PASSWORD);
+                assertThat(passwordEncoder.matches(PASSWORD, signedUpUser.getPassword())).isTrue();
                 assertThat(signedUpUser.getStatus()).isEqualTo(User.Status.SINGUP);
             }
         }

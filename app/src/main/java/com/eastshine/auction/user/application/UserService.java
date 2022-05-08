@@ -8,6 +8,7 @@ import com.eastshine.auction.user.domain.role.Role;
 import com.eastshine.auction.user.domain.role.RoleId;
 import com.eastshine.auction.user.domain.role.RoleRepository;
 import com.eastshine.auction.user.domain.role.RoleType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -37,6 +40,7 @@ public class UserService {
             throw new InvalidArgumentException(ErrorCode.USER_DUPLICATE_NICKNAME);
         }
 
+        signupInfo.encryptPassword(passwordEncoder);
         User user = userRepository.save(signupInfo);
         Role userRole = new Role(new RoleId(user, RoleType.USER));
         roleRepository.save(userRole);
