@@ -54,14 +54,14 @@ public class User extends BaseTimeEntity {
     private Status status;
 
     public enum Status{
-        SINGUP,
+        ACTIVE,
         DROPOUT
     }
 
     @PrePersist
     public void prePersist() {
         if(Objects.isNull(this.status)){
-            this.status = User.Status.SINGUP;
+            this.status = User.Status.ACTIVE;
         }
     }
 
@@ -74,5 +74,15 @@ public class User extends BaseTimeEntity {
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
         password = passwordEncoder.encode(password);
+    }
+
+    /**
+     * 비밀번호가 유효하고 활성중인 회원인지 검증한다.
+     * @param password 비밀번호
+     * @param passwordEncoder 비밀번호 인코더
+     * @return 비밀번호가 일치하고 활성중인 회원일 경우 True, 비밀번호가 일치하지 않거나 활성중인 회원이 아닌 경우 False.
+     */
+    public boolean authenticate(String password, PasswordEncoder passwordEncoder) {
+        return status == User.Status.ACTIVE && passwordEncoder.matches(password, this.password);
     }
 }

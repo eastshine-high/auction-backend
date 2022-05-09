@@ -80,7 +80,7 @@ class UserServiceTest extends IntegrationTest {
                 assertThat(signedUpUser.getNickname()).isEqualTo(newNickname);
                 assertThat(signedUpUser.getEmail()).isEqualTo(newEmail);
                 assertThat(passwordEncoder.matches(PASSWORD, signedUpUser.getPassword())).isTrue();
-                assertThat(signedUpUser.getStatus()).isEqualTo(User.Status.SINGUP);
+                assertThat(signedUpUser.getStatus()).isEqualTo(User.Status.ACTIVE);
             }
         }
 
