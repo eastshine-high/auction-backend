@@ -39,8 +39,8 @@ public class UserService {
         if(userRepository.existsByNickname(signupInfo.getNickname())){
             throw new InvalidArgumentException(ErrorCode.USER_DUPLICATE_NICKNAME);
         }
-
         signupInfo.encryptPassword(passwordEncoder);
+
         User user = userRepository.save(signupInfo);
         Role userRole = new Role(new RoleId(user, RoleType.USER));
         roleRepository.save(userRole);

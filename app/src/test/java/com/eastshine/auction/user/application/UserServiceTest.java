@@ -1,8 +1,8 @@
 package com.eastshine.auction.user.application;
 
-import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
+import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
 import com.eastshine.auction.user.domain.role.RoleRepository;
@@ -15,23 +15,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserServiceTest extends IntegrationTest {
-
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private RoleRepository roleRepository;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-
     private static final String REGISTERED_EMAIL ="registered@email.com";
     private static final String REGISTERED_NICKNAME ="사용중";
     private static final String PASSWORD ="1234";
+
+    @Autowired private UserService userService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private RoleRepository roleRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUpEach() {
@@ -48,12 +41,11 @@ class UserServiceTest extends IntegrationTest {
     void afterEach() {
         userRepository.deleteAll();
         roleRepository.deleteAll();
-
     }
 
     @Nested
     @DisplayName("회원 가입시에")
-    class Describe_signUpUser {
+    class signUpUser {
         private User signupInfo;
 
         @Nested
@@ -101,8 +93,8 @@ class UserServiceTest extends IntegrationTest {
             void it_throws_IllegalArgumentException() {
                 try {
                     userService.signUpUser(signupInfo);
-                }
-                catch (InvalidArgumentException e) {
+
+                } catch (InvalidArgumentException e) {
                     assertThat(e.getErrorCode()).isEqualTo(ErrorCode.USER_DUPLICATE_EMAIL);
                 }
             }
@@ -127,13 +119,11 @@ class UserServiceTest extends IntegrationTest {
             void it_throws_IllegalArgumentException() {
                 try {
                     userService.signUpUser(signupInfo);
-                }
-                catch (InvalidArgumentException e) {
+
+                } catch (InvalidArgumentException e) {
                     assertThat(e.getErrorCode()).isEqualTo(ErrorCode.USER_DUPLICATE_NICKNAME);
                 }
             }
         }
     }
-
-
 }
