@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 
+@SuppressWarnings("unchecked")
 @Component
 public class JwtUtil {
     public static final String KEY_OF_USER_INFO = "userInfo";
