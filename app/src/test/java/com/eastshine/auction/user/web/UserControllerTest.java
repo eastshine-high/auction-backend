@@ -5,6 +5,9 @@ import com.eastshine.auction.user.web.dto.UserSignupDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -44,17 +47,18 @@ class UserControllerTest extends IntegrationTest {
         }
 
         @Nested
-        class 유효하지_못한_정보를_통해_회원가입을_요청할_경우{
-            private String nickname = "nickname";
-            private String wrongEmail = "test";
-            private String password = "test1234";
+        class 유효하지_못한_이메일_정보를_통해_회원가입을_요청할_경우{
+            private String validNickname = "validNickname";
+            private String validPassword = "test1234";
 
-            @Test
-            void 상태코드_400_BadRequest_를_응답한다() throws Exception {
+            @ParameterizedTest
+            @ValueSource(strings = {"invalidEmail"})
+            @NullAndEmptySource
+            void 상태코드_400_BadRequest_를_응답한다(String invalidEmail) throws Exception {
                 UserSignupDto requestSignup = UserSignupDto.builder()
-                        .nickname(nickname)
-                        .email(wrongEmail)
-                        .password(password)
+                        .nickname(validNickname)
+                        .email(invalidEmail)
+                        .password(validPassword)
                         .build();
 
                 mockMvc.perform(
