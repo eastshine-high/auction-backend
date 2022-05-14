@@ -1,4 +1,4 @@
-package com.eastshine.auction.web;
+package com.eastshine.auction.user.web;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HealthCheckController {
 
-    @GetMapping("/health-check")
+    @GetMapping("/api/health-check")
     public Long healthCheck() {
         return System.currentTimeMillis();
     }
