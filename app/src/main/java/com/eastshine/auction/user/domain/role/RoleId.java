@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
-@EqualsAndHashCode(of = {"user", "roleType"})
+@EqualsAndHashCode(of = {"user", "role"})
 @NoArgsConstructor
 @Embeddable
 public class RoleId implements Serializable {
@@ -23,14 +23,14 @@ public class RoleId implements Serializable {
     private User user;
 
     @Enumerated(value = EnumType.STRING)
-    private RoleType roleType;
+    private RoleType role;
 
-    public RoleId(User user, RoleType roleType) {
+    public RoleId(User user, RoleType role) {
         this.user = user;
-        this.roleType = roleType;
+        this.role = role;
     }
 
-    public RoleType getRoleType() {
-        return roleType;
+    public RoleType getRole() {
+        return role;
     }
 }
