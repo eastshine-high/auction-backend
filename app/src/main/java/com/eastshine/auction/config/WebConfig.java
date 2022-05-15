@@ -11,11 +11,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void configurePathMatch(PathMatchConfigurer configurer) {
-        configurer.addPathPrefix("/api", (clazz)->true);
-    }
-
-    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CommonHttpRequestInterceptor())
                 .order(1)
