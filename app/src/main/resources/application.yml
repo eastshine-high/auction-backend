@@ -1,0 +1,11 @@
+spring:
+  messages:
+    encoding: UTF-8
+    basename: messages,errors
+  profiles:
+    active: local
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true

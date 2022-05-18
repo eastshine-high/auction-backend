@@ -7,12 +7,15 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
+    // Java
     id 'application'
 
-    //Spring
+    // Spring
     id 'org.springframework.boot' version '2.5.5'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+
+    // Asciidoctor
+    id 'org.asciidoctor.jvm.convert' version '3.3.0'
 }
 
 repositories {
@@ -21,14 +24,53 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+    testImplementation 'org.assertj:assertj-core:3.18.1'
+    testRuntimeOnly'com.h2database:h2'
 
-    // This dependency is used by the application.
+    //devtools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // RestDocs
+    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+
+    // google guava
     implementation 'com.google.guava:guava:30.1-jre'
 
-    // Spring Web
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // MapStruct
+    implementation (
+            'org.mapstruct:mapstruct:1.4.2.Final',
+            'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    )
+    annotationProcessor (
+            'org.mapstruct:mapstruct-processor:1.4.2.Final',
+            'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+    )
+    testAnnotationProcessor 'org.mapstruct:mapstruct-processor:1.4.2.Final'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    // Spring Developer Tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // Spring Validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    // Query parameter log
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
+
+    // H2 DB
+    runtimeOnly 'com.h2database:h2'
 }
 
 application {
@@ -36,7 +78,24 @@ application {
     mainClass = 'com.eastshine.auction.App'
 }
 
+clean {
+    delete 'out'
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true'
+    ]
+}
+
 tasks.named('test') {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
+}
+
+asciidoctor{
+    sourceDir 'src/main/asciidoc'
+    attributes \
+      'snippets': file('build/generated-snippets')
+    dependsOn(test)
 }
