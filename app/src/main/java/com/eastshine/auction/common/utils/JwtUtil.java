@@ -34,7 +34,7 @@ public class JwtUtil {
 
     public UserInfo decode(String token) {
         if (token == null || token.isBlank()) {
-            throw new InvalidArgumentException(token, ErrorCode.AUTH_INVALID_TOKEN);
+            throw new InvalidTokenException(ErrorCode.AUTH_INVALID_TOKEN);
         }
 
         try {
