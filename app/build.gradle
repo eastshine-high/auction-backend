@@ -70,8 +70,9 @@ dependencies {
     // Query parameter log
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 
-    // H2 DB
+    // DB
     runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
 }
 
 application {
