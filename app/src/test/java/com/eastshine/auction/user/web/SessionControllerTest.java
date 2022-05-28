@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,7 +40,7 @@ class SessionControllerTest extends IntegrationTest {
     class login메서드는 {
 
         @Test
-        @DisplayName("유효한 사용자 정보로 로그인 했을 경우, 201 상태를 응답한다.")
+        @DisplayName("유효한 사용자 정보로 로그인 했을 경우, created를 응답한다.")
         void loginWithValidUserInfo() throws Exception {
             SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
                     .email(REGISTERED_EMAIL)
@@ -52,13 +53,23 @@ class SessionControllerTest extends IntegrationTest {
                                     .content(objectMapper.writeValueAsString(sessionRequestDto))
                     )
                     .andExpect(status().isCreated())
-                    .andDo(document("post-session-201"));
+                    .andDo(
+                            document("post-session-201",
+                                    preprocessRequest(prettyPrint()),
+                                    preprocessResponse(
+                                            removeMatchingHeaders(
+                                                    "Host",
+                                                    "Content-type"
+                                            ),
+                                            prettyPrint())
+                            )
+                    );
         }
 
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"invalid@email.com", "   "})
-        @DisplayName("유효하지 못한 사용자 정보로 로그인 했을 경우, 400 상태를 응답한다.")
+        @DisplayName("유효하지 못한 사용자 정보로 로그인 했을 경우, badRequest를 응답한다.")
         void loginWithInvalidUserInfo(String invalidEmail) throws Exception {
             SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
                     .email(invalidEmail)
