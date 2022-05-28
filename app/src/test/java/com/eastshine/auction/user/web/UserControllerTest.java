@@ -48,17 +48,15 @@ class UserControllerTest extends IntegrationTest {
 
         @Nested
         class 유효하지_못한_이메일_정보를_통해_회원가입을_요청할_경우{
-            private String validNickname = "validNickname";
-            private String validPassword = "test1234";
 
             @ParameterizedTest
             @ValueSource(strings = {"invalidEmail"})
             @NullAndEmptySource
             void 상태코드_400_BadRequest_를_응답한다(String invalidEmail) throws Exception {
                 UserSignupDto requestSignup = UserSignupDto.builder()
-                        .nickname(validNickname)
+                        .nickname("validNickname")
                         .email(invalidEmail)
-                        .password(validPassword)
+                        .password("validPassword")
                         .build();
 
                 mockMvc.perform(
