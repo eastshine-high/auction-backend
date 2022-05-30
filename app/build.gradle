@@ -8,6 +8,20 @@ plugins {
 
     // Asciidoctor
     id 'org.asciidoctor.jvm.convert' version '3.3.0'
+
+    //querydsl
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+}
+
+application {
+    // Define the main class for the application.
+    mainClass = 'com.eastshine.auction.App'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
@@ -70,24 +84,16 @@ dependencies {
     // Query parameter log
     implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 
+    //querydsl
+    implementation 'com.querydsl:querydsl-jpa'
+
     // DB
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
 }
 
-application {
-    // Define the main class for the application.
-    mainClass = 'com.eastshine.auction.App'
-}
-
 clean {
     delete 'out'
-}
-
-tasks.withType(JavaCompile) {
-    options.compilerArgs = [
-            '-Amapstruct.suppressGeneratorTimestamp=true'
-    ]
 }
 
 tasks.named('test') {
@@ -109,4 +115,23 @@ bootJar {
         from 'build/docs/asciidoc'
         into 'src/main/resources/static/docs'
     }
+}
+
+//querydsl 추가 시작
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+    jpa = true
+    querydslSourcesDir = querydslDir
+}
+sourceSets {
+    main.java.srcDir querydslDir
+}
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+compileQuerydsl.doFirst {
+    if (file(querydslDir).exists()) delete(file(querydslDir))
 }
