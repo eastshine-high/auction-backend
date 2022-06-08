@@ -1,0 +1,77 @@
+package com.eastshine.auction.user.web;
+
+import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.user.UserFactory;
+import com.eastshine.auction.user.web.dto.SessionRequestDto;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+class SessionControllerTest extends IntegrationTest {
+    public static final String REGISTERED_EMAIL = "registered@naver.com";
+    public static final String REGISTERED_USER_PW = "password";
+
+    @Autowired
+    private UserFactory userFactory;
+
+    @BeforeEach
+    void setUp() {
+        userFactory.createUser(REGISTERED_EMAIL, REGISTERED_USER_PW);
+    }
+
+    @AfterEach
+    void afterEach() {
+        userFactory.deleteAllUser();
+    }
+
+    @Nested
+    class login메서드는 {
+
+        @Test
+        @DisplayName("유효한 사용자 정보로 로그인 했을 경우, 201 상태를 응답한다.")
+        void loginWithValidUserInfo() throws Exception {
+            SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
+                    .email(REGISTERED_EMAIL)
+                    .password(REGISTERED_USER_PW)
+                    .build();
+
+            mockMvc.perform(
+                            post("/api/session")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(sessionRequestDto))
+                    )
+                    .andExpect(status().isCreated())
+                    .andDo(document("post-session-201"));
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"invalid@email.com", "   "})
+        @DisplayName("유효하지 못한 사용자 정보로 로그인 했을 경우, 400 상태를 응답한다.")
+        void loginWithInvalidUserInfo(String invalidEmail) throws Exception {
+            SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
+                    .email(invalidEmail)
+                    .password(REGISTERED_USER_PW)
+                    .build();
+
+            mockMvc.perform(
+                            post("/api/session")
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .content(objectMapper.writeValueAsString(sessionRequestDto))
+                    )
+                    .andExpect(status().isBadRequest())
+                    .andDo(document("post-session-400"));
+        }
+    }
+}
