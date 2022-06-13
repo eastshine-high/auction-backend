@@ -8,6 +8,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cache:
+    type: redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
 logging:
   level:
     root: info
