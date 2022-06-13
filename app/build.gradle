@@ -87,9 +87,12 @@ dependencies {
     //querydsl
     implementation 'com.querydsl:querydsl-jpa'
 
-    // DB
+    // RDB
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client:2.7.5'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 clean {
