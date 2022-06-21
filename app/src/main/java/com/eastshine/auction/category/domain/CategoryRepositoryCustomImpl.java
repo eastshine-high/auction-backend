@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import java.util.List;
 
 public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
-
     private final JPAQueryFactory jpaQueryFactory;
 
     public CategoryRepositoryCustomImpl(EntityManager entityManager) {
@@ -15,17 +14,17 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom{
 
     @Override
     public List<Category> findDisplayCategories() {
-        QCategory parent = new QCategory("parent");
-        QCategory child = new QCategory("child");
+        QCategory category = new QCategory("category");
+        QCategory childCategory = new QCategory("childCategory");
 
-        return jpaQueryFactory.selectFrom(parent)
+        return jpaQueryFactory.selectFrom(category)
                 .distinct()
-                .leftJoin(parent.children, child)
+                .leftJoin(category.children, childCategory)
                 .fetchJoin()
                 .where(
-                        parent.parentId.isNull()
+                        category.parent.isNull()
                 )
-                .orderBy(parent.ordering.asc(), child.ordering.asc())
+                .orderBy(category.ordering.asc(), childCategory.ordering.asc())
                 .fetch();
     }
 }

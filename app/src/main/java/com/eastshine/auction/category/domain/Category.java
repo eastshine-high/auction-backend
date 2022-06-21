@@ -2,6 +2,7 @@ package com.eastshine.auction.category.domain;
 
 import com.eastshine.auction.common.model.BaseEntity;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+@EqualsAndHashCode(callSuper=false, of = "id")
 @Getter
 @Entity
 @NoArgsConstructor
@@ -22,11 +24,11 @@ public class Category extends BaseEntity {
 
     @Id
     @Column(name = "category_id")
-    private Integer id;
+    private Integer id; // Not auto Generated
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Category parentId;
+    private Category parent;
 
     @Column(nullable = false)
     private Integer ordering;
@@ -34,13 +36,13 @@ public class Category extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "parentId")
+    @OneToMany(mappedBy = "parent")
     private List<Category> children = new ArrayList<>();
 
     @Builder
-    public Category(Integer id, Category parentId, Integer ordering, String name) {
+    public Category(Integer id, Category parent, Integer ordering, String name) {
         this.id = id;
-        this.parentId = parentId;
+        this.parent = parent;
         this.ordering = ordering;
         this.name = name;
     }
