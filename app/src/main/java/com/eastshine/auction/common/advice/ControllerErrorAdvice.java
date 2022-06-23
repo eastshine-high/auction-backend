@@ -73,7 +73,7 @@ public class ControllerErrorAdvice {
         if (fe == null) {
             return ErrorResponse.of(ErrorCode.COMMON_INVALID_ARGUMENT.getErrorMsg(), ErrorCode.COMMON_INVALID_ARGUMENT.name());
         }
-        String responseMessage = messageSource.getMessage(fe, LocaleContextHolder.getLocale());
+        String responseMessage = fe.getField() + " - " + messageSource.getMessage(fe, LocaleContextHolder.getLocale());
         return ErrorResponse.of(responseMessage, ErrorCode.COMMON_INVALID_ARGUMENT.name());
     }
 
