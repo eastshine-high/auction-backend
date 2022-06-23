@@ -50,7 +50,7 @@ class AuthenticationServiceTest extends IntegrationTest {
 
             } catch (InvalidArgumentException ex) {
                 assertThat(ex).isInstanceOf(InvalidArgumentException.class);
-                assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.AUTH_LOGIN_FAIL);
+                assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.USER_LOGIN_FAIL);
             }
         }
 
@@ -62,7 +62,7 @@ class AuthenticationServiceTest extends IntegrationTest {
 
             } catch (InvalidArgumentException ex) {
                 assertThat(ex).isInstanceOf(InvalidArgumentException.class);
-                assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.AUTH_LOGIN_FAIL);
+                assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.USER_LOGIN_FAIL);
             }
         }
     }
