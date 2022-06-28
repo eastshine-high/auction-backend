@@ -24,11 +24,18 @@ public class RestDocsTest extends IntegrationTest{
                 .apply(MockMvcRestDocumentation
                         .documentationConfiguration(provider)
                         .operationPreprocessors()
-                                .withResponseDefaults(
-                                        prettyPrint(),
-                                        removeHeaders("Vary")
-                                )
-                        )
+                            .withRequestDefaults(
+                                    prettyPrint())
+                            .withResponseDefaults(
+                                    prettyPrint(),
+                                    removeHeaders("Vary"),
+                                    removeHeaders("X-XSS-Protection"))
+                        .and()
+                        .uris()
+                            .withScheme("http")
+                            .withHost("3.36.136.227")
+                            .withPort(80)
+                )
                 .apply(springSecurity())
                 .alwaysDo(MockMvcResultHandlers.print()) // andDo(print()) 코드 포함
                 .addFilters(new CharacterEncodingFilter("UTF-8", true)) // 한글 깨짐 방지
