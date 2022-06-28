@@ -2,53 +2,35 @@
 :toc: left
 :toclevels: 3
 
-**본 문서는 아직 보완이 필요한 테스트 문서임을 밝힙니다.**
-
-// 회원 관련해서 배포 한번 해보자.
-// mysql 사용해야함. in-memory 배포는 오바.
-// db, nginx(https), docker compose.
-// 배포에 대해서도 슬슬 시작해야 겠네.
-
 == 회원
 
 === 회원 가입
 
+POST /api/users
+
+include::{snippets}/post-users-201/request-fields.adoc[]
+
 **Request**
 
-URL : http://3.36.136.227/api/users
+(보안 개선 필요. HTTPS)
 
 include::{snippets}/post-users-201/http-request.adoc[]
 
-**Parameter**
+**Response**
 
-|===
-| Name | Type | Description | Required
-
-| email
-| String
-| 사용자 이메일
-| O
-
-| nickname
-| String
-| 사용자 닉네임
-| O
-
-| password
-| String
-| 비밀번호
-| O
-|===
+include::{snippets}/post-users-201/http-response.adoc[]
 
 === 토큰 받기(로그인)
 
+POST /api/session
+
+include::{snippets}/post-session-201/request-fields.adoc[]
+
 **Request**
 
-URL : http://3.36.136.227/api/session
+(보안 개선 필요. HTTPS)
 
 include::{snippets}/post-session-201/http-request.adoc[]
-
-**Parameter**
 
 |===
 | Name | Type | Description | Required
@@ -67,3 +49,35 @@ include::{snippets}/post-session-201/http-request.adoc[]
 **Response**
 
 include::{snippets}/post-session-201/http-response.adoc[]
+
+== 카테고리
+
+=== 카테고리 등록
+
+POST /api/categories
+
+include::{snippets}/post-categories-201/request-fields.adoc[]
+
+**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/post-categories-201/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/post-categories-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
+
+include::{snippets}/post-categories-201/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/post-categories-401/http-response.adoc[]
+
+=== 디스플레이 카테고리 조회
+
+GET /api/display/categories
+
+**Response**
+
+include::{snippets}/get-displayCategories-200/http-response.adoc[]
