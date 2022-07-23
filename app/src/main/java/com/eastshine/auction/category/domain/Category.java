@@ -30,6 +30,7 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
+
     @Column(nullable = false)
     private Integer ordering;
 
@@ -43,6 +44,7 @@ public class Category extends BaseEntity {
     public Category(Integer id, Category parent, Integer ordering, String name) {
         this.id = id;
         this.parent = parent;
+
         this.ordering = ordering;
         this.name = name;
     }

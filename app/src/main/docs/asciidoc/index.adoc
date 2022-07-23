@@ -32,6 +32,7 @@ include::{snippets}/post-session-201/request-fields.adoc[]
 
 include::{snippets}/post-session-201/http-request.adoc[]
 
+
 |===
 | Name | Type | Description | Required
 
