@@ -1,6 +1,6 @@
 package com.eastshine.auction.user.web;
 
-import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.user.web.dto.UserSignupDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -11,11 +11,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserControllerTest extends IntegrationTest {
+class UserControllerTest extends RestDocsTest {
 
     @Nested
     @DisplayName("signUpUser 메소드는")
@@ -42,7 +44,13 @@ class UserControllerTest extends IntegrationTest {
                         )
                         .andExpect(status().isCreated())
                         .andExpect(header().exists("location"))
-                        .andDo(document("post-users-201"));
+                        .andDo(document("post-users-201",
+                                requestFields(
+                                        fieldWithPath("email").description("사용자 이메일"),
+                                        fieldWithPath("nickname").description("사용자 닉네임"),
+                                        fieldWithPath("password").description("비밀번호")
+                                )
+                        ));
             }
         }
 

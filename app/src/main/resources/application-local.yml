@@ -1,4 +1,7 @@
 spring:
+  messages:
+    encoding: UTF-8
+    basename: messages,errors
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -9,15 +12,19 @@ spring:
       hibernate:
         format_sql: true
   cache:
-    type: redis
-  redis:
-    host: 127.0.0.1
-    port: 6379
+    type: NONE
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
 logging:
   level:
     root: info
     org.hibernate:
       SQL: debug
       type: trace
-jwt:
-  secret: "12345678901234567890123456789012"
+
+jwt.secret: "12345678901234567890123456789012"

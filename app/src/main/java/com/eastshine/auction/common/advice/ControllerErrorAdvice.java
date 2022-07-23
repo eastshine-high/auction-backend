@@ -12,6 +12,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -46,6 +47,18 @@ public class ControllerErrorAdvice {
     }
 
     /**
+     * 스프링 시큐리티 인가 오류
+     */
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ErrorResponse onAccessDeniedException(AccessDeniedException e) {
+        String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
+        log.error("eventId = {} ", eventId, e);
+        return ErrorResponse.of(ErrorCode.COMMON_UNAUTHORIZED_REQUEST);
+    }
+
+    /**
      * request parameter 오류
      */
     @ResponseBody
@@ -60,7 +73,7 @@ public class ControllerErrorAdvice {
         if (fe == null) {
             return ErrorResponse.of(ErrorCode.COMMON_INVALID_ARGUMENT.getErrorMsg(), ErrorCode.COMMON_INVALID_ARGUMENT.name());
         }
-        String responseMessage = messageSource.getMessage(fe, LocaleContextHolder.getLocale());
+        String responseMessage = fe.getField() + " - " + messageSource.getMessage(fe, LocaleContextHolder.getLocale());
         return ErrorResponse.of(responseMessage, ErrorCode.COMMON_INVALID_ARGUMENT.name());
     }
 

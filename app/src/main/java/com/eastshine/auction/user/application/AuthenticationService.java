@@ -22,10 +22,10 @@ public class AuthenticationService {
     @Transactional(readOnly = true)
     public String login(String email, String password){
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new InvalidArgumentException(ErrorCode.AUTH_LOGIN_FAIL));
+                .orElseThrow(() -> new InvalidArgumentException(ErrorCode.USER_LOGIN_FAIL));
 
         if (!user.authenticate(password, passwordEncoder)) {
-            throw new InvalidArgumentException(ErrorCode.AUTH_LOGIN_FAIL);
+            throw new InvalidArgumentException(ErrorCode.USER_LOGIN_FAIL);
         }
 
         UserInfo userInfo = UserMapper.INSTANCE.toUserInfo(user);

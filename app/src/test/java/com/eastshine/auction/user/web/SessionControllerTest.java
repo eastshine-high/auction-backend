@@ -1,6 +1,6 @@
 package com.eastshine.auction.user.web;
 
-import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.user.UserFactory;
 import com.eastshine.auction.user.web.dto.SessionRequestDto;
 import org.junit.jupiter.api.AfterEach;
@@ -15,11 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class SessionControllerTest extends IntegrationTest {
+class SessionControllerTest extends RestDocsTest {
     public static final String REGISTERED_EMAIL = "registered@naver.com";
     public static final String REGISTERED_USER_PW = "password";
 
@@ -55,13 +56,10 @@ class SessionControllerTest extends IntegrationTest {
                     .andExpect(status().isCreated())
                     .andDo(
                             document("post-session-201",
-                                    preprocessRequest(prettyPrint()),
-                                    preprocessResponse(
-                                            removeMatchingHeaders(
-                                                    "Host",
-                                                    "Content-type"
-                                            ),
-                                            prettyPrint())
+                                    requestFields(
+                                            fieldWithPath("email").description("사용자 이메일"),
+                                            fieldWithPath("password").description("비밀번호")
+                                    )
                             )
                     );
         }
