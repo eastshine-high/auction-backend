@@ -17,6 +17,10 @@ public enum ErrorCode {
     // Category
     CATEGORY_PARENT_ENTITY_NOT_FOUND("상위 카테고리를 찾을 수 없습니다."),
 
+    // Product
+    PRODUCT_INVALID_CATEGORY_ID("유효하지 않은 카테고리 ID입니다."),
+    PRODUCT_DUPLICATE("이미 등록된 상품입니다."),
+
     // User
     USER_DUPLICATE_EMAIL("이미 등록된 이메일입니다."),
     USER_DUPLICATE_NICKNAME("사용 중인 닉네임입니다."),
