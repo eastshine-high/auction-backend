@@ -13,6 +13,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -63,10 +64,10 @@ public class ControllerErrorAdvice {
      */
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(value = {MethodArgumentNotValidException.class})
-    public ErrorResponse methodArgumentNotValidException(MethodArgumentNotValidException e) {
+    @ExceptionHandler(value = {BindException.class, MethodArgumentNotValidException.class})
+    public ErrorResponse bindException(BindException e) {
         String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
-        log.warn("[BaseException] eventId = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+        log.warn("[BindException] eventId = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e).getMessage());
 
         BindingResult bindingResult = e.getBindingResult();
         FieldError fe = bindingResult.getFieldError();
