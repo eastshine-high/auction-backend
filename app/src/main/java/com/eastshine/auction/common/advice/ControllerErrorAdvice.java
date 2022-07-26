@@ -42,7 +42,7 @@ public class ControllerErrorAdvice {
     @ExceptionHandler(value = Exception.class)
     public ErrorResponse onException(Exception e) {
         String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
-        log.error("eventId = {} ", eventId, e);
+        log.error("[Exception] eventId = {} ", eventId, e);
         return ErrorResponse.of(ErrorCode.COMMON_SYSTEM_ERROR);
     }
 
@@ -54,7 +54,7 @@ public class ControllerErrorAdvice {
     @ExceptionHandler(value = AccessDeniedException.class)
     public ErrorResponse onAccessDeniedException(AccessDeniedException e) {
         String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
-        log.error("eventId = {} ", eventId, e);
+        log.error("[AccessDeniedException] eventId = {} ", eventId, e);
         return ErrorResponse.of(ErrorCode.COMMON_UNAUTHORIZED_REQUEST);
     }
 
