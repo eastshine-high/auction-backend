@@ -10,8 +10,12 @@ import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.domain.category.ProductCategory;
 import com.eastshine.auction.product.domain.category.ProductCategoryId;
 import com.eastshine.auction.product.domain.category.ProductCategoryRepository;
+import com.eastshine.auction.product.web.dto.ProductDto;
 import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
+import com.eastshine.auction.product.web.dto.ProductSearchCondition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,5 +39,10 @@ public class ProductService {
         Product registeredProduct = productRepository.save(productMapper.of(productRegistrationRequest));
         productCategoryRepository.save(new ProductCategory(new ProductCategoryId(registeredProduct, category)));
         return registeredProduct;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductDto> getProducts(ProductSearchCondition condition, Pageable pageRequest) {
+        return productRepository.findProducts(condition, pageRequest);
     }
 }

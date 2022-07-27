@@ -6,12 +6,16 @@ import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
+import com.eastshine.auction.product.web.dto.ProductDto;
 import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
+import com.eastshine.auction.product.web.dto.ProductSearchCondition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -116,5 +120,22 @@ class ProductServiceTest extends IntegrationTest {
                         .hasMessage(ErrorCode.PRODUCT_INVALID_CATEGORY_ID.getErrorMsg());
             }
         }
+    }
+
+    @DisplayName("getProducts 메서드는 입력 받는 조건의 상품을 검색합니다.")
+    @Test
+    void getProducts() {
+        String name = "마데카";
+        ProductSearchCondition searchCondition = ProductSearchCondition.builder()
+                .name(name)
+                .build();
+
+        Page<ProductDto> actuals = productService.getProducts(
+                        searchCondition,
+                        PageRequest.of(0, 10)
+                );
+
+        assertThat(actuals)
+                .anySatisfy(productDto -> productDto.getName().equals(name));
     }
 }
