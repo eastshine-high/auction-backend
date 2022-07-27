@@ -94,6 +94,9 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Flyway
+    implementation 'org.flywaydb:flyway-core'
 }
 
 clean {
