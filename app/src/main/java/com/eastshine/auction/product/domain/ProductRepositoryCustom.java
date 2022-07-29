@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface ProductRepositoryCustom {
 
-    Boolean existsProduct(ProductRegistrationRequest condition);
+    Boolean existsProduct(Integer categoryId, String productName);
 
     Page<ProductDto> findProducts(ProductSearchCondition condition, Pageable pageable);
 }
