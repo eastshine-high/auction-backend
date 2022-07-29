@@ -1,7 +1,6 @@
 package com.eastshine.auction.product.domain;
 
 import com.eastshine.auction.product.web.dto.ProductDto;
-import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
 import com.eastshine.auction.product.web.dto.ProductSearchCondition;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
@@ -60,13 +59,13 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
         return new PageImpl<>(results.getResults(), pageable, total);
     }
 
-    public Boolean existsProduct(ProductRegistrationRequest registrationRequest) {
+    public Boolean existsProduct(Integer categoryId, String productName) {
         Product fetchOne = jpaQueryFactory
                 .selectFrom(product)
                 .join(product.productCategories, productCategory)
                 .where(
-                        productCategory.productCategoryId.category.id.eq(registrationRequest.getCategoryId()),
-                        product.name.eq(registrationRequest.getName()))
+                        productCategory.productCategoryId.category.id.eq(categoryId),
+                        product.name.eq(productName))
                 .fetchFirst();
 
         return fetchOne != null;
