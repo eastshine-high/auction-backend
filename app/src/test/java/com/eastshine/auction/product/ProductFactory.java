@@ -1,16 +1,16 @@
 package com.eastshine.auction.product;
 
-import com.eastshine.auction.product.application.ProductService;
+import com.eastshine.auction.product.application.SellerProductService;
 import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.domain.category.ProductCategoryRepository;
-import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
+import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ProductFactory {
-    @Autowired ProductService productService;
+    @Autowired SellerProductService sellerProductService;
     @Autowired ProductRepository productRepository;
     @Autowired ProductCategoryRepository productCategoryRepository;
 
@@ -19,13 +19,13 @@ public class ProductFactory {
     }
 
     public Product createProduct(Integer categoryId, String name, Integer price, Boolean onSale) {
-        ProductRegistrationRequest registrationRequest = ProductRegistrationRequest.builder()
+        SellerProductRegistrationRequest registrationRequest = SellerProductRegistrationRequest.builder()
                 .categoryId(categoryId)
                 .name(name)
                 .price(price)
                 .onSale(onSale)
                 .build();
-        return productService.registerProduct(registrationRequest);
+        return sellerProductService.registerProduct(registrationRequest);
     }
 
     public void deleteAll() {

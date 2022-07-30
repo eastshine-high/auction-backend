@@ -1,6 +1,7 @@
 package com.eastshine.auction.product.domain;
 
-import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
+import com.eastshine.auction.product.web.dto.ProductModificationRequest;
+import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -11,5 +12,7 @@ import org.mapstruct.factory.Mappers;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    Product of(ProductRegistrationRequest productRegistrationRequest);
+    Product of(SellerProductRegistrationRequest sellerProductRegistrationRequest);
+
+    Product of(ProductModificationRequest productModificationRequest);
 }

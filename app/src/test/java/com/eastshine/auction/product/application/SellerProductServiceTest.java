@@ -3,45 +3,60 @@ package com.eastshine.auction.product.application;
 import com.eastshine.auction.category.CategoryFactory;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
-import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.common.model.UserInfo;
+import com.eastshine.auction.common.security.UserAuthentication;
 import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.web.dto.ProductDto;
-import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
-import com.eastshine.auction.product.web.dto.ProductSearchCondition;
+import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.user.UserFactory;
+import com.eastshine.auction.user.domain.role.RoleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ProductServiceTest extends IntegrationTest {
-    public static final int REGISTERED_CATEGORY_ID = 101;
-    public static final String REGISTERED_PRODUCT_NAME = "마데카솔";
+class SellerProductServiceTest {
+    private static final int REGISTERED_CATEGORY_ID = 101;
+    private static final long CREATED_ID_OF_PRODUCT = 303;
+    private static final String REGISTERED_PRODUCT_NAME = "마데카솔";
 
-    @Autowired ProductService productService;
+    private static long registeredProductId;
+
+    @Autowired SellerProductService sellerProductService;
     @Autowired CategoryFactory categoryFactory;
     @Autowired ProductFactory productFactory;
+    @Autowired UserFactory userFactory;
 
     @BeforeEach
     void setUp() {
         productFactory.deleteAll();
         categoryFactory.deleteAllCategory();
+
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
 
-        ProductRegistrationRequest productInfo = ProductRegistrationRequest.builder()
+        UserInfo productCreator = UserInfo.builder()
+                .id(CREATED_ID_OF_PRODUCT)
+                .roles(Arrays.asList(RoleType.USER))
+                .build();
+        SecurityContextHolder.getContext()
+                .setAuthentication(new UserAuthentication(productCreator));
+
+        SellerProductRegistrationRequest productInfo = SellerProductRegistrationRequest.builder()
                 .onSale(true)
                 .stockQuantity(30)
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name(REGISTERED_PRODUCT_NAME)
                 .price(3000)
                 .build();
-        productService.registerProduct(productInfo);
+        Product product = sellerProductService.registerProduct(productInfo);
+        registeredProductId = product.getId();
     }
 
     @DisplayName("registerProduct 메소드는")
@@ -60,7 +75,7 @@ class ProductServiceTest extends IntegrationTest {
                 String productName = "비판텐";
                 int price = 3200;
 
-                ProductRegistrationRequest productInfo = ProductRegistrationRequest.builder()
+                SellerProductRegistrationRequest productInfo = SellerProductRegistrationRequest.builder()
                         .onSale(onSale)
                         .stockQuantity(stockQuantity)
                         .categoryId(REGISTERED_CATEGORY_ID)
@@ -68,7 +83,7 @@ class ProductServiceTest extends IntegrationTest {
                         .price(price)
                         .build();
 
-                Product actual = productService.registerProduct(productInfo);
+                Product actual = sellerProductService.registerProduct(productInfo);
 
                 assertThat(actual).isInstanceOf(Product.class);
                 assertThat(actual.getName()).isEqualTo(productName);
@@ -85,7 +100,7 @@ class ProductServiceTest extends IntegrationTest {
             @DisplayName("InvalidArgumentException 예외를 던진다.")
             @Test
             void it_throws_InvalidArgumentException() {
-                ProductRegistrationRequest duplicateProductInfo = ProductRegistrationRequest.builder()
+                SellerProductRegistrationRequest duplicateProductInfo = SellerProductRegistrationRequest.builder()
                         .onSale(true)
                         .stockQuantity(30)
                         .categoryId(REGISTERED_CATEGORY_ID)
@@ -93,7 +108,7 @@ class ProductServiceTest extends IntegrationTest {
                         .price(3000)
                         .build();
 
-                assertThatThrownBy(() -> productService.registerProduct(duplicateProductInfo))
+                assertThatThrownBy(() -> sellerProductService.registerProduct(duplicateProductInfo))
                         .isInstanceOf(InvalidArgumentException.class)
                         .hasMessage(ErrorCode.PRODUCT_DUPLICATE.getErrorMsg());
             }
@@ -107,7 +122,7 @@ class ProductServiceTest extends IntegrationTest {
             @DisplayName("InvalidArgumentException 예외를 던진다.")
             @Test
             void it_throws_InvalidArgumentException() {
-                ProductRegistrationRequest productInfo = ProductRegistrationRequest.builder()
+                SellerProductRegistrationRequest productInfo = SellerProductRegistrationRequest.builder()
                         .onSale(true)
                         .stockQuantity(30)
                         .categoryId(notRegisteredCategoryId)
@@ -115,27 +130,10 @@ class ProductServiceTest extends IntegrationTest {
                         .price(3000)
                         .build();
 
-                assertThatThrownBy(() -> productService.registerProduct(productInfo))
+                assertThatThrownBy(() -> sellerProductService.registerProduct(productInfo))
                         .isInstanceOf(InvalidArgumentException.class)
                         .hasMessage(ErrorCode.PRODUCT_INVALID_CATEGORY_ID.getErrorMsg());
             }
         }
-    }
-
-    @DisplayName("getProducts 메서드는 입력 받는 조건의 상품을 검색합니다.")
-    @Test
-    void getProducts() {
-        String name = "마데카";
-        ProductSearchCondition searchCondition = ProductSearchCondition.builder()
-                .name(name)
-                .build();
-
-        Page<ProductDto> actuals = productService.getProducts(
-                        searchCondition,
-                        PageRequest.of(0, 10)
-                );
-
-        assertThat(actuals)
-                .anySatisfy(productDto -> productDto.getName().equals(name));
     }
 }

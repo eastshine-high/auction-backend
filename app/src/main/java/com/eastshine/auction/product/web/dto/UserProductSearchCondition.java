@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductSearchCondition {
+public class UserProductSearchCondition {
 
     @NotBlank
     String name;
