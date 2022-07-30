@@ -10,39 +10,33 @@ import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.domain.category.ProductCategory;
 import com.eastshine.auction.product.domain.category.ProductCategoryId;
 import com.eastshine.auction.product.domain.category.ProductCategoryRepository;
-import com.eastshine.auction.product.web.dto.ProductDto;
-import com.eastshine.auction.product.web.dto.ProductRegistrationRequest;
-import com.eastshine.auction.product.web.dto.ProductSearchCondition;
+import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
-public class ProductService {
+public class SellerProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductMapper productMapper;
 
     @Transactional
-    public Product registerProduct(ProductRegistrationRequest productRegistrationRequest) {
-        Category category = categoryRepository.findById(productRegistrationRequest.getCategoryId())
+    public Product registerProduct(SellerProductRegistrationRequest registrationRequest) {
+        Category category = categoryRepository.findById(registrationRequest.getCategoryId())
                 .orElseThrow(() -> new InvalidArgumentException(ErrorCode.PRODUCT_INVALID_CATEGORY_ID));
 
-        if (productRepository.existsProduct(productRegistrationRequest)) {
+        if (productRepository.existsProduct(
+                registrationRequest.getCategoryId(),
+                registrationRequest.getName())
+        ) {
             throw new InvalidArgumentException(ErrorCode.PRODUCT_DUPLICATE);
         }
 
-        Product registeredProduct = productRepository.save(productMapper.of(productRegistrationRequest));
+        Product registeredProduct = productRepository.save(productMapper.of(registrationRequest));
         productCategoryRepository.save(new ProductCategory(new ProductCategoryId(registeredProduct, category)));
         return registeredProduct;
-    }
-
-    @Transactional(readOnly = true)
-    public Page<ProductDto> getProducts(ProductSearchCondition condition, Pageable pageRequest) {
-        return productRepository.findProducts(condition, pageRequest);
     }
 }

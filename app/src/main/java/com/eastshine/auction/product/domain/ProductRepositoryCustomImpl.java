@@ -1,7 +1,7 @@
 package com.eastshine.auction.product.domain;
 
 import com.eastshine.auction.product.web.dto.ProductDto;
-import com.eastshine.auction.product.web.dto.ProductSearchCondition;
+import com.eastshine.auction.product.web.dto.UserProductSearchCondition;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,7 +22,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
     }
 
     @Override
-    public Page<ProductDto> findProducts(ProductSearchCondition condition, Pageable pageable) {
+    public Page<ProductDto> findProducts(UserProductSearchCondition condition, Pageable pageable) {
         if(condition.getCategoryId() == null){ // 이 조건이 없는 경우, 조인 없이 질의
             return findByProductNameContaining(condition, pageable);
         }
@@ -44,7 +44,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
         return new PageImpl<>(results.getResults(), pageable, results.getTotal());
     }
 
-    Page<ProductDto> findByProductNameContaining(ProductSearchCondition condition, Pageable pageable){
+    Page<ProductDto> findByProductNameContaining(UserProductSearchCondition condition, Pageable pageable){
         QueryResults<ProductDto> results = jpaQueryFactory.select(Projections.fields(ProductDto.class,
                         product.id,
                         product.name,

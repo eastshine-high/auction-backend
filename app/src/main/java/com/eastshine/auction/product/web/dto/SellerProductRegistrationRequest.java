@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductRegistrationRequest {
+public class SellerProductRegistrationRequest {
 
     @NotBlank
     private String name;
