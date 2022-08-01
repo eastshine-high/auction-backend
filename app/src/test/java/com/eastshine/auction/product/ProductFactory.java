@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class ProductFactory {
     @Autowired SellerProductService sellerProductService;
     @Autowired ProductRepository productRepository;
-    @Autowired ProductCategoryRepository productCategoryRepository;
 
     public Product createProduct(Integer categoryId, String name) {
         return createProduct(categoryId, name, 5000, true);
@@ -29,7 +28,6 @@ public class ProductFactory {
     }
 
     public void deleteAll() {
-        productCategoryRepository.deleteAll();
         productRepository.deleteAll();
     }
 }

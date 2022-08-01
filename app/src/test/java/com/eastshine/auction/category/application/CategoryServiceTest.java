@@ -5,8 +5,6 @@ import com.eastshine.auction.category.domain.CategoryRepository;
 import com.eastshine.auction.category.web.dto.CategoryRegistrationRequest;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.test.IntegrationTest;
-import com.eastshine.auction.product.domain.category.ProductCategoryRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,12 +21,10 @@ class CategoryServiceTest extends IntegrationTest{
     private static final int EXIST_PARENT_ID = 641;
 
     @Autowired CategoryService categoryService;
-    @Autowired ProductCategoryRepository productCategoryRepository;
     @Autowired CategoryRepository categoryRepository;
 
     @BeforeEach
     void setUp() {
-        productCategoryRepository.deleteAll();
         categoryRepository.deleteAll();
 
         Category category = Category.builder()

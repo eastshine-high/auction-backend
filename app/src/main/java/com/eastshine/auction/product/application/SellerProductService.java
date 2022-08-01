@@ -7,9 +7,6 @@ import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.domain.ProductMapper;
 import com.eastshine.auction.product.domain.ProductRepository;
-import com.eastshine.auction.product.domain.category.ProductCategory;
-import com.eastshine.auction.product.domain.category.ProductCategoryId;
-import com.eastshine.auction.product.domain.category.ProductCategoryRepository;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SellerProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final ProductCategoryRepository productCategoryRepository;
     private final ProductMapper productMapper;
 
     @Transactional
@@ -29,14 +25,13 @@ public class SellerProductService {
                 .orElseThrow(() -> new InvalidArgumentException(ErrorCode.PRODUCT_INVALID_CATEGORY_ID));
 
         if (productRepository.existsProduct(
-                registrationRequest.getCategoryId(),
-                registrationRequest.getName())
+                registrationRequest.getCategoryId(), registrationRequest.getName())
         ) {
             throw new InvalidArgumentException(ErrorCode.PRODUCT_DUPLICATE);
         }
 
-        Product registeredProduct = productRepository.save(productMapper.of(registrationRequest));
-        productCategoryRepository.save(new ProductCategory(new ProductCategoryId(registeredProduct, category)));
-        return registeredProduct;
+        Product product = productMapper.of(registrationRequest);
+        product.setCategory(category);
+        return productRepository.save(product);
     }
 }
