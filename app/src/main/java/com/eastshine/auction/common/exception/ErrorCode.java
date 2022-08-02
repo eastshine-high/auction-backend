@@ -19,7 +19,6 @@ public enum ErrorCode {
 
     // Product
     PRODUCT_INVALID_CATEGORY_ID("유효하지 않은 카테고리 ID입니다."),
-    PRODUCT_DUPLICATE("이미 등록된 상품입니다."),
 
     // User
     USER_DUPLICATE_EMAIL("이미 등록된 이메일입니다."),
