@@ -5,6 +5,7 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.security.UserAuthentication;
+import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
@@ -22,15 +23,15 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class SellerProductServiceTest {
+class SellerProductServiceTest extends IntegrationTest {
     private static final int REGISTERED_CATEGORY_ID = 101;
     private static final long CREATED_ID_OF_PRODUCT = 303;
     private static final String REGISTERED_PRODUCT_NAME = "마데카솔";
 
     private static long registeredProductId;
 
-    @Autowired SellerProductService sellerProductService;
     @Autowired CategoryFactory categoryFactory;
+    @Autowired SellerProductService sellerProductService;
     @Autowired ProductFactory productFactory;
     @Autowired UserFactory userFactory;
 
@@ -93,27 +94,6 @@ class SellerProductServiceTest {
             }
         }
 
-        @DisplayName("동일한 카테고리 ID와 상품명의 상품이 이미 등록되어 있는 경우")
-        @Nested
-        class Context_with_duplicate_product{
-
-            @DisplayName("InvalidArgumentException 예외를 던진다.")
-            @Test
-            void it_throws_InvalidArgumentException() {
-                SellerProductRegistrationRequest duplicateProductInfo = SellerProductRegistrationRequest.builder()
-                        .onSale(true)
-                        .stockQuantity(30)
-                        .categoryId(REGISTERED_CATEGORY_ID)
-                        .name(REGISTERED_PRODUCT_NAME)
-                        .price(3000)
-                        .build();
-
-                assertThatThrownBy(() -> sellerProductService.registerProduct(duplicateProductInfo))
-                        .isInstanceOf(InvalidArgumentException.class)
-                        .hasMessage(ErrorCode.PRODUCT_DUPLICATE.getErrorMsg());
-            }
-        }
-
         @DisplayName("등록되지 않은 카테고리 ID를 통해 상품을 등록할 경우")
         @Nested
         class Context_with_not_registered_category{
@@ -136,4 +116,5 @@ class SellerProductServiceTest {
             }
         }
     }
+
 }

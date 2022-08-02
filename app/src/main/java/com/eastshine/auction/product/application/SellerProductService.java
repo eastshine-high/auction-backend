@@ -24,12 +24,6 @@ public class SellerProductService {
         Category category = categoryRepository.findById(registrationRequest.getCategoryId())
                 .orElseThrow(() -> new InvalidArgumentException(ErrorCode.PRODUCT_INVALID_CATEGORY_ID));
 
-        if (productRepository.existsProduct(
-                registrationRequest.getCategoryId(), registrationRequest.getName())
-        ) {
-            throw new InvalidArgumentException(ErrorCode.PRODUCT_DUPLICATE);
-        }
-
         Product product = productMapper.of(registrationRequest);
         product.setCategory(category);
         return productRepository.save(product);
