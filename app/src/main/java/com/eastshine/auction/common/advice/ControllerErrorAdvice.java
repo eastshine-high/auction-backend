@@ -4,6 +4,7 @@ import com.eastshine.auction.common.dto.ErrorResponse;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
+import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.interceptor.CommonHttpRequestInterceptor;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
@@ -48,15 +49,31 @@ public class ControllerErrorAdvice {
     }
 
     /**
-     * 스프링 시큐리티 인가 오류
+     * 스프링 시큐리티 인가 예외
      */
     @ResponseBody
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = AccessDeniedException.class)
     public ErrorResponse onAccessDeniedException(AccessDeniedException e) {
         String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
         log.error("[AccessDeniedException] eventId = {} ", eventId, e);
         return ErrorResponse.of(ErrorCode.COMMON_UNAUTHORIZED_REQUEST);
+    }
+
+    /**
+     * 비즈니스 로직에서의 인가 예외
+     */
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(value = UnauthorizedException.class)
+    public ErrorResponse onUnauthorizedException(UnauthorizedException e) {
+        String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
+        if (SPECIFIC_ALERT_TARGET_ERROR_CODE_LIST.contains(e.getErrorCode())) {
+            log.error("[BaseException] eventId = {}, cause = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e), NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+        } else {
+            log.warn("[BaseException] eventId = {}, cause = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e), NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+        }
+        return ErrorResponse.of(e.getMessage(), e.getErrorCode().name());
     }
 
     /**
