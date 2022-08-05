@@ -1,6 +1,6 @@
 package com.eastshine.auction.product.domain;
 
-import com.eastshine.auction.product.web.dto.ProductModificationRequest;
+import com.eastshine.auction.product.web.dto.SellerProductPatchValidationBean;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -14,5 +14,5 @@ public interface ProductMapper {
 
     Product of(SellerProductRegistrationRequest sellerProductRegistrationRequest);
 
-    Product of(ProductModificationRequest productModificationRequest);
+    SellerProductPatchValidationBean toSellerProductModificationDto(Product product);
 }
