@@ -11,6 +11,8 @@ plugins {
 
     //querydsl
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+
+    id 'org.barfuin.gradle.taskinfo' version '1.0.5'
 }
 
 application {
@@ -68,6 +70,10 @@ dependencies {
 
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // For Json patch
+    implementation 'org.apache.johnzon:johnzon-core'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr353'
 
     // JWT
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
