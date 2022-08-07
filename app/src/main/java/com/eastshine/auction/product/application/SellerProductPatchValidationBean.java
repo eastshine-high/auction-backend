@@ -1,4 +1,4 @@
-package com.eastshine.auction.product.web.dto;
+package com.eastshine.auction.product.application;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,7 +24,6 @@ public class SellerProductPatchValidationBean {
     @Range(min = 1000)
     private Integer price;
 
-    @NotNull
     private Integer stockQuantity;
 
     @NotNull
@@ -32,11 +32,26 @@ public class SellerProductPatchValidationBean {
     @NotNull
     private PatchCategory category;
 
+    private List<PatchProductOption> productOptions;
+
     @Getter
     @Setter
     public static class PatchCategory {
 
         @NotNull
         private Integer id;
+    }
+
+    @Getter
+    @Setter
+    public static class PatchProductOption {
+
+        @NotBlank
+        private String productOptionName;
+
+        private Integer stockQuantity;
+
+        @NotNull
+        private Integer ordering;
     }
 }

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -17,10 +19,23 @@ public class SellerProductPatchRequest {
     private Integer stockQuantity;
     private Boolean onSale;
     private SellerProductPatchRequest.PatchCategory category;
+    private List<ProductOption> productOptions;
 
     @Getter
     @Setter
     public static class PatchCategory {
         private Integer id;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ProductOption {
+        private Long id;
+        private String productOptionName;
+        private Integer stockQuantity;
+        private Integer ordering;
     }
 }

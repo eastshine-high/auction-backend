@@ -7,8 +7,9 @@ import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long>, ProductRepositoryCustom {
 
+    @EntityGraph(attributePaths = {"productOptions"})
     Optional<Product> findByName(String name);
 
-    @EntityGraph(attributePaths = {"category"})
+    @EntityGraph(attributePaths = {"category","productOptions"})
     Optional<Product> findEagerById(Long id);
 }
