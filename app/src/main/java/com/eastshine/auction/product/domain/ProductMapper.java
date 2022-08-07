@@ -1,8 +1,10 @@
 package com.eastshine.auction.product.domain;
 
-import com.eastshine.auction.product.web.dto.SellerProductPatchValidationBean;
+import com.eastshine.auction.product.application.SellerProductPatchValidationBean;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -12,7 +14,8 @@ import org.mapstruct.factory.Mappers;
 public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
+    @Mappings({@Mapping(source = "sellerProductRegistrationRequest.productOptions", target = "productOptions")})
     Product of(SellerProductRegistrationRequest sellerProductRegistrationRequest);
 
-    SellerProductPatchValidationBean toSellerProductModificationDto(Product product);
+    SellerProductPatchValidationBean toValidationBean(Product product);
 }
