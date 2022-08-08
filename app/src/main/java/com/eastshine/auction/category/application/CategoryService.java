@@ -24,12 +24,6 @@ public class CategoryService {
                     .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CATEGORY_PARENT_ENTITY_NOT_FOUND));
         }
 
-        Category category = Category.builder()
-                .id(categoryRegistrationRequest.getId())
-                .parent(parentCategory)
-                .ordering(categoryRegistrationRequest.getOrdering())
-                .name(categoryRegistrationRequest.getName())
-                .build();
-        return categoryRepository.save(category);
+        return categoryRepository.save(categoryRegistrationRequest.toEntity(parentCategory));
     }
 }
