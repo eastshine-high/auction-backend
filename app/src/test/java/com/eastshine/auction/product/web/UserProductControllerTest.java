@@ -1,7 +1,7 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.category.CategoryFactory;
 import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,15 +22,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserProductControllerTest extends RestDocsTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
-    @Autowired
-    CategoryFactory categoryFactory;
-    @Autowired
-    ProductFactory productFactory;
+    @Autowired CategoryFactory categoryFactory;
+    @Autowired ProductFactory productFactory;
 
     @BeforeEach
     void setUp() {
         productFactory.deleteAll();
-        categoryFactory.deleteAllCategory();
+        categoryFactory.deleteAll();
 
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
         Product createdProduct = productFactory.createProduct(REGISTERED_CATEGORY_ID, "비판텐");

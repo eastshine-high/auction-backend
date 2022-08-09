@@ -1,4 +1,4 @@
-package com.eastshine.auction.category.domain;
+package com.eastshine.auction.product.domain.category;
 
 import java.util.List;
 

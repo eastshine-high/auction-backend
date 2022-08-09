@@ -1,6 +1,6 @@
-package com.eastshine.auction.category.web.dto;
+package com.eastshine.auction.product.web.dto;
 
-import com.eastshine.auction.category.domain.Category;
+import com.eastshine.auction.product.domain.category.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

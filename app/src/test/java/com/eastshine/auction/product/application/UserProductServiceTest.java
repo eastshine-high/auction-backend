@@ -1,6 +1,6 @@
 package com.eastshine.auction.product.application;
 
-import com.eastshine.auction.category.CategoryFactory;
+import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.web.dto.ProductDto;
@@ -18,16 +18,14 @@ class UserProductServiceTest {
     private static final int REGISTERED_CATEGORY_ID = 101;
     private static final String REGISTERED_PRODUCT_NAME = "마데카솔";
 
-    @Autowired
-    CategoryFactory categoryFactory;
-    @Autowired
-    ProductFactory productFactory;
+    @Autowired CategoryFactory categoryFactory;
+    @Autowired ProductFactory productFactory;
     @Autowired UserProductService userProductService;
 
     @BeforeEach
     void setUp() {
         productFactory.deleteAll();
-        categoryFactory.deleteAllCategory();
+        categoryFactory.deleteAll();
 
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
         Product product = productFactory.createProduct(REGISTERED_CATEGORY_ID, REGISTERED_PRODUCT_NAME);
