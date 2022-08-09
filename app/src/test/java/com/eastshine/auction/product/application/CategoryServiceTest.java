@@ -1,8 +1,9 @@
-package com.eastshine.auction.category.application;
+package com.eastshine.auction.product.application;
 
-import com.eastshine.auction.category.domain.Category;
-import com.eastshine.auction.category.domain.CategoryRepository;
-import com.eastshine.auction.category.web.dto.CategoryRegistrationRequest;
+import com.eastshine.auction.product.application.CategoryService;
+import com.eastshine.auction.product.domain.category.Category;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class CategoryServiceTest extends IntegrationTest{
     private static final int EXIST_PARENT_ID = 641;
 
-    @Autowired CategoryService categoryService;
+    @Autowired
+    CategoryService categoryService;
     @Autowired CategoryRepository categoryRepository;
 
     @BeforeEach

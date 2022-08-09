@@ -1,4 +1,4 @@
-package com.eastshine.auction.category.domain;
+package com.eastshine.auction.product.domain.category;
 
 import com.eastshine.auction.common.model.BaseEntity;
 import lombok.Builder;
@@ -30,7 +30,6 @@ public class Category extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Category parent;
 
-
     @Column(nullable = false)
     private Integer ordering;
 
@@ -44,8 +43,14 @@ public class Category extends BaseEntity {
     public Category(Integer id, Category parent, Integer ordering, String name) {
         this.id = id;
         this.parent = parent;
-
         this.ordering = ordering;
         this.name = name;
+    }
+
+    /**
+     * 재귀 쿼리 수행을 방지하기 위해 children의 레퍼런스를 null로 설정합니다.
+     */
+    public void setChildrenNull() {
+        this.children = null;
     }
 }

@@ -1,8 +1,8 @@
-package com.eastshine.auction.category.application;
+package com.eastshine.auction.product.application;
 
-import com.eastshine.auction.category.domain.Category;
-import com.eastshine.auction.category.domain.CategoryRepository;
-import com.eastshine.auction.category.web.dto.MainDisplayCategoryDto;
+import com.eastshine.auction.product.domain.category.Category;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.MainDisplayCategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;

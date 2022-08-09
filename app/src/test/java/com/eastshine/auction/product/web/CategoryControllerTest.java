@@ -1,7 +1,7 @@
-package com.eastshine.auction.category.web;
+package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.category.domain.CategoryRepository;
-import com.eastshine.auction.category.web.dto.CategoryRegistrationRequest;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
 import com.eastshine.auction.common.test.RestDocsTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

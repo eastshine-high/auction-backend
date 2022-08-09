@@ -1,7 +1,7 @@
-package com.eastshine.auction.category.web;
+package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.category.application.DisplayCategoryService;
-import com.eastshine.auction.category.web.dto.MainDisplayCategoryDto;
+import com.eastshine.auction.product.application.DisplayCategoryService;
+import com.eastshine.auction.product.web.dto.MainDisplayCategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

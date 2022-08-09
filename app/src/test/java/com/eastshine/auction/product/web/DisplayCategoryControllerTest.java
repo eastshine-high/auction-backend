@@ -1,6 +1,6 @@
-package com.eastshine.auction.category.web;
+package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.category.CategoryFactory;
+import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.common.test.RestDocsTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class DisplayCategoryControllerTest extends RestDocsTest {
 
     @BeforeEach
     void setUp() {
-        categoryFactory.deleteAllCategory();
+        categoryFactory.deleteAllCategory(); // product 커밋한 다음에 개선, 걸쳐있는 게 많다.
 
         categoryFactory.createCategory(101, "패션/뷰티", 1);
         categoryFactory.createCategory(1010001, 101, "스킨케어", 1);

@@ -1,8 +1,8 @@
-package com.eastshine.auction.category.application;
+package com.eastshine.auction.product.application;
 
-import com.eastshine.auction.category.domain.Category;
-import com.eastshine.auction.category.domain.CategoryRepository;
-import com.eastshine.auction.category.web.dto.CategoryRegistrationRequest;
+import com.eastshine.auction.product.domain.category.Category;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
