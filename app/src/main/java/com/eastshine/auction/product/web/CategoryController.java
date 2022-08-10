@@ -1,29 +1,27 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.product.application.CategoryService;
 import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.MainDisplayCategoryDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/categories")
 public class CategoryController {
-    private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity registerCategory(@RequestBody @Validated CategoryRegistrationRequest categoryRegistrationRequest) {
-        Category registeredCategory = categoryService.registerCategory(categoryRegistrationRequest);
-        return ResponseEntity.created(URI.create("/api/categories/" + registeredCategory.getId())).build();
+    @GetMapping("/api/display/categories")
+    @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
+    public List<MainDisplayCategoryDto> getDisplayCategories() {
+        List<Category> categories = categoryRepository.findDisplayCategories();
+        return categories.stream()
+                .map(MainDisplayCategoryDto::new)
+                .collect(Collectors.toList());
     }
 }

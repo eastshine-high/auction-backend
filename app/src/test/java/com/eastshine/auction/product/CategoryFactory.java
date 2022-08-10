@@ -1,15 +1,15 @@
 package com.eastshine.auction.product;
 
-import com.eastshine.auction.product.application.CategoryService;
+import com.eastshine.auction.product.application.AdminCategoryService;
 import com.eastshine.auction.product.domain.category.Category;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
+import com.eastshine.auction.product.web.dto.AdminCategoryRegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryFactory {
-    @Autowired CategoryService categoryService;
+    @Autowired AdminCategoryService adminCategoryService;
     @Autowired CategoryRepository categoryRepository;
     private int ordering = 1;
 
@@ -22,16 +22,16 @@ public class CategoryFactory {
     }
 
     public Category createCategory(Integer id, Integer parentId, String name, Integer ordering) {
-        CategoryRegistrationRequest registrationDto = CategoryRegistrationRequest.builder()
+        AdminCategoryRegistrationRequest registrationDto = AdminCategoryRegistrationRequest.builder()
                 .id(id)
                 .parentId(parentId)
                 .name(name)
                 .ordering(ordering)
                 .build();
-        return categoryService.registerCategory(registrationDto);
+        return adminCategoryService.registerCategory(registrationDto);
     }
 
-    public void deleteAllCategory() {
+    public void deleteAll() {
         categoryRepository.deleteAll();
     }
 }
