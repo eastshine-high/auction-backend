@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategoryRegistrationRequest {
+public class AdminCategoryRegistrationRequest {
 
     @NotNull
     private Integer id;

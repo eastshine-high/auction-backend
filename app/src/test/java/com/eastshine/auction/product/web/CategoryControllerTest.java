@@ -1,111 +1,49 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.CategoryRegistrationRequest;
 import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.product.CategoryFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.JsonFieldType;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class CategoryControllerTest extends RestDocsTest {
 
     @Autowired
-    CategoryRepository categoryRepository;
+    CategoryFactory categoryFactory;
 
     @BeforeEach
     void setUp() {
-        categoryRepository.deleteAll();
+        categoryFactory.deleteAll(); // product 커밋한 다음에 개선, 걸쳐있는 게 많다.
+
+        categoryFactory.createCategory(101, "패션/뷰티", 1);
+        categoryFactory.createCategory(1010001, 101, "스킨케어", 1);
+        categoryFactory.createCategory(1010002, 101, "헤어/바디/미용", 2);
+        categoryFactory.createCategory(102, "디지털/가전", 2);
+        categoryFactory.createCategory(1020001, 102, "가공식품/즉석/간신", 1);
+        categoryFactory.createCategory(103, "가구/생활/자동차", 3);
     }
 
-    @Nested
-    @DisplayName("registerCategory 메소드는")
-    class Describe_registerCategory{
+    @AfterEach
+    void tearDown() {
+        categoryFactory.deleteAll();
+    }
 
-        @Nested
-        @DisplayName("유효한 카테고리 정보로 등록했을 경우")
-        class Context_with_valid_CategoryRegistrationDto{
-            CategoryRegistrationRequest categoryRegistrationRequest = CategoryRegistrationRequest.builder()
-                    .id(101)
-                    .name("패션/뷰티")
-                    .ordering(1)
-                    .build();
-
-            @Test
-            @DisplayName("created 상태를 응답한다.")
-            void it_returns_created_status() throws Exception {
-                mockMvc.perform(
-                        post("/api/categories")
-                                .header("Authorization", VALID_AUTHENTICATION)
+    @Test
+    void getDisplayCategories() throws Exception {
+        mockMvc.perform(
+                        get("/api/display/categories")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(categoryRegistrationRequest))
                 )
-                        .andExpect(status().isCreated())
-                        .andExpect(header().exists("location"))
-                        .andDo(document("post-categories-201",
-                                requestFields(
-                                        fieldWithPath("id").description("카테고리 식별자"),
-                                        fieldWithPath("parentId").description("상위 카테고리 식별자").type(JsonFieldType.NUMBER).optional(),
-                                        fieldWithPath("ordering").description("정렬 순서"),
-                                        fieldWithPath("name").description("카테고리 이름")
-                                )
-                        ));
-            }
-        }
-
-
-        @Nested
-        @DisplayName("유효하지 못한 카테고리 정보로 등록할 경우")
-        class Context_with_invalid_dto{
-            CategoryRegistrationRequest categoryRegistrationRequest = CategoryRegistrationRequest.builder()
-                    .id(12345)
-                    .build();
-
-            @DisplayName("badRequest 상태를 응답한다.")
-            @Test
-            void it_returns_badRequest_status() throws Exception {
-                mockMvc.perform(
-                                post("/api/categories")
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", VALID_AUTHENTICATION)
-                                        .content(objectMapper.writeValueAsString(categoryRegistrationRequest))
-                        )
-                        .andExpect(status().isBadRequest())
-                        .andDo(document("post-categories-201"));
-            }
-        }
-
-        @Nested
-        @DisplayName("권한이 없는 요청일 경우")
-        class Context_with_unauthorized_request{
-            CategoryRegistrationRequest categoryRegistrationRequest = CategoryRegistrationRequest.builder()
-                    .id(101)
-                    .name("패션/뷰티")
-                    .ordering(1)
-                    .build();
-
-            @DisplayName("unauthorized 상태를 응답한다.")
-            @Test
-            void it_returns_badRequest_status() throws Exception {
-                mockMvc.perform(
-                        post("/api/categories")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .header("Authorization", INVALID_AUTHENTICATION)
-                                .content(objectMapper.writeValueAsString(categoryRegistrationRequest))
-                )
-                        .andExpect(status().isUnauthorized())
-                        .andDo(document("post-categories-401"));
-            }
-        }
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("103")))
+                .andDo(document("guest-displayCategories-get-200"));
     }
 }
