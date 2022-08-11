@@ -46,11 +46,4 @@ public class Category extends BaseEntity {
         this.ordering = ordering;
         this.name = name;
     }
-
-    /**
-     * 재귀 쿼리 수행을 방지하기 위해 children의 레퍼런스를 null로 설정합니다.
-     */
-    public void setChildrenNull() {
-        this.children = null;
-    }
 }

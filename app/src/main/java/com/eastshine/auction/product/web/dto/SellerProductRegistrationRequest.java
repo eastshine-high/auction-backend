@@ -1,6 +1,5 @@
 package com.eastshine.auction.product.web.dto;
 
-import com.eastshine.auction.category.domain.Category;
 import com.eastshine.auction.product.domain.Product;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,10 +41,10 @@ public class SellerProductRegistrationRequest {
 
     private List<ProductOption> productOptions;
 
-    public Product toEntity(Category category) {
+    public Product toEntity() {
         return Product.builder()
                 .name(name)
-                .category(category)
+                .categoryId(categoryId)
                 .price(price)
                 .onSale(onSale)
                 .stockQuantity(stockQuantity)
