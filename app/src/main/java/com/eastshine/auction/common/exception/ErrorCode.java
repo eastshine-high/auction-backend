@@ -18,7 +18,6 @@ public enum ErrorCode {
     CATEGORY_PARENT_ENTITY_NOT_FOUND("상위 카테고리를 찾을 수 없습니다."),
 
     // Product
-    PRODUCT_INVALID_CATEGORY_ID("유효하지 않은 카테고리 ID입니다."),
     PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다."),
     PRODUCT_UNACCESSABLE("상품에 대한 접근 권한이 없습니다."),
 

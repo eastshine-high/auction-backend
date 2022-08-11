@@ -30,17 +30,9 @@ public class SellerProductPatchValidationBean {
     private Boolean onSale;
 
     @NotNull
-    private PatchCategory category;
+    private Integer categoryId;
 
     private List<PatchProductOption> productOptions;
-
-    @Getter
-    @Setter
-    public static class PatchCategory {
-
-        @NotNull
-        private Integer id;
-    }
 
     @Getter
     @Setter
