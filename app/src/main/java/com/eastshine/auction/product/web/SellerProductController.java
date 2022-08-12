@@ -1,9 +1,6 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.common.exception.ErrorCode;
-import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.UserInfo;
-import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.application.SellerProductService;
 import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.web.dto.SellerProductPatchRequest;
@@ -33,7 +30,6 @@ import java.net.URI;
 @RestController
 public class SellerProductController {
     private final SellerProductService sellerProductService;
-    private final JsonMergePatchMapper<Product> mergeMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -64,27 +60,11 @@ public class SellerProductController {
             @RequestBody SellerProductPatchRequest sellerProductPatchRequest,
             Authentication authentication
     ) {
-        Product product = sellerProductService.fetchProduct(productId);
-        validateAccessableProduct(product, authentication);
-
         JsonValue jsonValue = objectMapper.convertValue(sellerProductPatchRequest, JsonValue.class);
         JsonMergePatch patchDocument = Json.createMergePatch(jsonValue);
-        Product patchedProduct = mergeMapper.apply(patchDocument, product);
 
-        sellerProductService.updatePatchedProduct(patchedProduct);
-    }
+        UserInfo userInfo = (UserInfo)authentication.getPrincipal();
 
-    /**
-     * 상품 정보에 접근 가능한 인증 정보인지 검증한다.
-     *
-     * @param product 접근하려는 상품 정보
-     * @param authentication 상품 정보에 접근하려는 사용자의 인증 정보
-     * @throws UnauthorizedException 상품 정보의 등록자와 상품 정보에 접근하려는 요청자가 다른 경우.
-     */
-    private void validateAccessableProduct(Product product, Authentication authentication) {
-        UserInfo userInfo = (UserInfo) authentication.getPrincipal();
-        if(product.getCreatedBy() != userInfo.getId()){
-            throw new UnauthorizedException(ErrorCode.PRODUCT_UNACCESSABLE);
-        }
+        sellerProductService.patchProduct(productId, patchDocument, userInfo.getId());
     }
 }

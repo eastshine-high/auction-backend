@@ -1,9 +1,8 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.category.CategoryFactory;
 import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.ProductFactory;
-import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.web.dto.SellerProductPatchRequest;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
@@ -35,7 +34,7 @@ class SellerProductControllerTest extends RestDocsTest {
     @BeforeEach
     void setUp() throws Exception {
         productFactory.deleteAll();
-        categoryFactory.deleteAllCategory();
+        categoryFactory.deleteAll();
 
         // Test 데이터 생성
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품");
@@ -59,11 +58,6 @@ class SellerProductControllerTest extends RestDocsTest {
                         .header("Authorization", SELLER_AUTHENTICATION)
                         .content(createJson(registrationRequest))
         );
-
-        // 트랜잭션 시작
-        Product registeredProduct = productRepository.findByName("비판텐").orElse(null);
-        registeredProductId = registeredProduct.getId();
-        registeredProductOptionId = registeredProduct.getProductOptions().get(0).getId();
     }
 
     @Nested
