@@ -1,5 +1,7 @@
 package com.eastshine.auction.product.domain;
 
+import com.eastshine.auction.common.exception.ErrorCode;
+import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseEntity;
 import com.eastshine.auction.product.domain.option.ProductOption;
 import lombok.Builder;
@@ -59,5 +61,11 @@ public class Product extends BaseEntity {
     public void addProductOption(ProductOption productOption) {
         this.productOptions.add(productOption);
         productOption.setProduct(this);
+    }
+
+    public void validateAccessibleUser(Long userId) {
+        if(super.createdBy != userId){
+            throw new UnauthorizedException(ErrorCode.PRODUCT_UNACCESSABLE);
+        }
     }
 }
