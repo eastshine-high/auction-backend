@@ -6,7 +6,10 @@
 |{{#tableCellContent}}`+{{path}}+`{{/tableCellContent}}
 |{{#tableCellContent}}`+{{type}}+`{{/tableCellContent}}
 |{{#tableCellContent}}{{description}}{{/tableCellContent}}
-|{{#tableCellContent}}{{^optional}}O{{/optional}}{{/tableCellContent}}
+|{{#tableCellContent}}
+    {{#optional}}X{{/optional}}
+    {{^optional}}O{{/optional}}
+{{/tableCellContent}}
 
 {{/fields}}
 |===
