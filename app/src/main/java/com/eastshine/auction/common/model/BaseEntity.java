@@ -14,8 +14,8 @@ public class BaseEntity extends BaseTimeEntity{
 
     @CreatedBy
     @Column(updatable = false)
-    private Long createdBy;
+    protected Long createdBy;
 
     @LastModifiedBy
-    private Long lastModifiedBy;
+    protected Long lastModifiedBy;
 }
