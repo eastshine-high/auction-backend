@@ -16,13 +16,13 @@ alter table user
     add constraint uk_user_nickname unique (nickname);
 
 create table role (
-    role varchar(255) not null,
     user_id bigint not null,
+    role varchar(255) not null,
     created_by bigint not null,
     last_modified_by bigint not null,
     created_at datetime(6) not null,
     updated_at datetime(6) not null,
-    primary key (role, user_id)
+    primary key (user_id, role)
 ) engine=InnoDB default charset = utf8mb4;
 
 alter table role
