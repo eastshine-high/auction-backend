@@ -6,7 +6,6 @@ import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
-import com.eastshine.auction.user.web.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ public class AuthenticationService {
             throw new InvalidArgumentException(ErrorCode.USER_LOGIN_FAIL);
         }
 
-        UserInfo userInfo = UserMapper.INSTANCE.toUserInfo(user);
-        return jwtUtil.encode(userInfo);
+        return jwtUtil.encode(new UserInfo(user));
     }
 }
