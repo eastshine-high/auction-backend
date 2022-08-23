@@ -17,6 +17,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import java.util.ArrayList;
@@ -24,12 +26,13 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * 사용자 도메인
+ * 사용자
  */
 @ToString
 @EqualsAndHashCode(callSuper=false, of = "id")
 @Getter
 @NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
 @Entity
 public class User extends BaseTimeEntity {
 
@@ -70,6 +73,10 @@ public class User extends BaseTimeEntity {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+    }
+
+    public void addRole(Role role) {
+        roles.add(role);
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
