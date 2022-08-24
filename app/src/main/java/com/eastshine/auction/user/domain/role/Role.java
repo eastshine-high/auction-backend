@@ -1,5 +1,7 @@
 package com.eastshine.auction.user.domain.role;
 
+import com.eastshine.auction.common.model.BaseEntity;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.EmbeddedId;
@@ -8,9 +10,11 @@ import javax.persistence.Entity;
 /**
  * 권한
  */
+@EqualsAndHashCode(of = {"roleId"})
 @NoArgsConstructor
 @Entity
-public class Role {
+public class Role extends BaseEntity {
+
     @EmbeddedId
     private RoleId roleId;
 
@@ -20,5 +24,10 @@ public class Role {
 
     public RoleId getRoleId() {
         return roleId;
+    }
+
+    public void setSelfCreation() {
+        super.createdBy = roleId.getUser().getId();
+        super.lastModifiedBy = roleId.getUser().getId();
     }
 }

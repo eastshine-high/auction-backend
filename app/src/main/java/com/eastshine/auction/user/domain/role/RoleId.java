@@ -33,4 +33,8 @@ public class RoleId implements Serializable {
     public RoleType getRole() {
         return role;
     }
+
+    public User getUser() {
+        return user;
+    }
 }
