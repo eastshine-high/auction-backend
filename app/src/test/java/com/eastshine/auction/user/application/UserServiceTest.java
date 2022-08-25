@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UserServiceTest extends IntegrationTest {
     private static final String REGISTERED_EMAIL ="registered@email.com";
@@ -91,12 +92,11 @@ class UserServiceTest extends IntegrationTest {
             @Test
             @DisplayName("ErrorCode가 USER_DUPLICATE_EMAIL인 예외를 던진다.")
             void it_throws_IllegalArgumentException() {
-                try {
-                    userService.signUpUser(signupInfo);
-
-                } catch (InvalidArgumentException e) {
-                    assertThat(e.getErrorCode()).isEqualTo(ErrorCode.USER_DUPLICATE_EMAIL);
-                }
+                assertThatThrownBy(
+                        () -> userService.signUpUser(signupInfo)
+                )
+                        .isInstanceOf(InvalidArgumentException.class)
+                        .hasMessage(ErrorCode.USER_DUPLICATE_EMAIL.getErrorMsg());
             }
         }
 
@@ -117,12 +117,11 @@ class UserServiceTest extends IntegrationTest {
             @Test
             @DisplayName("ErrorCode가 USER_DUPLICATE_NICKNAME인 예외를 던진다.")
             void it_throws_IllegalArgumentException() {
-                try {
-                    userService.signUpUser(signupInfo);
-
-                } catch (InvalidArgumentException e) {
-                    assertThat(e.getErrorCode()).isEqualTo(ErrorCode.USER_DUPLICATE_NICKNAME);
-                }
+                assertThatThrownBy(
+                        () -> userService.signUpUser(signupInfo)
+                )
+                        .isInstanceOf(InvalidArgumentException.class)
+                        .hasMessage(ErrorCode.USER_DUPLICATE_NICKNAME.getErrorMsg());
             }
         }
     }
