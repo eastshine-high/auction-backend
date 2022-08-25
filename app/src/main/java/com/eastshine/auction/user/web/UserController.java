@@ -2,6 +2,7 @@ package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.user.application.UserService;
 import com.eastshine.auction.user.domain.User;
+import com.eastshine.auction.user.domain.UserMapper;
 import com.eastshine.auction.user.web.dto.UserSignupDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,6 @@ public class UserController {
 
         User signedUpUser = userService.signUpUser(requestSignup);
 
-        return ResponseEntity.created(URI.create("/users/" + signedUpUser.getId())).build();
+        return ResponseEntity.created(URI.create("/api/users/" + signedUpUser.getId())).build();
     }
 }
