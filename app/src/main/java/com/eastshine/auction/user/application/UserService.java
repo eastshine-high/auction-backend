@@ -4,10 +4,6 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
-import com.eastshine.auction.user.domain.role.Role;
-import com.eastshine.auction.user.domain.role.RoleId;
-import com.eastshine.auction.user.domain.role.RoleRepository;
-import com.eastshine.auction.user.domain.role.RoleType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -39,11 +33,8 @@ public class UserService {
         if(userRepository.existsByNickname(signupInfo.getNickname())){
             throw new InvalidArgumentException(ErrorCode.USER_DUPLICATE_NICKNAME);
         }
-        signupInfo.encryptPassword(passwordEncoder);
 
-        User user = userRepository.save(signupInfo);
-        Role userRole = new Role(new RoleId(user, RoleType.USER));
-        roleRepository.save(userRole);
-        return user;
+        signupInfo.encryptPassword(passwordEncoder);
+        return userRepository.save(signupInfo);
     }
 }
