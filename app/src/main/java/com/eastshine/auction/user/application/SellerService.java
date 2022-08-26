@@ -1,5 +1,6 @@
 package com.eastshine.auction.user.application;
 
+import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.user.domain.User;
@@ -9,9 +10,12 @@ import com.eastshine.auction.user.domain.role.RoleId;
 import com.eastshine.auction.user.domain.role.RoleType;
 import com.eastshine.auction.user.domain.seller.Seller;
 import com.eastshine.auction.user.domain.seller.SellerRepository;
+import com.eastshine.auction.user.web.dto.SellerDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+;
 
 @Service
 public class SellerService {
@@ -55,5 +59,10 @@ public class SellerService {
         Role sellerRole = new Role(new RoleId(seller, RoleType.SELLER));
         sellerRole.setSelfCreation();
         seller.addRole(sellerRole);
+    }
+
+    public SellerDto.Info findSellerInfo(Long id) {
+        return sellerRepository.findSellerInfoById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 }

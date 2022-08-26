@@ -1,5 +1,6 @@
 package com.eastshine.auction.user.web.dto;
 
+import com.eastshine.auction.user.domain.seller.SellerLevelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,5 +45,6 @@ public class SellerDto {
         private String email;
         private String nickname;
         private String businessNumber;
+        private SellerLevelType sellerLevel;
     }
 }
