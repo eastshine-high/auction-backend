@@ -77,6 +77,7 @@ public class User extends BaseTimeEntity {
 
     public void addRole(Role role) {
         roles.add(role);
+        // 복합키 사용은 setter를 내포.
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
