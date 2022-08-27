@@ -1,7 +1,9 @@
 package com.eastshine.auction.user.application;
 
+import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
+import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,5 +38,19 @@ public class UserService {
 
         signupInfo.encryptPassword(passwordEncoder);
         return userRepository.save(signupInfo);
+    }
+
+    @Transactional
+    public void deleteUser(Long id, Long accessorId) {
+        validateAccessibleUser(id, accessorId);
+        if(!userRepository.existsById(id)) throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
+
+        userRepository.deleteById(id);
+    }
+
+    private void validateAccessibleUser(Long id, Long accessorId) {
+        if(!id.equals(accessorId)){
+            throw new UnauthorizedException(ErrorCode.USER_INACCESSIBLE);
+        }
     }
 }
