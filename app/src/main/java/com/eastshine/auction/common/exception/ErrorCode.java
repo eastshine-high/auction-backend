@@ -26,7 +26,8 @@ public enum ErrorCode {
     USER_DUPLICATE_NICKNAME("사용 중인 닉네임입니다."),
     USER_DUPLICATE_BUSINESS_NUMBER("등록된 사업자 번호입니다."),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다."),
-    USER_LOGIN_FAIL("아이디 또는 비밀번호를 잘못 입력했습니다.");
+    USER_LOGIN_FAIL("아이디 또는 비밀번호를 잘못 입력했습니다."),
+    USER_INACCESSIBLE("사용자에 대한 접근 권한이 없습니다.");
 
     private final String errorMsg;
 
