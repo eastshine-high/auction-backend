@@ -1,8 +1,9 @@
 package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.user.application.AuthenticationService;
+import com.eastshine.auction.user.application.SellerService;
 import com.eastshine.auction.user.domain.UserRepository;
-import com.eastshine.auction.user.domain.role.RoleRepository;
 import com.eastshine.auction.user.domain.seller.Seller;
 import com.eastshine.auction.user.domain.seller.SellerLevelType;
 import com.eastshine.auction.user.web.dto.SellerDto;
@@ -16,47 +17,48 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class SellerControllerTest extends RestDocsTest {
     private static Long registeredSellerId;
+    private static String registeredSellerAuthentication;
 
     @Autowired UserRepository userRepository;
-    @Autowired RoleRepository roleRepository;
+    @Autowired SellerService sellerService;
+    @Autowired AuthenticationService authenticationService;
 
     @BeforeEach
     void setUp() {
+        String nickname = "nickname";
+        String email = nickname + "@email.com";
         Seller seller = Seller.sellerBuilder()
-                .email("seller@email.com")
-                .nickname("seller")
-                .password("seller")
+                .email(email)
+                .nickname(nickname)
+                .password(nickname)
                 .businessNumber("1234567890")
                 .build();
-        userRepository.save(seller);
-        ReflectionTestUtils.setField(seller, "sellerLevel", SellerLevelType.NEW);
+        sellerService.signUpSeller(seller);
         registeredSellerId = seller.getId();
+        registeredSellerAuthentication = authenticationService.login(email, nickname);
     }
 
     @AfterEach
     void tearDown() {
         userRepository.deleteAll();
-        roleRepository.deleteAll();
     }
 
     @Nested
-    @DisplayName("signUpUser 메소드는")
-    class Describe_signUpUser {
+    @DisplayName("signUpSeller 메소드는")
+    class Describe_signUpSeller {
 
         @Nested
         class 유효한_정보를_통해_회원가입을_요청할_경우{
-            private String nickname = "nickname";
+            private String nickname = "newNickname";
             private String validEmail = "test@eamil.com";
             private String password = "test1234";
             private String businessNumber = "1234567897";
@@ -130,7 +132,7 @@ class SellerControllerTest extends RestDocsTest {
                                         .content(objectMapper.writeValueAsString(sellerSignupDto))
                         )
                         .andExpect(status().isBadRequest())
-                        .andDo(document("post-users-400"));
+                        .andDo(document("seller-users-post-400"));
             }
         }
     }
@@ -149,5 +151,41 @@ class SellerControllerTest extends RestDocsTest {
                 .andExpect(jsonPath("$.businessNumber").exists())
                 .andExpect(jsonPath("$.sellerLevel").exists())
                 .andDo(document("seller-users-get-200"));
+    }
+
+    @Nested
+    @DisplayName("deleteSeller 메소드는")
+    class Describe_deleteSeller {
+
+        @Nested
+        class 인증되지_않은_판매자의_요청일_경우{
+
+            @Test
+            void 상태코드_400_Unauthorized를_응답한다() throws Exception {
+                mockMvc.perform(
+                                delete("/seller-api/users/" + registeredSellerId)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("seller-users-delete-401"));
+            }
+        }
+
+        @Nested
+        class 유효한_인증_정보를_통해_삭제를_요청할_경우{
+
+            @Test
+            void 상태코드_200을_응답한다() throws Exception {
+
+                mockMvc.perform(
+                                delete("/seller-api/users/" + registeredSellerId)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", "Bearer " + registeredSellerAuthentication)
+                        )
+                        .andExpect(status().isOk())
+                        .andDo(document("seller-users-delete-200"));
+            }
+        }
     }
 }
