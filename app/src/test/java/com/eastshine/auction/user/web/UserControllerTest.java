@@ -6,6 +6,7 @@ import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
 import com.eastshine.auction.user.web.dto.UserSignupDto;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -19,10 +20,9 @@ import org.springframework.http.MediaType;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 class UserControllerTest extends RestDocsTest {
     private static Long registeredUserId;
@@ -33,6 +33,8 @@ class UserControllerTest extends RestDocsTest {
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
+
         User user = User.builder()
                 .email("nickname@email.com")
                 .nickname("nickname")
@@ -43,13 +45,18 @@ class UserControllerTest extends RestDocsTest {
         registeredUserAuthentication = jwtUtil.encode(new UserInfo(user));
     }
 
+    @AfterEach
+    void tearDown() {
+        userRepository.deleteAll();
+    }
+
     @Nested
     @DisplayName("signUpUser 메소드는")
     class Describe_signUpUser {
 
         @Nested
         class 유효한_정보를_통해_회원가입을_요청할_경우{
-            private String nickname = "nickname";
+            private String nickname = "nickname2";
             private String validEmail = "test@eamil.com";
             private String password = "test1234";
 
@@ -62,13 +69,13 @@ class UserControllerTest extends RestDocsTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/api/users")
+                                post("/user-api/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
                         .andExpect(status().isCreated())
                         .andExpect(header().exists("location"))
-                        .andDo(document("post-users-201",
+                        .andDo(document("user-users-post-201",
                                 requestFields(
                                         fieldWithPath("email").description("사용자 이메일"),
                                         fieldWithPath("nickname").description("사용자 닉네임"),
@@ -92,14 +99,27 @@ class UserControllerTest extends RestDocsTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/api/users")
+                                post("/user-api/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
                         .andExpect(status().isBadRequest())
-                        .andDo(document("post-users-400"));
+                        .andDo(document("user-users-post-400"));
             }
         }
+    }
+
+    @Test
+    void getUser() throws Exception {
+
+        mockMvc.perform(
+                        get("/user-api/users/" + registeredUserId)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.email").exists())
+                .andExpect(jsonPath("$.nickname").exists())
+                .andDo(document("user-users-get-200"));
     }
 
     @Nested
@@ -112,7 +132,7 @@ class UserControllerTest extends RestDocsTest {
             @Test
             void 상태코드_400_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
-                                delete("/api/users/" + registeredUserId)
+                                delete("/user-api/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
                         )
@@ -128,7 +148,7 @@ class UserControllerTest extends RestDocsTest {
             void 상태코드_200을_응답한다() throws Exception {
 
                 mockMvc.perform(
-                                delete("/api/users/" + registeredUserId)
+                                delete("/user-api/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", "Bearer " + registeredUserAuthentication)
                         )

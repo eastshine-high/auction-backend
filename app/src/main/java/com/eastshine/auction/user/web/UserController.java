@@ -4,6 +4,7 @@ import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.user.application.UserService;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserMapper;
+import com.eastshine.auction.user.web.dto.UserDto;
 import com.eastshine.auction.user.web.dto.UserSignupDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/user-api/users")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -34,7 +36,13 @@ public class UserController {
 
         User signedUpUser = userService.signUpUser(requestSignup);
 
-        return ResponseEntity.created(URI.create("/api/users/" + signedUpUser.getId())).build();
+        return ResponseEntity.created(URI.create("/user-api/users/" + signedUpUser.getId())).build();
+    }
+
+    @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UserDto.Info getUser(@PathVariable Long id) {
+        return userService.findUserInfo(id);
     }
 
     @DeleteMapping("{id}")
