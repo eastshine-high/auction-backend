@@ -6,6 +6,7 @@ import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.web.dto.UserDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +39,11 @@ public class UserService {
 
         signupInfo.encryptPassword(passwordEncoder);
         return userRepository.save(signupInfo);
+    }
+
+    public UserDto.Info findUserInfo(Long id) {
+        return userRepository.findUserInfoById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
     }
 
     @Transactional
