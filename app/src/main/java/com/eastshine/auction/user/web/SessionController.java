@@ -1,8 +1,7 @@
 package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.user.application.AuthenticationService;
-import com.eastshine.auction.user.web.dto.SessionRequestDto;
-import com.eastshine.auction.user.web.dto.SessionResponseDto;
+import com.eastshine.auction.user.web.dto.SessionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,13 +20,13 @@ public class SessionController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public SessionResponseDto login(@RequestBody SessionRequestDto sessionRequestDto) {
+    public SessionDto.Response login(@RequestBody SessionDto.Request sessionRequestDto) {
         String email = sessionRequestDto.getEmail();
         String password = sessionRequestDto.getPassword();
 
         String accessToken = authenticationService.login(email, password);
 
-        return SessionResponseDto.builder()
+        return SessionDto.Response.builder()
                 .tokenType(TOKEN_TYPE_BEARER)
                 .accessToken(accessToken)
                 .build();

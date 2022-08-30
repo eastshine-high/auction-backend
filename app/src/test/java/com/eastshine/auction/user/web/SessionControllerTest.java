@@ -2,7 +2,7 @@ package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.user.UserFactory;
-import com.eastshine.auction.user.web.dto.SessionRequestDto;
+import com.eastshine.auction.user.web.dto.SessionDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,7 +43,7 @@ class SessionControllerTest extends RestDocsTest {
         @Test
         @DisplayName("유효한 사용자 정보로 로그인 했을 경우, created를 응답한다.")
         void loginWithValidUserInfo() throws Exception {
-            SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
+            SessionDto.Request sessionRequestDto = SessionDto.Request.builder()
                     .email(REGISTERED_EMAIL)
                     .password(REGISTERED_USER_PW)
                     .build();
@@ -69,7 +69,7 @@ class SessionControllerTest extends RestDocsTest {
         @ValueSource(strings = {"invalid@email.com", "   "})
         @DisplayName("유효하지 못한 사용자 정보로 로그인 했을 경우, badRequest를 응답한다.")
         void loginWithInvalidUserInfo(String invalidEmail) throws Exception {
-            SessionRequestDto sessionRequestDto = SessionRequestDto.builder()
+            SessionDto.Request sessionRequestDto = SessionDto.Request.builder()
                     .email(invalidEmail)
                     .password(REGISTERED_USER_PW)
                     .build();
