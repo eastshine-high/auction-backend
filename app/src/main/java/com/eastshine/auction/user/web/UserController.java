@@ -5,7 +5,6 @@ import com.eastshine.auction.user.application.UserService;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserMapper;
 import com.eastshine.auction.user.web.dto.UserDto;
-import com.eastshine.auction.user.web.dto.UserSignupDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PostMapping()
-    public ResponseEntity signUpMember(@RequestBody @Validated UserSignupDto request) {
+    public ResponseEntity signUpMember(@RequestBody @Validated UserDto.Signup request) {
         User requestSignup = userMapper.of(request);
 
         User signedUpUser = userService.signUpUser(requestSignup);

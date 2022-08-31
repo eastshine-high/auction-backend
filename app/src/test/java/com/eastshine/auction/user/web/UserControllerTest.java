@@ -5,7 +5,7 @@ import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
-import com.eastshine.auction.user.web.dto.UserSignupDto;
+import com.eastshine.auction.user.web.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,7 +22,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 class UserControllerTest extends RestDocsTest {
     private static Long registeredUserId;
@@ -62,7 +61,7 @@ class UserControllerTest extends RestDocsTest {
 
             @Test
             void 상태코드_201_Created_를_응답한다() throws Exception {
-                UserSignupDto requestSignup = UserSignupDto.builder()
+                UserDto.Signup requestSignup = UserDto.Signup.builder()
                         .nickname(nickname)
                         .email(validEmail)
                         .password(password)
@@ -92,7 +91,7 @@ class UserControllerTest extends RestDocsTest {
             @ValueSource(strings = {"invalidEmail"})
             @NullAndEmptySource
             void 상태코드_400_BadRequest_를_응답한다(String invalidEmail) throws Exception {
-                UserSignupDto requestSignup = UserSignupDto.builder()
+                UserDto.Signup requestSignup = UserDto.Signup.builder()
                         .nickname("validNickname")
                         .email(invalidEmail)
                         .password("validPassword")
