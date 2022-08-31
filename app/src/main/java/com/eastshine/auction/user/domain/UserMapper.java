@@ -2,7 +2,7 @@ package com.eastshine.auction.user.domain;
 
 import com.eastshine.auction.user.domain.seller.Seller;
 import com.eastshine.auction.user.web.dto.SellerDto;
-import com.eastshine.auction.user.web.dto.UserSignupDto;
+import com.eastshine.auction.user.web.dto.UserDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -11,7 +11,7 @@ import org.mapstruct.factory.Mappers;
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-    User of(UserSignupDto userSignupDto);
+    User of(UserDto.Signup userSignupDto);
 
     Seller of(SellerDto.Signup sellerSignupDto);
 }
