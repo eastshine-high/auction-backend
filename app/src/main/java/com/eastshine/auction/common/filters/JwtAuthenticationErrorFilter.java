@@ -1,6 +1,6 @@
 package com.eastshine.auction.common.filters;
 
-import com.eastshine.auction.common.exception.InvalidTokenException;
+import com.eastshine.auction.common.exception.AuthenticationException;
 import org.springframework.http.HttpStatus;
 
 import javax.servlet.FilterChain;
@@ -19,7 +19,7 @@ public class JwtAuthenticationErrorFilter extends HttpFilter {
             throws IOException, ServletException {
         try {
             chain.doFilter(request, response);
-        } catch (InvalidTokenException e) {
+        } catch (AuthenticationException e) {
             response.sendError(HttpStatus.UNAUTHORIZED.value(), e.getMessage());
         }
     }
