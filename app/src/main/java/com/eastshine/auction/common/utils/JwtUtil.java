@@ -1,7 +1,7 @@
 package com.eastshine.auction.common.utils;
 
 import com.eastshine.auction.common.exception.ErrorCode;
-import com.eastshine.auction.common.exception.InvalidTokenException;
+import com.eastshine.auction.common.exception.AuthenticationException;
 import com.eastshine.auction.common.model.UserInfo;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -34,7 +34,7 @@ public class JwtUtil {
 
     public UserInfo decode(String token) {
         if (token == null || token.isBlank()) {
-            throw new InvalidTokenException(ErrorCode.COMMON_INVALID_TOKEN);
+            throw new AuthenticationException(ErrorCode.COMMON_INVALID_TOKEN);
         }
 
         try {
@@ -47,7 +47,7 @@ public class JwtUtil {
                     .get(KEY_OF_USER_INFO, UserInfo.class);
 
         } catch (SignatureException | MalformedJwtException e) {
-            throw new InvalidTokenException(ErrorCode.COMMON_INVALID_TOKEN);
+            throw new AuthenticationException(ErrorCode.COMMON_INVALID_TOKEN);
         }
     }
 }

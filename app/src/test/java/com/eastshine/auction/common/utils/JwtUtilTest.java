@@ -1,7 +1,6 @@
 package com.eastshine.auction.common.utils;
 
-import com.eastshine.auction.common.exception.InvalidArgumentException;
-import com.eastshine.auction.common.exception.InvalidTokenException;
+import com.eastshine.auction.common.exception.AuthenticationException;
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.user.domain.role.RoleType;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,6 +56,6 @@ class JwtUtilTest {
     @NullAndEmptySource
     void decodeWithInvalidToken(String whiteSpace) {
         assertThatThrownBy(() -> jwtUtil.decode(whiteSpace))
-                .isInstanceOf(InvalidTokenException.class);
+                .isInstanceOf(AuthenticationException.class);
     }
 }
