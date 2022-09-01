@@ -36,12 +36,14 @@ class SellerControllerTest extends RestDocsTest {
     void setUp() {
         String nickname = "nickname";
         String email = nickname + "@email.com";
+
         Seller seller = Seller.sellerBuilder()
                 .email(email)
                 .nickname(nickname)
                 .password(nickname)
                 .businessNumber("1234567890")
                 .build();
+
         sellerService.signUpSeller(seller);
         registeredSellerId = seller.getId();
         registeredSellerAuthentication = authenticationService.login(email, nickname);

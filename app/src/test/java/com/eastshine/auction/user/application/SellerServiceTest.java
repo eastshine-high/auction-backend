@@ -34,17 +34,17 @@ class SellerServiceTest extends IntegrationTest {
 
     @BeforeEach
     void setUp() {
-            userRepository.deleteAll();
-            roleRepository.deleteAll();
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
 
-            Seller seller = sellerService.signUpSeller(
-                    Seller.sellerBuilder()
-                            .nickname(REGISTERED_NICKNAME)
-                            .email(REGISTERED_EMAIL)
-                            .password(PASSWORD)
-                            .businessNumber(REGISTERED_BUSINESS_NUMBER)
-                            .build()
-            );
+        Seller seller = sellerService.signUpSeller(
+                Seller.sellerBuilder()
+                        .nickname(REGISTERED_NICKNAME)
+                        .email(REGISTERED_EMAIL)
+                        .password(PASSWORD)
+                        .businessNumber(REGISTERED_BUSINESS_NUMBER)
+                        .build()
+        );
     }
 
     @AfterEach
