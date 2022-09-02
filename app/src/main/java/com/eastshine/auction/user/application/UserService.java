@@ -47,6 +47,24 @@ public class UserService {
     }
 
     @Transactional
+    public User updateNickname(Long id, String nickname, Long accessorId) {
+        if(!id.equals(accessorId)){
+            throw new UnauthorizedException(ErrorCode.USER_INACCESSIBLE);
+        }
+        if(userRepository.existsByNickname(nickname)){
+            throw new InvalidArgumentException(ErrorCode.USER_DUPLICATE_NICKNAME);
+        }
+        User user = findUser(id);
+        user.updateNickname(nickname);
+        return user;
+    }
+
+    private User findUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Transactional
     public void deleteUser(Long id, Long accessorId) {
         validateAccessibleUser(id, accessorId);
         if(!userRepository.existsById(id)) throw new EntityNotFoundException(ErrorCode.USER_NOT_FOUND);
