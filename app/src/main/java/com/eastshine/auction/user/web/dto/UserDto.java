@@ -31,6 +31,16 @@ public class UserDto {
 
     @ToString
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PatchNickname{
+
+        @NotBlank
+        String nickname;
+    }
+
+    @ToString
+    @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor

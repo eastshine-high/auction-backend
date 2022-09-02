@@ -93,4 +93,8 @@ public class User extends BaseTimeEntity {
     public boolean authenticate(String password, PasswordEncoder passwordEncoder) {
         return status == User.Status.ACTIVE && passwordEncoder.matches(password, this.password);
     }
+
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
 }

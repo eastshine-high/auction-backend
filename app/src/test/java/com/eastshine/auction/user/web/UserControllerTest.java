@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserControllerTest extends RestDocsTest {
     private static Long registeredUserId;
-    private static String registeredUserAuthentication;
+    private static String userAuthentication;
 
     @Autowired UserRepository userRepository;
     @Autowired JwtUtil jwtUtil;
@@ -41,7 +41,7 @@ class UserControllerTest extends RestDocsTest {
                 .build();
         userRepository.save(user);
         registeredUserId = user.getId();
-        registeredUserAuthentication = jwtUtil.encode(new UserInfo(user));
+        userAuthentication = jwtUtil.encode(new UserInfo(user));
     }
 
     @AfterEach
@@ -122,6 +122,44 @@ class UserControllerTest extends RestDocsTest {
     }
 
     @Nested
+    @DisplayName("patchNickname 메소드는")
+    class Describe_patchNickname {
+
+        @Nested
+        class 인증되지_않은_사용자의_요청일_경우{
+
+            @Test
+            void 상태코드_401_Unauthorized를_응답한다() throws Exception {
+                mockMvc.perform(
+                                patch("/user-api/users/" + registeredUserId + "/nickname")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("user-users-nickname-patch-401"));
+            }
+        }
+
+        @Nested
+        class 유효한_인증_정보를_통해_닉네임_변경을_요청할_경우{
+
+            @Test
+            void 상태코드_200을_응답한다() throws Exception {
+                UserDto.PatchNickname patchNickname = new UserDto.PatchNickname("newNickname");
+
+                mockMvc.perform(
+                                patch("/user-api/users/" + registeredUserId + "/nickname")
+                                        .header("Authorization", "Bearer " + userAuthentication)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(createJson(patchNickname))
+                        )
+                        .andExpect(status().isOk())
+                        .andDo(document("user-users-nickname-patch-200"));
+            }
+        }
+    }
+
+    @Nested
     @DisplayName("deleteUser 메소드는")
     class Describe_deleteUser {
 
@@ -129,14 +167,14 @@ class UserControllerTest extends RestDocsTest {
         class 인증되지_않은_사용자의_요청일_경우{
 
             @Test
-            void 상태코드_400_Unauthorized를_응답한다() throws Exception {
+            void 상태코드_401_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
                                 delete("/user-api/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("user-delete-users-401"));
+                        .andDo(document("user-users-delete-401"));
             }
         }
 
@@ -149,10 +187,10 @@ class UserControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 delete("/user-api/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", "Bearer " + registeredUserAuthentication)
+                                        .header("Authorization", "Bearer " + userAuthentication)
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("user-delete-users-200"));
+                        .andDo(document("user-users-delete-200"));
             }
         }
     }

@@ -178,4 +178,55 @@ class UserServiceTest extends IntegrationTest {
             }
         }
     }
+
+
+    @Nested
+    @DisplayName("updatNickname 메소드는")
+    class updatNickname {
+
+        @Nested
+        @DisplayName("자신이 아닌 사용자의 요청일 경우")
+        class Context_with_an_other_accessor{
+            Long otherAccessor = 999999L;
+
+            @Test
+            @DisplayName("UnauthorizedException을 던진다.")
+            void it_throws_UnauthorizedException() {
+                assertThatThrownBy(
+                        () -> userService.updateNickname(registeredId, REGISTERED_NICKNAME, otherAccessor)
+                )
+                        .isInstanceOf(UnauthorizedException.class)
+                        .hasMessage(ErrorCode.USER_INACCESSIBLE.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("이미 사용중인 닉네임으로 수정을 요청할 경우")
+        class Context_with_an_exist_nickname{
+
+            @Test
+            @DisplayName("InvalidArgumentException을 던진다.")
+            void it_throws_InvalidArgumentException() {
+                assertThatThrownBy(
+                        () -> userService.updateNickname(registeredId, REGISTERED_NICKNAME, registeredId)
+                )
+                        .isInstanceOf(InvalidArgumentException.class)
+                        .hasMessage(ErrorCode.USER_DUPLICATE_NICKNAME.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("사용중이지 않은 닉네임으로 수정을 요청할 경우")
+        class Context_with_not_exist_nickname{
+            String newNickname = "새로운 닉네임";
+
+            @Test
+            @DisplayName("변경된 사용자 정보를 반환한다.")
+            void it_returns_updated_user() {
+                User user = userService.updateNickname(registeredId, newNickname, registeredId);
+
+                assertThat(user.getNickname()).isEqualTo(newNickname);
+            }
+        }
+    }
 }
