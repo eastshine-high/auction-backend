@@ -20,10 +20,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
-import javax.persistence.PrePersist;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 사용자
@@ -54,18 +52,11 @@ public class User extends BaseTimeEntity {
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
-    private Status status;
+    private Status status = User.Status.ACTIVE;
 
     public enum Status{
         ACTIVE,
         DROPOUT
-    }
-
-    @PrePersist
-    public void prePersist() {
-        if(Objects.isNull(this.status)){
-            this.status = User.Status.ACTIVE;
-        }
     }
 
     @Builder
