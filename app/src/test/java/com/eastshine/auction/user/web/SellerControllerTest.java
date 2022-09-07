@@ -7,6 +7,7 @@ import com.eastshine.auction.user.domain.UserRepository;
 import com.eastshine.auction.user.domain.seller.Seller;
 import com.eastshine.auction.user.domain.seller.SellerLevelType;
 import com.eastshine.auction.user.web.dto.SellerDto;
+import com.eastshine.auction.user.web.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -153,6 +154,45 @@ class SellerControllerTest extends RestDocsTest {
                 .andExpect(jsonPath("$.businessNumber").exists())
                 .andExpect(jsonPath("$.sellerLevel").exists())
                 .andDo(document("seller-users-get-200"));
+    }
+
+
+    @Nested
+    @DisplayName("patchNickname 메소드는")
+    class Describe_patchNickname {
+
+        @Nested
+        class 인증되지_않은_사용자의_요청일_경우{
+
+            @Test
+            void 상태코드_401_Unauthorized를_응답한다() throws Exception {
+                mockMvc.perform(
+                                patch("/user-api/users/" + registeredSellerId + "/nickname")
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("seller-users-nickname-patch-401"));
+            }
+        }
+
+        @Nested
+        class 유효한_인증_정보를_통해_닉네임_변경을_요청할_경우{
+
+            @Test
+            void 상태코드_200을_응답한다() throws Exception {
+                UserDto.PatchNickname patchNickname = new UserDto.PatchNickname("newNickname");
+
+                mockMvc.perform(
+                                patch("/user-api/users/" + registeredSellerId + "/nickname")
+                                        .header("Authorization", "Bearer " + registeredSellerAuthentication)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(createJson(patchNickname))
+                        )
+                        .andExpect(status().isOk())
+                        .andDo(document("seller-users-nickname-patch-200"));
+            }
+        }
     }
 
     @Nested
