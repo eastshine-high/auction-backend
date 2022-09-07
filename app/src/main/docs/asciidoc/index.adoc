@@ -2,83 +2,219 @@
 :toc: left
 :toclevels: 3
 
-== 회원
+== 게스트 API
 
-=== 회원 가입
+=== User
 
-POST /api/users
-
-include::{snippets}/post-users-201/request-fields.adoc[]
-
-**Request**
-
-(보안 개선 필요. HTTPS)
-
-include::{snippets}/post-users-201/http-request.adoc[]
-
-**Response**
-
-include::{snippets}/post-users-201/http-response.adoc[]
-
-=== 토큰 받기(로그인)
+==== 토큰 받기(로그인)
 
 POST /api/session
 
-include::{snippets}/post-session-201/request-fields.adoc[]
+include::{snippets}/guest-session-post-201/request-fields.adoc[]
 
 **Request**
 
 (보안 개선 필요. HTTPS)
 
-include::{snippets}/post-session-201/http-request.adoc[]
-
-
-|===
-| Name | Type | Description | Required
-
-| email
-| String
-| 사용자 이메일
-| O
-
-| password
-| String
-| 비밀번호
-| O
-|===
+include::{snippets}/guest-session-post-201/http-request.adoc[]
 
 **Response**
 
-include::{snippets}/post-session-201/http-response.adoc[]
+(보안 개선 필요. HTTPS)
 
-== 카테고리
+include::{snippets}/guest-session-post-201/http-response.adoc[]
 
-=== 카테고리 등록
+=== Product
 
-POST /api/categories
+==== 상품 검색
 
-include::{snippets}/post-categories-201/request-fields.adoc[]
+==== 상품 조회
 
-**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
-
-include::{snippets}/post-categories-201/http-request.adoc[]
-
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
-
-include::{snippets}/post-categories-401/http-request.adoc[]
-
-**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
-
-include::{snippets}/post-categories-201/http-response.adoc[]
-
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
-
-include::{snippets}/post-categories-401/http-response.adoc[]
-
-=== 디스플레이 카테고리 조회
+==== 디스플레이 카테고리 조회
 
 GET /api/display/categories
 
+**Request**
+
+include::{snippets}/guest-displayCategories-get-200/http-request.adoc[]
+
 **Response**
 
-include::{snippets}/get-displayCategories-200/http-response.adoc[]
+include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
+
+== 사용자 API
+
+=== User
+
+==== 사용자 등록
+
+POST /user-api/users
+
+include::{snippets}/user-users-post-201/request-fields.adoc[]
+
+**Request**
+
+include::{snippets}/user-users-post-201/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/user-users-post-201/http-response.adoc[]
+
+==== 사용자 조회
+
+GET /user-api/users/{id}
+
+**Request**
+
+include::{snippets}/user-users-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/user-users-get-200/http-response.adoc[]
+
+==== 사용자 닉네임 변경
+
+PATCH /user-api/users/{id}/nickname
+
+**Request : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/user-users-nickname-patch-200/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/user-users-nickname-patch-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+
+include::{snippets}/user-users-nickname-patch-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/user-users-nickname-patch-401/http-response.adoc[]
+
+
+==== 사용자 삭제
+
+DELETE /user-api/users/{id}
+
+**Request : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/user-users-delete-200/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/user-users-delete-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+
+include::{snippets}/user-users-delete-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/user-users-delete-401/http-response.adoc[]
+
+== 판매자 API
+
+=== User
+
+==== 사용자 등록
+
+POST /seller-api/users
+
+include::{snippets}/seller-users-post-201/request-fields.adoc[]
+
+**Request**
+
+include::{snippets}/seller-users-post-201/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/seller-users-post-201/http-response.adoc[]
+
+==== 사용자 조회
+
+GET /seller-api/users/{id}
+
+**Request**
+
+include::{snippets}/seller-users-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/seller-users-get-200/http-response.adoc[]
+
+==== 사용자 닉네임 변경
+
+PATCH /seller-api/users/{id}/nickname
+
+**Request : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/seller-users-nickname-patch-200/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/seller-users-nickname-patch-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+
+include::{snippets}/seller-users-nickname-patch-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/seller-users-nickname-patch-401/http-response.adoc[]
+
+==== 사용자 삭제
+
+DELETE /seller-api/users/{id}
+
+**Request : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/seller-users-delete-200/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/seller-users-delete-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+
+include::{snippets}/seller-users-delete-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/seller-users-delete-401/http-response.adoc[]
+
+=== Product
+
+==== 상품 등록
+
+판매 권한을 가진 사람만 수정 가능합니다.
+
+==== 상품 수정
+
+==== 상품 옵션 등록
+
+== 관리자 API
+
+=== Product
+
+==== 카테고리 등록
+
+POST /admin-api/categories
+
+include::{snippets}/admin-categories-post-201/request-fields.adoc[]
+
+**Request : Authorization 헤더에 등록  권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/admin-categories-post-201/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/admin-categories-post-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
+
+include::{snippets}/admin-categories-post-201/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/admin-categories-post-401/http-response.adoc[]
