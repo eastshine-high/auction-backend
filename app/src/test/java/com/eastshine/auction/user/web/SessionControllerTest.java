@@ -55,7 +55,7 @@ class SessionControllerTest extends RestDocsTest {
                     )
                     .andExpect(status().isCreated())
                     .andDo(
-                            document("post-session-201",
+                            document("guest-session-post-201",
                                     requestFields(
                                             fieldWithPath("email").description("사용자 이메일"),
                                             fieldWithPath("password").description("비밀번호")
@@ -80,7 +80,7 @@ class SessionControllerTest extends RestDocsTest {
                                     .content(objectMapper.writeValueAsString(sessionRequestDto))
                     )
                     .andExpect(status().isBadRequest())
-                    .andDo(document("post-session-400"));
+                    .andDo(document("guest-session-post-400"));
         }
     }
 }
