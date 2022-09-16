@@ -1,8 +1,7 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.product.application.UserProductService;
+import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.web.dto.ProductDto;
-import com.eastshine.auction.product.web.dto.UserProductSearchCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/products")
 @RestController
 public class UserProductController {
-    private final UserProductService userProductService;
+    private final ProductRepository productRepository;
 
     /**
      * 상품을 조회 조건에 맞게 검색하고 검색된 상품 정보를 응답한다.
@@ -25,10 +24,10 @@ public class UserProductController {
      * @return 페이징된 상품 정보.
      */
     @GetMapping
-    public Page<ProductDto> getProducts(
-            @Validated UserProductSearchCondition condition,
+    public Page<ProductDto.SearchResponse> getProducts(
+            @Validated ProductDto.SearchCondition condition,
             Pageable pageable
     ) {
-        return userProductService.getProducts(condition, pageable);
+        return productRepository.searchProducts(condition, pageable);
     }
 }
