@@ -2,14 +2,17 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.Product;
+import com.eastshine.auction.product.domain.ProductRepository;
+import com.eastshine.auction.user.UserFactory;
+import com.eastshine.auction.user.domain.seller.Seller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -23,15 +26,26 @@ class UserProductControllerTest extends RestDocsTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
     @Autowired CategoryFactory categoryFactory;
-    @Autowired ProductFactory productFactory;
+    @Autowired ProductRepository productRepository;
+    @Autowired UserFactory userFactory;
 
     @BeforeEach
     void setUp() {
-        productFactory.deleteAll();
+        productRepository.deleteAll();
         categoryFactory.deleteAll();
+        userFactory.deleteAllUser();
 
+        Seller seller = userFactory.createSeller("판매왕");
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
-        Product createdProduct = productFactory.createProduct(REGISTERED_CATEGORY_ID, "비판텐");
+        Product product = Product.builder()
+                .categoryId(REGISTERED_CATEGORY_ID)
+                .name("비판텐")
+                .stockQuantity(50000)
+                .price(50000)
+                .onSale(true)
+                .build();
+        ReflectionTestUtils.setField(product, "createdBy", seller.getId());
+        productRepository.save(product);
     }
 
     @Nested
@@ -48,12 +62,12 @@ class UserProductControllerTest extends RestDocsTest {
             @DisplayName("파라미터 조건에 맞게 검색된 상품들을 반환한다.")
             void it_returns_products() throws Exception {
                 mockMvc.perform(
-                                get("/api/products?"+requiredParameter)
+                                get("/api/products?" + requiredParameter)
                                         .accept(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
                         .andExpect(content().string(containsString(productName)))
-                        .andDo(document("products-get-200",
+                        .andDo(document("guest-products-get-200",
                                 requestParameters(
                                         parameterWithName("name").description("상품명"),
                                         parameterWithName("categoryId").description("카테고리 식별자").optional(),
