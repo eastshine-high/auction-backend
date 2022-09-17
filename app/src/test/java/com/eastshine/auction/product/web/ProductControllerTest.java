@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class UserProductControllerTest extends RestDocsTest {
+class ProductControllerTest extends RestDocsTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
     @Autowired CategoryFactory categoryFactory;
