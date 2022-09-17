@@ -2,7 +2,7 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.product.domain.category.Category;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.MainDisplayCategoryDto;
+import com.eastshine.auction.product.web.dto.CategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +18,10 @@ public class CategoryController {
 
     @GetMapping("/api/display/categories")
     @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
-    public List<MainDisplayCategoryDto> getDisplayCategories() {
+    public List<CategoryDto.DisplayMain> getDisplayCategories() {
         List<Category> categories = categoryRepository.findDisplayCategories();
         return categories.stream()
-                .map(MainDisplayCategoryDto::new)
+                .map(CategoryDto.DisplayMain::new)
                 .collect(Collectors.toList());
     }
 }
