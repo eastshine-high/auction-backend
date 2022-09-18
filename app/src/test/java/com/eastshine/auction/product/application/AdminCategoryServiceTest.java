@@ -1,10 +1,10 @@
 package com.eastshine.auction.product.application;
 
-import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.AdminCategoryRegistrationRequest;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.product.domain.category.Category;
+import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,7 +39,7 @@ class AdminCategoryServiceTest extends IntegrationTest{
     @Nested
     @DisplayName("registerCategory 메소드는")
     class Describe_registerCategory{
-        AdminCategoryRegistrationRequest adminCategoryRegistrationRequest;
+        AdminCategoryDto.RegistrationRequest adminCategoryRegistrationRequest;
 
         @Nested
         @DisplayName("부모 카테고리가 null이거나 존재하는 경우,")
@@ -53,7 +53,7 @@ class AdminCategoryServiceTest extends IntegrationTest{
             @NullSource
             @ValueSource(ints = {EXIST_PARENT_ID})
             void it_returns_registered_category(Integer existParentId) {
-                adminCategoryRegistrationRequest = AdminCategoryRegistrationRequest.builder()
+                adminCategoryRegistrationRequest = AdminCategoryDto.RegistrationRequest.builder()
                         .id(categoryId)
                         .parentId(existParentId)
                         .ordering(ordering)
@@ -73,7 +73,7 @@ class AdminCategoryServiceTest extends IntegrationTest{
         class Context_with_not_exist_parent_id{
             @BeforeEach
             void setUp() {
-                adminCategoryRegistrationRequest = AdminCategoryRegistrationRequest.builder()
+                adminCategoryRegistrationRequest = AdminCategoryDto.RegistrationRequest.builder()
                         .id(999)
                         .parentId(99999)
                         .ordering(1)
