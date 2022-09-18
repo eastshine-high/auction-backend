@@ -3,7 +3,7 @@ package com.eastshine.auction.product;
 import com.eastshine.auction.product.application.AdminCategoryService;
 import com.eastshine.auction.product.domain.category.Category;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.AdminCategoryRegistrationRequest;
+import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class CategoryFactory {
     }
 
     public Category createCategory(Integer id, Integer parentId, String name, Integer ordering) {
-        AdminCategoryRegistrationRequest registrationDto = AdminCategoryRegistrationRequest.builder()
+        AdminCategoryDto.RegistrationRequest registrationDto = AdminCategoryDto.RegistrationRequest.builder()
                 .id(id)
                 .parentId(parentId)
                 .name(name)

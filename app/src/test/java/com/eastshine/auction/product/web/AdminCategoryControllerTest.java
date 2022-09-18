@@ -2,7 +2,7 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
-import com.eastshine.auction.product.web.dto.AdminCategoryRegistrationRequest;
+import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +35,7 @@ class AdminCategoryControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효한 카테고리 정보로 등록했을 경우")
         class Context_with_valid_CategoryRegistrationDto{
-            AdminCategoryRegistrationRequest validRequest = AdminCategoryRegistrationRequest.builder()
+            AdminCategoryDto.RegistrationRequest validRequest = AdminCategoryDto.RegistrationRequest.builder()
                     .id(101)
                     .name("패션/뷰티")
                     .ordering(1)
@@ -66,7 +66,7 @@ class AdminCategoryControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효하지 못한 카테고리 정보로 등록할 경우")
         class Context_with_invalid_dto{
-            AdminCategoryRegistrationRequest invalidRequest = AdminCategoryRegistrationRequest.builder()
+            AdminCategoryDto.RegistrationRequest invalidRequest = AdminCategoryDto.RegistrationRequest.builder()
                     .id(12345)
                     .build();
 
@@ -87,7 +87,7 @@ class AdminCategoryControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("권한이 없는 요청일 경우")
         class Context_with_unauthorized_request{
-            AdminCategoryRegistrationRequest validRequest = AdminCategoryRegistrationRequest.builder()
+            AdminCategoryDto.RegistrationRequest validRequest = AdminCategoryDto.RegistrationRequest.builder()
                     .id(101)
                     .name("패션/뷰티")
                     .ordering(1)

@@ -2,7 +2,7 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.product.application.AdminCategoryService;
 import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.web.dto.AdminCategoryRegistrationRequest;
+import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,8 +20,8 @@ public class AdminCategoryController {
 
     @PostMapping("/admin-api/categories")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity registerCategory(@RequestBody @Validated AdminCategoryRegistrationRequest adminCategoryRegistrationRequest) {
-        Category registeredCategory = adminCategoryService.registerCategory(adminCategoryRegistrationRequest);
+    public ResponseEntity registerCategory(@RequestBody @Validated AdminCategoryDto.RegistrationRequest registrationRequest) {
+        Category registeredCategory = adminCategoryService.registerCategory(registrationRequest);
         return ResponseEntity.created(URI.create("/admin-api/categories/" + registeredCategory.getId())).build();
     }
 }
