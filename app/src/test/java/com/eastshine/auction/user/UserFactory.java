@@ -14,6 +14,7 @@ import java.util.UUID;
 
 @Component
 public class UserFactory {
+    public static final long TEN_DIGITS = 1000000000L;
     public static final Random RANDOM = new Random();
 
     @Autowired UserService userService;
@@ -50,7 +51,7 @@ public class UserFactory {
     }
 
     private String generateBusinessNumber() {
-        Long asLong = RANDOM.longs(1000000000L, 10000000000L)
+        Long asLong = RANDOM.longs(TEN_DIGITS, TEN_DIGITS * 10)
                 .findFirst()
                 .getAsLong();
         return asLong.toString();
