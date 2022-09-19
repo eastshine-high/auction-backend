@@ -2,10 +2,13 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.ProductFactory;
+import com.eastshine.auction.product.application.SellerProductService;
+import com.eastshine.auction.product.domain.Product;
 import com.eastshine.auction.product.domain.ProductRepository;
 import com.eastshine.auction.product.web.dto.SellerProductPatchRequest;
 import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.user.WithSeller;
+import com.eastshine.auction.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,13 +30,15 @@ class SellerProductControllerTest extends RestDocsTest {
     private static Long registeredProductId;
     private static Long registeredProductOptionId;
 
+    @Autowired SellerProductService sellerProductService;
     @Autowired CategoryFactory categoryFactory;
-    @Autowired ProductFactory productFactory;
     @Autowired ProductRepository productRepository;
+    @Autowired UserRepository userRepository;
 
     @BeforeEach
     void setUp() throws Exception {
-        productFactory.deleteAll();
+        userRepository.deleteAll();
+        productRepository.deleteAll();
         categoryFactory.deleteAll();
 
         // Test 데이터 생성
@@ -52,12 +57,9 @@ class SellerProductControllerTest extends RestDocsTest {
                 .productOptions(List.of(optionRegistrationRequest))
                 .build();
 
-        mockMvc.perform(
-                post("/seller-api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", SELLER_AUTHENTICATION)
-                        .content(createJson(registrationRequest))
-        );
+        Product registerProduct = sellerProductService.registerProduct(registrationRequest);
+        registeredProductId = registerProduct.getId();
+        registeredProductOptionId = registerProduct.getProductOptions().get(0).getId();
     }
 
     @Nested
@@ -177,29 +179,63 @@ class SellerProductControllerTest extends RestDocsTest {
             SellerProductPatchRequest.ProductOption optionPatchRequest;
 
             @Test
+            @WithSeller("bestSeller")
             @DisplayName("ok를 응답한다.")
             void it_responses_ok() throws Exception {
                 optionPatchRequest = SellerProductPatchRequest.ProductOption.builder()
                         .id(registeredProductOptionId)
-                        .stockQuantity(90)
+                        .stockQuantity(0)
                         .build();
 
                 patchRequest = SellerProductPatchRequest.builder()
                         .price(99999)
                         .name("modify name")
-                        .stockQuantity(0)
-                        .onSale(Boolean.FALSE)
+                        .stockQuantity(30)
+                        .onSale(Boolean.TRUE)
                         .productOptions(List.of(optionPatchRequest))
                         .build();
 
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", SELLER_AUTHENTICATION)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isOk())
                         .andDo(document("seller-products-patch-200"));
+            }
+        }
+
+        @Nested
+        @DisplayName("유효하지 못한 인증 정보로 상품 변경을 요청할 경우")
+        class Context_with_invalid_authentication_request{
+            SellerProductPatchRequest patchRequest;
+            SellerProductPatchRequest.ProductOption optionPatchRequest;
+
+            @Test
+            @WithSeller("bestSeller")
+            @DisplayName("ok를 응답한다.")
+            void it_responses_ok() throws Exception {
+                optionPatchRequest = SellerProductPatchRequest.ProductOption.builder()
+                        .id(registeredProductOptionId)
+                        .stockQuantity(0)
+                        .build();
+
+                patchRequest = SellerProductPatchRequest.builder()
+                        .price(99999)
+                        .name("modify name")
+                        .stockQuantity(30)
+                        .onSale(Boolean.TRUE)
+                        .productOptions(List.of(optionPatchRequest))
+                        .build();
+
+                mockMvc.perform(
+                                patch("/seller-api/products/"+registeredProductId)
+                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .content(objectMapper.writeValueAsString(patchRequest))
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("seller-products-patch-401"));
             }
         }
     }
