@@ -88,6 +88,7 @@ public class SellerProductDto {
         private Integer stockQuantity;
         private Integer categoryId;
         private Boolean onSale;
+        private String productOptionsTitle;
         private List<ProductOption> productOptions;
 
         @Getter
