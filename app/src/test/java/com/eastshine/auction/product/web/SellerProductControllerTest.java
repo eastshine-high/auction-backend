@@ -17,11 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 
 import java.util.List;
+import java.util.regex.Matcher;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SellerProductControllerTest extends RestDocsTest {
@@ -51,7 +53,7 @@ class SellerProductControllerTest extends RestDocsTest {
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name("비판텐")
                 .price(3000)
-                .stockQuantity(20)
+                .stockQuantity(0)
                 .onSale(Boolean.TRUE)
                 .productOptions(List.of(optionRegistrationRequest))
                 .build();
@@ -85,6 +87,7 @@ class SellerProductControllerTest extends RestDocsTest {
                         .price(3000)
                         .stockQuantity(0)
                         .onSale(Boolean.FALSE)
+                        .productOptionsTitle("용량")
                         .productOptions(List.of(validOptionRegistrationRequest))
                         .build();
 
@@ -102,10 +105,11 @@ class SellerProductControllerTest extends RestDocsTest {
                                         fieldWithPath("price").description("상품 가격"),
                                         fieldWithPath("stockQuantity").description("상품 재고"),
                                         fieldWithPath("onSale").description("판매 여부"),
-                                        fieldWithPath("productOptions[]").description("상품 옵션"),
-                                        fieldWithPath("productOptions[].productOptionName").description("상품 옵션의 이름"),
-                                        fieldWithPath("productOptions[].stockQuantity").description("상품 옵션의 재고"),
-                                        fieldWithPath("productOptions[].ordering").description("옵션 순서")
+                                        fieldWithPath("productOptionsTitle").description("상품 옵션의 제목"),
+                                        fieldWithPath("productOptions[]").description("상품 옵션").optional(),
+                                        fieldWithPath("productOptions[].productOptionName").description("상품 옵션의 이름").optional(),
+                                        fieldWithPath("productOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
+                                        fieldWithPath("productOptions[].ordering").description("옵션 순서").optional()
                                 )
                         ));
             }
@@ -183,23 +187,41 @@ class SellerProductControllerTest extends RestDocsTest {
             void it_responses_ok() throws Exception {
                 optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
                         .id(registeredProductOptionId)
-                        .stockQuantity(0)
+                        .stockQuantity(30)
+                        .productOptionName("300ml")
+                        .ordering(1)
                         .build();
 
                 patchRequest = SellerProductDto.PatchRequest.builder()
+                        .name("비판텐")
                         .price(99999)
-                        .stockQuantity(30)
+                        .stockQuantity(0)
+                        .categoryId(REGISTERED_CATEGORY_ID)
                         .onSale(Boolean.TRUE)
+                        .productOptionsTitle("용량")
                         .productOptions(List.of(optionPatchRequest))
                         .build();
-
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("seller-products-patch-200"));
+                        .andDo(document("seller-products-patch-200",
+                                PayloadDocumentation.requestFields(
+                                        fieldWithPath("categoryId").description("카테고리 식별자").optional(),
+                                        fieldWithPath("name").description("상품명").optional(),
+                                        fieldWithPath("price").description("상품 가격").optional(),
+                                        fieldWithPath("stockQuantity").description("상품 재고").optional(),
+                                        fieldWithPath("onSale").description("판매 여부").optional(),
+                                        fieldWithPath("productOptionsTitle").description("상품 옵션의 제목").optional(),
+                                        fieldWithPath("productOptions[]").description("상품 옵션").optional(),
+                                        fieldWithPath("productOptions[].id").description("상품 옵션 식별자").optional(),
+                                        fieldWithPath("productOptions[].productOptionName").description("상품 옵션의 이름").optional(),
+                                        fieldWithPath("productOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
+                                        fieldWithPath("productOptions[].ordering").description("옵션 순서").optional()
+                                )
+                        ));
             }
         }
 
@@ -210,9 +232,8 @@ class SellerProductControllerTest extends RestDocsTest {
             SellerProductDto.PatchRequest.ProductOption optionPatchRequest;
 
             @Test
-            @WithSeller("bestSeller")
-            @DisplayName("ok를 응답한다.")
-            void it_responses_ok() throws Exception {
+            @DisplayName("Unauthorized를 응답한다.")
+            void it_responses_unauthorized() throws Exception {
                 optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
                         .id(registeredProductOptionId)
                         .stockQuantity(0)
