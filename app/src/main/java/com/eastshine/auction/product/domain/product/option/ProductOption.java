@@ -1,7 +1,7 @@
-package com.eastshine.auction.product.domain.option;
+package com.eastshine.auction.product.domain.product.option;
 
 import com.eastshine.auction.common.model.BaseEntity;
-import com.eastshine.auction.product.domain.Product;
+import com.eastshine.auction.product.domain.product.Product;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

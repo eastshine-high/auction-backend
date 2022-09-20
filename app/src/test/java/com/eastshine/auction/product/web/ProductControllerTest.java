@@ -2,8 +2,8 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.domain.ProductRepository;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductRepository;
 import com.eastshine.auction.user.UserFactory;
 import com.eastshine.auction.user.domain.seller.Seller;
 import org.junit.jupiter.api.BeforeEach;

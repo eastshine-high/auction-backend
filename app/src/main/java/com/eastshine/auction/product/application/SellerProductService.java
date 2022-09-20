@@ -4,10 +4,10 @@ import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.utils.JsonMergePatchMapper;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.domain.ProductMapper;
-import com.eastshine.auction.product.domain.ProductRepository;
-import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductMapper;
+import com.eastshine.auction.product.domain.product.ProductRepository;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class SellerProductService {
     private final Validator validator;
 
     @Transactional
-    public Product registerProduct(SellerProductRegistrationRequest registrationRequest) {
+    public Product registerProduct(SellerProductDto.RegistrationRequest registrationRequest) {
         Product product = registrationRequest.toEntity();
 
         if(!CollectionUtils.isEmpty(registrationRequest.getProductOptions())) {

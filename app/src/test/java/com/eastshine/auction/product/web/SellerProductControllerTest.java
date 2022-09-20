@@ -3,10 +3,9 @@ package com.eastshine.auction.product.web;
 import com.eastshine.auction.common.test.RestDocsTest;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.application.SellerProductService;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.domain.ProductRepository;
-import com.eastshine.auction.product.web.dto.SellerProductPatchRequest;
-import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductRepository;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import com.eastshine.auction.user.WithSeller;
 import com.eastshine.auction.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,12 +42,12 @@ class SellerProductControllerTest extends RestDocsTest {
 
         // Test 데이터 생성
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품");
-        SellerProductRegistrationRequest.ProductOption optionRegistrationRequest = SellerProductRegistrationRequest.ProductOption.builder()
+        SellerProductDto.RegistrationRequest.ProductOption optionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOption.builder()
                 .productOptionName("300ml")
                 .stockQuantity(50)
                 .ordering(1)
                 .build();
-        SellerProductRegistrationRequest registrationRequest = SellerProductRegistrationRequest.builder()
+        SellerProductDto.RegistrationRequest registrationRequest = SellerProductDto.RegistrationRequest.builder()
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name("비판텐")
                 .price(3000)
@@ -69,18 +68,18 @@ class SellerProductControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효한 인증 정보와 상품 정보를 통해 등록을 요청할 경우,")
         class Context_with_valid_productRegistrationRequest{
-            SellerProductRegistrationRequest validRegistrationRequest;
-            SellerProductRegistrationRequest.ProductOption validOptionRegistrationRequest;
+            SellerProductDto.RegistrationRequest validRegistrationRequest;
+            SellerProductDto.RegistrationRequest.ProductOption validOptionRegistrationRequest;
 
             @Test
             void createProduct() throws Exception {
-                validOptionRegistrationRequest = SellerProductRegistrationRequest.ProductOption.builder()
+                validOptionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOption.builder()
                         .productOptionName("300ml")
                         .stockQuantity(9999)
                         .ordering(1)
                         .build();
 
-                validRegistrationRequest = SellerProductRegistrationRequest.builder()
+                validRegistrationRequest = SellerProductDto.RegistrationRequest.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(3000)
@@ -115,12 +114,12 @@ class SellerProductControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효하지 못한 인증 정보를 통해 요청할 경우,")
         class Context_with_unauthorized_request{
-            SellerProductRegistrationRequest validRegistrationRequest;
+            SellerProductDto.RegistrationRequest validRegistrationRequest;
 
             @Test
             @DisplayName("unauthorized를 응답한다.")
             void it_responses_unauthorized() throws Exception {
-                validRegistrationRequest = SellerProductRegistrationRequest.builder()
+                validRegistrationRequest = SellerProductDto.RegistrationRequest.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(1000)
@@ -142,13 +141,13 @@ class SellerProductControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효하지 못한 상품 정보를 통해 등록 요청할 경우,")
         class Context_with_invalid_productRegistrationRequest{
-            SellerProductRegistrationRequest invalidRegistrationRequest;
+            SellerProductDto.RegistrationRequest invalidRegistrationRequest;
             int invalidPrice = 999;
 
             @Test
             @DisplayName("badRequest를 응답한다.")
             void it_responses_badRequest() throws Exception {
-                invalidRegistrationRequest = SellerProductRegistrationRequest.builder()
+                invalidRegistrationRequest = SellerProductDto.RegistrationRequest.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(invalidPrice)
@@ -175,21 +174,20 @@ class SellerProductControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효한 인증 정보와 상품 ID로 변경을 요청할 경우")
         class Context_with_valid_modification_request{
-            SellerProductPatchRequest patchRequest;
-            SellerProductPatchRequest.ProductOption optionPatchRequest;
+            SellerProductDto.PatchRequest patchRequest;
+            SellerProductDto.PatchRequest.ProductOption optionPatchRequest;
 
             @Test
             @WithSeller("bestSeller")
             @DisplayName("ok를 응답한다.")
             void it_responses_ok() throws Exception {
-                optionPatchRequest = SellerProductPatchRequest.ProductOption.builder()
+                optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
                         .id(registeredProductOptionId)
                         .stockQuantity(0)
                         .build();
 
-                patchRequest = SellerProductPatchRequest.builder()
+                patchRequest = SellerProductDto.PatchRequest.builder()
                         .price(99999)
-                        .name("modify name")
                         .stockQuantity(30)
                         .onSale(Boolean.TRUE)
                         .productOptions(List.of(optionPatchRequest))
@@ -208,19 +206,19 @@ class SellerProductControllerTest extends RestDocsTest {
         @Nested
         @DisplayName("유효하지 못한 인증 정보로 상품 변경을 요청할 경우")
         class Context_with_invalid_authentication_request{
-            SellerProductPatchRequest patchRequest;
-            SellerProductPatchRequest.ProductOption optionPatchRequest;
+            SellerProductDto.PatchRequest patchRequest;
+            SellerProductDto.PatchRequest.ProductOption optionPatchRequest;
 
             @Test
             @WithSeller("bestSeller")
             @DisplayName("ok를 응답한다.")
             void it_responses_ok() throws Exception {
-                optionPatchRequest = SellerProductPatchRequest.ProductOption.builder()
+                optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
                         .id(registeredProductOptionId)
                         .stockQuantity(0)
                         .build();
 
-                patchRequest = SellerProductPatchRequest.builder()
+                patchRequest = SellerProductDto.PatchRequest.builder()
                         .price(99999)
                         .name("modify name")
                         .stockQuantity(30)
