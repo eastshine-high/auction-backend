@@ -41,7 +41,7 @@ public class SellerProductController {
     @PreAuthorize("hasAuthority('SELLER')")
     public ResponseEntity registerProduct(@RequestBody @Validated SellerProductDto.RegistrationRequest sellerProductRegistrationRequest) {
         Product registeredProduct = sellerProductService.registerProduct(sellerProductRegistrationRequest);
-        return ResponseEntity.created(URI.create("/api/products/" + registeredProduct.getId())).build();
+        return ResponseEntity.created(URI.create("/seller-api/products/" + registeredProduct.getId())).build();
     }
 
     /**
