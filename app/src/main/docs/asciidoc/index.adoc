@@ -28,7 +28,17 @@ include::{snippets}/guest-session-post-201/http-response.adoc[]
 
 ==== 상품 검색
 
-==== 상품 조회
+GET /api/products
+
+include::{snippets}/guest-products-get-200/request-parameters.adoc[]
+
+**Request**
+
+include::{snippets}/guest-products-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/guest-products-get-200/http-response.adoc[]
 
 ==== 디스플레이 카테고리 조회
 
@@ -187,11 +197,47 @@ include::{snippets}/seller-users-delete-401/http-response.adoc[]
 
 ==== 상품 등록
 
-판매 권한을 가진 사람만 수정 가능합니다.
+POST /seller-api/products
+
+include::{snippets}/seller-products-post-201/request-fields.adoc[]
+
+**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/seller-products-post-201/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/seller-products-post-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
+
+include::{snippets}/seller-products-post-201/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/seller-products-post-401/http-response.adoc[]
 
 ==== 상품 수정
 
-==== 상품 옵션 등록
+PATCH /seller-api/products
+
+include::{snippets}/seller-products-patch-200/request-fields.adoc[]
+
+**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
+
+include::{snippets}/seller-products-patch-200/http-request.adoc[]
+
+**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+
+include::{snippets}/seller-products-patch-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 200 상태를 응답**
+
+include::{snippets}/seller-products-patch-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+
+include::{snippets}/seller-products-patch-401/http-response.adoc[]
 
 == 관리자 API
 
