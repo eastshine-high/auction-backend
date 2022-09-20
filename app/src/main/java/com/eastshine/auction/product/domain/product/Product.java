@@ -1,9 +1,9 @@
-package com.eastshine.auction.product.domain;
+package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseEntity;
-import com.eastshine.auction.product.domain.option.ProductOption;
+import com.eastshine.auction.product.domain.product.option.ProductOption;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.eastshine.auction.product.domain;
+package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.product.web.dto.ProductDto;
 import com.querydsl.core.QueryResults;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 
-import static com.eastshine.auction.product.domain.QProduct.product;
+import static com.eastshine.auction.product.domain.product.QProduct.product;
 import static com.eastshine.auction.product.domain.category.QCategory.category;
 import static com.eastshine.auction.user.domain.seller.QSeller.seller;
 

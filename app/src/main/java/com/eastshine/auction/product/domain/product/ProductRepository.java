@@ -1,4 +1,4 @@
-package com.eastshine.auction.product.domain;
+package com.eastshine.auction.product.domain.product;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

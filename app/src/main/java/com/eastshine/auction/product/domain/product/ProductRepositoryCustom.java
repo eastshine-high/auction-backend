@@ -1,4 +1,4 @@
-package com.eastshine.auction.product.domain;
+package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.product.web.dto.ProductDto;
 import org.springframework.data.domain.Page;

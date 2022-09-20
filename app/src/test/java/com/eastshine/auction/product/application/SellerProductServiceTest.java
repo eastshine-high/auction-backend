@@ -8,10 +8,10 @@ import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.ProductFactory;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.domain.ProductRepository;
-import com.eastshine.auction.product.domain.option.ProductOption;
-import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductRepository;
+import com.eastshine.auction.product.domain.product.option.ProductOption;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -73,13 +73,13 @@ class SellerProductServiceTest extends IntegrationTest {
         @DisplayName("유효한 상품 정보로 등록할 경우")
         @Nested
         class Context_with_registered_category{
-            SellerProductRegistrationRequest productInfo;
+            SellerProductDto.RegistrationRequest productInfo;
             boolean onSale = true;
             int stockQuantity = 20;
             String productName = "비판텐";
             int price = 3200;
 
-            SellerProductRegistrationRequest.ProductOption optionInfo;
+            SellerProductDto.RegistrationRequest.ProductOption optionInfo;
             String productOptionName = "300ml";
             int ordering = 1;
             int optionStockQuantity = 9999;
@@ -87,13 +87,13 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("등록된 상품을 반환한다.")
             @Test
             void it_returns_registerd_product() {
-                optionInfo = SellerProductRegistrationRequest.ProductOption.builder()
+                optionInfo = SellerProductDto.RegistrationRequest.ProductOption.builder()
                         .productOptionName(productOptionName)
                         .ordering(ordering)
                         .stockQuantity(optionStockQuantity)
                         .build();
 
-                productInfo = SellerProductRegistrationRequest.builder()
+                productInfo = SellerProductDto.RegistrationRequest.builder()
                         .onSale(onSale)
                         .stockQuantity(stockQuantity)
                         .categoryId(REGISTERED_CATEGORY_ID)
@@ -110,7 +110,7 @@ class SellerProductServiceTest extends IntegrationTest {
                 assertThat(product.getStockQuantity()).isEqualTo(stockQuantity);
                 assertThat(product.isOnSale()).isEqualTo(onSale);
 
-                com.eastshine.auction.product.domain.option.ProductOption productOption = product.getProductOptions().get(0);
+                com.eastshine.auction.product.domain.product.option.ProductOption productOption = product.getProductOptions().get(0);
                 assertThat(productOption.getProductOptionName()).isEqualTo(productOptionName);
                 assertThat(productOption.getOrdering()).isEqualTo(ordering);
                 assertThat(productOption.getStockQuantity()).isEqualTo(optionStockQuantity);

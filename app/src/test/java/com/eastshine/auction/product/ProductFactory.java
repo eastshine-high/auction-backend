@@ -1,12 +1,14 @@
 package com.eastshine.auction.product;
 
 import com.eastshine.auction.product.application.SellerProductService;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.domain.ProductRepository;
-import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductRepository;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Component
 public class ProductFactory {
@@ -15,15 +17,17 @@ public class ProductFactory {
     @Autowired JdbcTemplate jdbcTemplate;
 
     public Product createProduct(Integer categoryId, String name) {
-        return createProduct(categoryId, name, 5000, true);
+        return createProduct(categoryId, name, 5000, true, 5000);
     }
 
-    public Product createProduct(Integer categoryId, String name, Integer price, Boolean onSale) {
-        SellerProductRegistrationRequest registrationRequest = SellerProductRegistrationRequest.builder()
+    public Product createProduct(Integer categoryId, String name, Integer price, Boolean onSale, Integer stockQuantity) {
+        SellerProductDto.RegistrationRequest registrationRequest = SellerProductDto.RegistrationRequest.builder()
                 .categoryId(categoryId)
                 .name(name)
                 .price(price)
                 .onSale(onSale)
+                .stockQuantity(stockQuantity)
+                .productOptions(new ArrayList<>())
                 .build();
         return sellerProductService.registerProduct(registrationRequest);
     }

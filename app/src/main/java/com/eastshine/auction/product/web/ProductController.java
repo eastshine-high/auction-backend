@@ -1,6 +1,6 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.product.domain.ProductRepository;
+import com.eastshine.auction.product.domain.product.ProductRepository;
 import com.eastshine.auction.product.web.dto.ProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

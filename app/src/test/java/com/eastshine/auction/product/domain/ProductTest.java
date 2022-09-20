@@ -2,6 +2,7 @@ package com.eastshine.auction.product.domain;
 
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.UnauthorizedException;
+import com.eastshine.auction.product.domain.product.Product;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 

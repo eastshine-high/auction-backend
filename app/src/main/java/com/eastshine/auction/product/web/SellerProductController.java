@@ -2,9 +2,8 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.product.application.SellerProductService;
-import com.eastshine.auction.product.domain.Product;
-import com.eastshine.auction.product.web.dto.SellerProductPatchRequest;
-import com.eastshine.auction.product.web.dto.SellerProductRegistrationRequest;
+import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -40,7 +39,7 @@ public class SellerProductController {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('SELLER')")
-    public ResponseEntity registerProduct(@RequestBody @Validated SellerProductRegistrationRequest sellerProductRegistrationRequest) {
+    public ResponseEntity registerProduct(@RequestBody @Validated SellerProductDto.RegistrationRequest sellerProductRegistrationRequest) {
         Product registeredProduct = sellerProductService.registerProduct(sellerProductRegistrationRequest);
         return ResponseEntity.created(URI.create("/api/products/" + registeredProduct.getId())).build();
     }
@@ -57,7 +56,7 @@ public class SellerProductController {
     @ResponseStatus(HttpStatus.OK)
     public void patchProduct(
             @PathVariable Long productId,
-            @RequestBody SellerProductPatchRequest sellerProductPatchRequest,
+            @RequestBody SellerProductDto.PatchRequest sellerProductPatchRequest,
             Authentication authentication
     ) {
         JsonValue jsonValue = objectMapper.convertValue(sellerProductPatchRequest, JsonValue.class);
