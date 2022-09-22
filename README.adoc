@@ -1,0 +1,417 @@
+= Auction-backend
+:toc:
+:toclevels: 3
+
+## 프로젝트 개요
+
+쇼핑 플랫폼(예 인터파크)을 참조하여 REST API를 설계하고 구현하는 과정에서 고민하고 배운 것들을 기록합니다.
+
+**활용 기술**
+
+* Java 11, Gradle
+* JPA, QueryDsl, Junit5, MapStruct
+* Spring Boot : 캐싱, 인터셉션, 예외 처리, logging, Profile, MessageSource 등
+* Spring Data JPA
+* Spring REST Docs
+* 보안 : JWT, Spring Security
+* Database : MariaDB 10, Redis
+* 배포 : Github Action, Docker, AWS EC2
+* 디자인 방식 : HTTP(REST) API, 도메인 주도 설계
+
+## 프로젝트 API Document
+
+Spring REST Docs를 이용해 작성한 문서를 AWS EC2에 배포합니다.
+
+Document Link
+
+## 이 프로젝트를 통해 경험한 것을 작성해 주세요.
+
+* Spring Rest Docs를 이용해 API를 문서화합니다.
+
+* Junit5와 스프링 프레임워크의 테스트 기능을 이용하여, 모든 인터페이스의 테스트 코드를 작성합니다.
+
+* https://github.com/eastshine-high/til/tree/main/java/specification/jpa-hibernate[JPA]의 상속 및 https://github.com/eastshine-high/til/blob/main/java/specification/jpa-hibernate/domain-model/associations.md[다양한 연관 관계를 활용]하여 엔터티들을 정의합니다. https://github.com/eastshine-high/til/tree/main/java/specification/jpa-hibernate/persistence-context[영속성 컨텍스트에 대한 이해]를 바탕으로 https://github.com/eastshine-high/til/tree/main/spring/spring-data/spring-data-jpa[Spring Data JPA의 기능을 활용]하여 엔터티들의 영속화 및 조회 로직을 작성합니다. 또한 Spring Data JPA의 기술적 한계가 있는 부분은 Querydsl를 이용하여 DML 로직을 작성합니다.
+
+* https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md[JSON Merge Patch를 활용하여 PATCH API를 구현]합니다.
+
+* https://github.com/eastshine-high/til/blob/main/web/jwt.md[JWT], Spring Security를 활용하여 인증 및 인가처리 구현합니다.
+
+* Redis를 캐시로 사용하여 요청 빈도가 높은 API의 처리 속도를 개선합니다.
+
+* 예외 처리, https://github.com/eastshine-high/til/blob/main/spring/spring-data/spring-data-jpa/auditing.md[Auditing] 등의 공통 모듈을 구현합니다.
+
+* 클린 코드를 항상 의식하고 리팩토링하여 코드를 개선합니다.
+
+* Bean validation과 https://github.com/eastshine-high/til/tree/main/regular-expressions[정규 표현식]을 활용하여 요청값에 대한 검증을 수행합니다.
+
+* 도메인 주도 설계를 적용하여 바운디드 컨텍스트를 기준으로 패키지를 구분합니다.
+
+* Flyway를 이용해 데이터베이스의 변경 사항을 형상 관리합니다.
+
+* https://github.com/eastshine-high/til/blob/main/java/building/gradle/five-things-you-need-to-know-about-gradle.md[Gradle에 대한 이해]를 바탕으로 빌드 스크립트를 작성합니다.
+
+* https://github.com/eastshine-high/til/blob/main/spring/spring-framework/core/di-container.md[스프링의 DI를 이해]하고 구성(Configuration) 파일을 작성합니다.
+
+* https://github.com/eastshine-high/til/blob/main/nginx/basic-usage.md[Nginx 기본 구조를 이해]하고 nginx.conf를 작성하여 웹 서버로 활용합니다.
+
+* Docker의 https://github.com/eastshine-high/til/blob/main/docker/dockerfile.md[빌드 스크립트]를 작성하고 https://github.com/eastshine-high/til/blob/main/docker/docker-run.md[배포 환경에 맞게 실행]합니다.
+
+* NAS를 DB 서버로 활용해 보면서 방화벽, 포트포워딩 등의 네트워크 개념에 대한 이해도를 높입니다.
+
+* Github Actions를 사용하여 CI/CD 파이프라인을 구축합니다.
+
+## 프로젝트 도메인
+
+패키지는 도메인 주도 설계의 바운디드 컨텍스트(Bounded context)를 기준으로 나누었습니다.
+
+```
+auction
+    ├── config(구성)
+    ├── common(공통 모듈)
+    ├── user(사용자)
+    └── product(상품)
+```
+
+### common(공통 기능)
+
+#### REST API의 예외(Exception) 처리
+
+(1) 오류는 일관성 있게 표현합니다.
+
+https://digital.kyobobook.co.kr/digital/ebook/ebookDetail.ink?selectedLargeCategory=001&barcode=480D150507640&orderClick=LAG&Kc=[REST API 디자인 규칙(마크 마세 저)] 에서는 “오류는 일관성 있게 표현하여 응답”하는 것을 권고합니다. 오류 메세지는 다음과 같은 형식으로 정의하였습니다.
+
+```json
+{
+	"errorCode" : "PRODUCT_NOT_FOUND",
+	"message" : "상품을 찾을 수 없습니다."
+}
+```
+
+이를 위해, 먼저 오류가 발생할 경우 공통으로 응답할 DTO를 정의합니다.
+
+```java
+public class ErrorResponse {
+    private String message;
+    private String errorCode;
+}
+```
+
+내부적으로 `errorCode` 는 Enum으로 관리하며 `message` 와 매핑합니다.
+
+```java
+public enum ErrorCode {
+    PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다."),
+    PRODUCT_UNACCESSABLE("상품에 대한 접근 권한이 없습니다.");
+
+		private final String errorMsg;
+
+		public String getErrorMsg(Object... arg) {
+        return String.format(errorMsg, arg);
+    }
+}
+```
+
+위의 `ErrorCode` 를 기반으로 하는 예외 클래스를 생성합니다.
+
+```java
+@Getter
+public class BaseException extends RuntimeException {
+    private ErrorCode errorCode;
+
+    public BaseException() {
+    }
+
+    public BaseException(ErrorCode errorCode) {
+        super(errorCode.getErrorMsg());
+        this.errorCode = errorCode;
+    }
+}
+```
+
+그리고 `ErrorCode` 를 기반으로 하는 클래스인 `BaseException` 을 상속하여 실제 비즈니스 로직에서 사용할 예외 클래스를 만듭니다.
+
+image::http://dl.dropbox.com/s/g3rwsw09kf8l2rs/exception%20hierarchy.png[]
+
+(2) HTTP 응답 상태 코드
+
+REST API는 HTTP 응답 메시지의 Status-Line 부분을 사용하여 클라이언트가 요청한 결과를 알려줍니다. 오류 응답 상태 코드는 ‘4xx’ 또는 ‘5xx’ 중 하나여야 합니다.
+
+`BaseException` 상속한 클래스들은 HTTP 응답 상태 코드의 표현이기도 합니다. 예를 들어 `EntityNotFoundException`는 아래와 같이 404 상태 코드를 응답합니다.
+
+```java
+@Slf4j
+@ControllerAdvice
+public class ControllerErrorAdvice {
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(value = EntityNotFoundException.class)
+    public ErrorResponse onEntityNotFoundException(EntityNotFoundException e) {
+        String eventId = MDC.get(CommonHttpRequestInterceptor.HEADER_REQUEST_UUID_KEY);
+        log.error("[BaseException] eventId = {}, cause = {}, errorMsg = {}", eventId, NestedExceptionUtils.getMostSpecificCause(e), NestedExceptionUtils.getMostSpecificCause(e).getMessage());
+        return ErrorResponse.of(e.getMessage(), e.getErrorCode().name());
+    }
+}
+```
+
+- 스프링은 API 예외 처리 문제를 해결하기 위해 몇 가지 어노테이션을 지원합니다.
+- `@ControllerAdvice` : 모든 예외를 한 곳에서 처리하기 위해 선언합니다.
+- `@ExceptionHandler` : 처리하고 싶은 예외를 지정합니다.
+- 오류를 일관성 있게 표현하여 응답하기 위해 초기에 정의한 `ErrorResponse` 를 통해 응답합니다.
+
+이제 실제 비즈니스 로직에서 예외 처리를 수행합니다.
+
+```java
+@RequiredArgsConstructor
+@Service
+public class ProductService {
+		private final ProductRepository productRepository;
+
+		public Product findProduct(Long id) {
+			    return productRepository.findById(id)
+			            .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+		}
+}
+```
+
+위의 예시는 특정 Id의 상품이 조회되지 않았을 경우, `EntityNotFoundException` 을 던집니다. `ErrorCode.PRODUCT_NOT_FOUND` 를 통해 예외 상황을 좀 더 자세히 설명하며, 같은 상황의 응답 메세지를 통일합니다.
+
+
+### User(사용자 도메인)
+
+image::http://dl.dropbox.com/s/xid2l7fou0j88p8/user%20erd.png[]
+
+#### 외래키와 복합키 사용에 대하여
+
+실무 프로젝트에서는 개발 편의성과 유연성을 이유로 외래키와 복합키를 잘 사용하지 않습니다. 이번 토이 프로젝트에서는 이를 직접 경험해 보고 이와 관련한 글들을 읽어보면서, 이에 대해 정리해 볼 수 있었습니다.
+
+**외래키 사용에 대하여**
+
+* 무결성과 정합성 : 외래키 사용의 가장 큰 장점입니다. 만약 외래키가 설정되어있는 테이블 또는 데이터를 변경할 때, 참조 무결성이 위배되는 데이터가 있을 경우, 오류가 발생하여 해당 작업을 수행할 수 없습니다. 따라서 이러한 변경 작업 전에 해당 문제가 해결되어야 데이터 또는 테이블을 변경할 수 있습니다. 따라서 인지하지 못했던 데이터 오류를 사전에 확인하고 방지할 수 있습니다.
+* 관리포인트 증가 : 외래키를 설정하면서 `RESTRICT` , `ON UPDATE SET NULL` , `ON DELETE CASCADE` 와 같은 옵션을 넣거나 넣지 않거나 어느 쪽이든 신경 써야 할 부분이 늘어납니다. 특히 `ON DELETE CASCADE` 와 같은 옵션은 매우 주의해서 사용해야 합니다. 데이터의 양이 더 많아지고 관계가 복잡해질수록 신경 써야 할 부분은 더욱 많아질 수 있습니다.
+* 개발 편의성과 변경의 유연성 : 위의 두 가지 등의 이유로 외래키의 사용은 개발 편의성과 변경의 유연성이 떨어집니다. 즉 개발 편의성과 변경의 유연성은 무결성, 정합성과 트레이드 오프 관계로 볼 수 있습니다. 특히 변경이 자주 발생하는 개발 초기 단계에서는 무결성 문제로 인해 변경 작업에 어려움을 겪을 수 있기 때문에, 개발이 안정화 되는 단계에서 외래키를 적용하는 것도 하나의 방법이 될 수 있습니다.
+* 인덱스 : 데이터베이스는 외래키를 설정하는 테이블의 칼럼에 자동으로 인덱스를 생성합니다. 따라서 외래키를 사용하지 않지만 해당 칼럼으로 테이블 조인이 자주 발생한다면, 인덱스 생성이 권장됩니다.
+* 성능 : 외래키 제약조건이 있는 테이블의 경우, 부모-자식 관계로 정의된 컬럼에 대해서 두 테이블 데이터가 일치해야 하기 때문에, 외래키로 정의된 동일 데이터(레코드)에 대해 DML 작업이 발생하게 되면, Lock으로 인해 대기해야 하는 상황이 발생합니다.  따라서 대량의 트랜잭션이 발생하는 경우라면 외래키 사용을 지양해야 할 필요가 있습니다. 성능의 차이에 대해서는 다음 https://martin-son.github.io/Martin-IT-Blog/mysql/foreign[블로그]를 참고해 볼 수 있습니다.
+
+**복합키 사용에 대하여**
+
+* 주의 사항 : 복합키를 정의할 때는, 복합키를 구성하는 칼럼의 순서에 주의할 필요가 있었습니다. DBMS는 자동으로 복합키를 구성하는 칼럼의 순서대로 인덱스를 생성합니다. 이 때, 복합 인덱스의 선두 칼럼의 카디널리티에 따라서 인덱스의 성능 차이가 발생할 수 있습니다. 따라서 카디널리티가 높은 칼럼의 순서대로 복합키의 순서를 구성하는 것이 좋습니다.
+* 인덱스 : 만약 복합키를 사용하지 않고 인조 식별자를 기본키를 사용한다면, 복합키로 선언하지 않은 칼럼들은 인덱스로 구성하는 것을 고려할 필요가 있습니다.
+
+
+### Product(상품 도메인)
+
+image::http://dl.dropbox.com/s/gd2nhs7gbx8vpfl/product%20domain.png[]
+
+#### Category 엔터티 설계 :  Main - Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티
+
+image::https://velog.velcdn.com/images/eastshine-high/post/bde225b5-4d69-4eb4-87c8-facf09c17ea6/image.png[Tux,350,450]
+
+
+위의 쇼핑몰 카테고리의 엔터티 설계는 Main Category - Sub Category 구조로 설계할 수 있으며, 자기 자신을 참조하는 재귀 구조의 엔터티로도 설계할 수도 있습니다.
+
+무엇이 좋은 방법일지를 고민하면서 얻은 결론은 “설계에 정답있는 것은 아니며 Trade off의 과정이다”라는 점을 배울 수 있었습니다. 따라서 설계에 따른 Trade off를 생각하고 결정하는 것이 필요합니다.
+
+Main Entity - Sub Entity 구조
+
+- (장점) 데이터를 관리(CRUD)하기 쉽습니다.
+- (단점) 엔티티의 계층적 확장 측면에서 유연하지 못합니다.
+
+재귀 구조
+
+- (장점) 엔티티의 계층적 확장 측면에서 유연합니다.
+- (단점) 데이터를 관리(CRUD)하기 어렵습니다.
+
+결론적으로 추가적인 Sub Entity의 확장을 고려하여 `Category` 엔티티의 설계를 재귀 구조로 결정하였습니다.
+
+image::https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png[Tux,350,450]
+
+#### JPA : 계층(재귀) 구조 엔터티의 N + 1 조회 문제
+
+카테고리 엔터티는 계층(재귀) 구조이기 때문에 JPA를 이용한 조회 시, 기본적으로 하위 엔터티를 계속해서 조회해 나가는 N + 1 문제가 발생합니다. 먼저 이 문제는 두 가지 경우로 나누어 볼 수 있습니다.
+
+**하위 엔터티까지 조회하는 경우**
+
+JPA가 아닌 SQL을 이용하여 조회할 때도 재귀적 방식을 이용하여 조회합니다. 따라서 N+1 방식의 조회가 자연스러울 수 있습니다. 하지만 쇼핑몰 메인 페이지의 카테고리 조회와 같이 N+1 쿼리 수행을 자주 요청하는 조회 API는 조회 결과를 **Redis와 같은 인메모리 DB에 캐싱하여 조회 성능을 개선**할 수 있습니다. 이 프로젝트에서 메인 페이지의 카테고리 조회 API는 Redis를 이용하여 캐싱처리하였습니다.
+
+**단일 레코드를 조회하는 경우**
+
+단일 레코드를 조회하는 경우에는 N+1 문제가 발생하기를 원치 않을 것입니다. 이 경우에는 **DTO를 사용하여 재귀 참조하는 부분의 Projection을 제한**함으로써 N+1 문제가 발생하지 않도록 하였습니다. 만약 도메인 엔터티로 조회를 해야하는 경우라면, 재귀 참조를 하고 있는 필드를 `null` 로 설정하여 N+1 문제를 방지할 수 있으나 권장되는 방식은 아닐 것 같습니다.
+
+#### 단일 책임 원칙과 URI 설계
+
+REST API 디자인 규칙을 따라 상품을 조회할 때의 API는 다음과 같을 것입니다.
+
+```
+GET /api/products/{id}
+```
+
+하지만 사이트 방문자(Guest)가 조회할 상품 정보와 판매자(Seller)가 조회할 상품 정보는 다릅니다. 따라서 이를 구분할 필요가 있었습니다. 이 때, “하나의 모듈은 하나의, 오직 하나의 액터에 대해서만 책임져야 한다”는 단일 책임 원칙을 URI를 설계에 적용하였습니다. 다음과 같이 URI에 액터를 추가하여 표현합니다.
+
+방문자 상품 조회 URI : `guest-api/products/{id}`
+
+판매자 상품 조회 URI : `seller-api/products/{id}`
+
+> 개발에서는 방문자의 상품 조회 URI는 편의상 축약하여 `api/products/{id}` 로 표현하였습니다.
+>
+
+이렇게 액터에 따라 URI를 분리하면서, 함께 분리한 클래스의 관심사도 더 명확해질 수 있었습니다. 또한 액터에 따른 분리는 CQRS의 기준이 될 수도 있었습니다.
+
+#### CQRS
+
+위의 URI 설계에서 방문자와 판매자 API를 분리하면서, CQRS(Command and Query Responsibility Segregation)를 적용해볼 기회를 가지게 되었습니다. 상품에 대한 방문자의 주요 관심사는 조회(Query)이며 판매자의 주요 관심사는 데이터의 조작(Command)에 있습니다. 따라서 액터의 분리가 자연스럽게 CQRS의 기준이 되었습니다.
+
+따라서 복잡한 로직이 필요하지 않은 방문자 API의 컨트롤러는 리포지토리에 직접 의존하는 형태로 간단한 방식의 CQRS를 구현하였습니다. 이를 통해 서비스 레이어의 구현을 생략함으로써 조회 로직을 간소화 시킬 수 있었습니다.
+
+#### Flyway 적용
+
+도메인을 개발해 나갈 때 변경이 발생하면, 데이터베이스에 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스의 운영에 있어 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 점에서 불안전함을 느꼈습니다. 이에 대한 관리 방법을 찾아 보면서 Flyway라는 도구에 대해 알게되었습니다. 이를 적용하여 데이터베이스의 변경 사항에 대한 이력을 관리함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.  - `resources/db/migration/**`
+
+#### JSON Merge Patch를 이용한 PATCH API 구현
+
+https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md[JSON Merge Patch를 이용한 PATCH API 구현하기]
+
+**JSON Merge Patch를 적용 배경**
+
+리소스의 값을 변경하는 REST API를 구현할 때, 도메인 레이어에서는 다음과 같이 리소스(도메인 객체)의 값을 변경하는 메소드를 만들 수 있습니다.
+
+```java
+@Entity
+public class Product
+    private String name;
+    private Integer price;
+    private Integer stockQuantity;
+    private boolean onSale;
+
+    public void changeWith(Product source) {
+        name = source.name;
+        price = source.price;
+        stockQuantity = source.stockQuantity;
+        onSale = source.onSale;
+    }
+}
+```
+
+위와 같이 구현된 API에, 만약 요청자가 변경할 리소스의 속성 값을 지정하지 않고 요청을 한다면, 해당 요청의 아규먼트 속성은 `null` 값이 됩니다. 이 경우, 기존에 객체의 속성에 저장된 값은 `null` 로 대치되게 됩니다. 따라서 이와 같은 방식으로 변경 메소드를 구현을 한다면, 이 REST API는 `PUT` HTTP 메소드를 사용해야 합니다.
+
+하지만 `PUT` 을 사용하면 리소스의 단일 필드를 수정해야 하는 경우에도 리소스의 전체 표현을 보내야 하므로 다소 불편합니다. 따라서 `PATCH` HTTP 메소드를 지원하는 API를 구현해 보기로 했습니다.
+
+그러면 `PATCH` 메소드는 어떻게 구현해야 할까요? 가장 단순한 방법으로는 각 속성마다 값을 변경하기 전에 `if` 문을 넣으면 구현이 가능할 것 같습니다.
+
+```java
+@Entity
+public class Product
+    private String name;
+    private Integer price;
+    private Integer stockQuantity;
+    private boolean onSale;
+
+    public void changeWith(Product source) {
+        if(source.name != null){
+            name = source.name;
+        }
+        if(source.price != null){
+            price = source.price;
+        }
+        ...
+    }
+}
+```
+
+혹은 조금 생각을 해서 `Map` 과 `Reflection` 을 활용하는 방법도 있을 것 같습니다.
+
+```java
+public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
+    Optional<Product> product = productService.findById(id);
+    if(product.isPresent()) {
+        fields.forEach((key, value) -> {
+                Field field = ReflectionUtils.findField(Product.class, (String) key);
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, book.get(), value);
+        });
+        Product updatedProduct = productService.saveOrUpdate(product.get());
+    }
+}
+```
+
+하지만 이 방법은 `Reflection` 을 사용한다는 점에서 사용하기가 조금 꺼려졌습니다. 다시 다른 방법을 찾아보면서 JsonPatch(https://datatracker.ietf.org/doc/html/rfc6902[RFC6902])와 JsonMergePatch(https://datatracker.ietf.org/doc/html/rfc7386[RFC7396])에 대해서 알게 되었고, https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md[이에 대해 정리해 보면서 JsonMergePatch 를 이용해 PATCH API를 구현]해 볼 수 있었습니다.
+
+#### SQL을 이용한 `LIKE '%Keyword%'` 검색은 Index Range Scan을 할 수 없습니다.
+
+현재 상품 검색 API의 문제점입니다. 상품 검색 API는 RDB의 `LIKE '%Keyword%'` SQL문을 사용하여 상품을 검색합니다. 이 SQL 문은 Index Range Scan(인덱스 설정을 전제)을 할 수 없고 Index Full Scan을 수행하기 때문에 조회 성능이 좋지 않습니다. 만약 이 SQL을 사용하는 API에 요청이 자주 발생한다면 서비스에 부하를 줄 수도 있습니다.
+
+이러한 문제를 개선하기 위한 방법으로 Elasticsearch를 검색 엔진으로 활용해보는 것을 검토해 볼 수 있습니다. Elasticsearch는 특정 문장을 입력받으면, 파싱을 통해 문장을 단어 단위로 분리하여 저장합니다. 검색을 할 때는 분리된 단어를 기반으로 역으로 인덱스(Reverted Index)를 찾아가는 방식으로 검색을 수행합니다. 따라서 RDB에서 Keyword 검색을 위해 수행되는 Index Full Scan의 시간만큼을 아낄 수 있습니다.
+
+## 코드 개선하기
+
+### 관심사의 분리
+
+다음 코드는 요청 객체(DTO)의 값을 검증하고 도메인 객체로 매핑한 뒤에, 리포지토리에 저장을 하는 간단한 서비스(Service) 코드입니다.
+
+```java
+@RequiredArgsConstructor
+@Service
+public class CategoryService {
+    private final CategoryRepository categoryRepository;
+
+    @Transactional
+    public Category registerCategory(CategoryRegistrationRequest request) {
+        Category parentCategory = null;
+        if(Objects.nonNull(request.getParentId())) {
+            parentCategory = categoryRepository.findById(request.getParentId())
+                    .orElseThrow(CategoryEntityNotFoundException::new);
+        }
+
+        Category category = Category.builder()
+                .id(request.getId())
+                .parent(parentCategory)
+                .ordering(request.getOrdering())
+                .name(request.getName())
+                .build();
+        return categoryRepository.save(category);
+    }
+}
+```
+
+간단한 로직이지만 코드의 길이가 길어지면서 코드의 가독성이 떨어집니다. 이렇게 코드가 복잡해진 이유는 DTO 객체를 도메인 객체로 매핑하는 책임을 서비스가 가지고 있기 때문입니다. 이 책임을 DTO 객체에 위임하여 관심사를 분리합니다.
+
+```java
+
+public class CategoryRegistrationRequest {
+
+    @NotNull
+    private Integer id;
+    private Integer parentId;
+
+    @NotBlank
+    private String name;
+
+    @NotNull
+    private Integer ordering;
+
+    public Category toEntity(Category parentCategory) {
+        return Category.builder()
+                .id(id)
+                .parent(parentCategory)
+                .name(name)
+                .ordering(ordering)
+                .build();
+    }
+}
+```
+
+이제 다음과 같이 코드의 길이가 짧아지면서 코드의 가독성이 개선되는 것을 확인할 수 있습니다.
+
+```java
+@Transactional
+public Category registerCategory(CategoryRegistrationRequest request) {
+    Category parentCategory = null;
+    if(Objects.nonNull(request.getParentId())) {
+        parentCategory = categoryRepository.findById(request.getParentId())
+                .orElseThrow(CategoryEntityNotFoundException::new);
+    }
+
+    return categoryRepository.save(request.toEntity(parentCategory));
+}
+```
+
