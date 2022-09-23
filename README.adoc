@@ -22,7 +22,7 @@
 
 Spring REST Docs를 이용해 작성한 문서를 AWS EC2에 배포합니다.
 
-Document Link
+Document URL : http://3.36.136.227/docs/index.html
 
 ## 이 프로젝트를 통해 경험한 것을 작성해 주세요.
 
@@ -60,7 +60,7 @@ Document Link
 
 * Github Actions를 사용하여 CI/CD 파이프라인을 구축합니다.
 
-## 프로젝트 도메인
+## 프로젝트 패키지
 
 패키지는 도메인 주도 설계의 바운디드 컨텍스트(Bounded context)를 기준으로 나누었습니다.
 
@@ -72,9 +72,9 @@ auction
     └── product(상품)
 ```
 
-### common(공통 기능)
+## common(공통 기능)
 
-#### REST API의 예외(Exception) 처리
+### REST API의 예외(Exception) 처리
 
 (1) 오류는 일관성 있게 표현합니다.
 
@@ -177,11 +177,11 @@ public class ProductService {
 위의 예시는 특정 Id의 상품이 조회되지 않았을 경우, `EntityNotFoundException` 을 던집니다. `ErrorCode.PRODUCT_NOT_FOUND` 를 통해 예외 상황을 좀 더 자세히 설명하며, 같은 상황의 응답 메세지를 통일합니다.
 
 
-### User(사용자 도메인)
+## User(사용자 도메인)
 
 image::http://dl.dropbox.com/s/xid2l7fou0j88p8/user%20erd.png[]
 
-#### 외래키와 복합키 사용에 대하여
+### 외래키와 복합키 사용에 대하여
 
 실무 프로젝트에서는 개발 편의성과 유연성을 이유로 외래키와 복합키를 잘 사용하지 않습니다. 이번 토이 프로젝트에서는 이를 직접 경험해 보고 이와 관련한 글들을 읽어보면서, 이에 대해 정리해 볼 수 있었습니다.
 
@@ -199,11 +199,11 @@ image::http://dl.dropbox.com/s/xid2l7fou0j88p8/user%20erd.png[]
 * 인덱스 : 만약 복합키를 사용하지 않고 인조 식별자를 기본키를 사용한다면, 복합키로 선언하지 않은 칼럼들은 인덱스로 구성하는 것을 고려할 필요가 있습니다.
 
 
-### Product(상품 도메인)
+## Product(상품 도메인)
 
 image::http://dl.dropbox.com/s/gd2nhs7gbx8vpfl/product%20domain.png[]
 
-#### Category 엔터티 설계 :  Main - Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티
+### Category 엔터티 설계 :  Main - Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티
 
 image::https://velog.velcdn.com/images/eastshine-high/post/bde225b5-4d69-4eb4-87c8-facf09c17ea6/image.png[Tux,350,450]
 
@@ -226,7 +226,7 @@ Main Entity - Sub Entity 구조
 
 image::https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png[Tux,350,450]
 
-#### JPA : 계층(재귀) 구조 엔터티의 N + 1 조회 문제
+### JPA : 계층(재귀) 구조 엔터티의 N + 1 조회 문제
 
 카테고리 엔터티는 계층(재귀) 구조이기 때문에 JPA를 이용한 조회 시, 기본적으로 하위 엔터티를 계속해서 조회해 나가는 N + 1 문제가 발생합니다. 먼저 이 문제는 두 가지 경우로 나누어 볼 수 있습니다.
 
@@ -238,7 +238,7 @@ JPA가 아닌 SQL을 이용하여 조회할 때도 재귀적 방식을 이용하
 
 단일 레코드를 조회하는 경우에는 N+1 문제가 발생하기를 원치 않을 것입니다. 이 경우에는 **DTO를 사용하여 재귀 참조하는 부분의 Projection을 제한**함으로써 N+1 문제가 발생하지 않도록 하였습니다. 만약 도메인 엔터티로 조회를 해야하는 경우라면, 재귀 참조를 하고 있는 필드를 `null` 로 설정하여 N+1 문제를 방지할 수 있으나 권장되는 방식은 아닐 것 같습니다.
 
-#### 단일 책임 원칙과 URI 설계
+### 단일 책임 원칙과 URI 설계
 
 REST API 디자인 규칙을 따라 상품을 조회할 때의 API는 다음과 같을 것입니다.
 
@@ -257,17 +257,17 @@ GET /api/products/{id}
 
 이렇게 액터에 따라 URI를 분리하면서, 함께 분리한 클래스의 관심사도 더 명확해질 수 있었습니다. 또한 액터에 따른 분리는 CQRS의 기준이 될 수도 있었습니다.
 
-#### CQRS
+### CQRS
 
 위의 URI 설계에서 방문자와 판매자 API를 분리하면서, CQRS(Command and Query Responsibility Segregation)를 적용해볼 기회를 가지게 되었습니다. 상품에 대한 방문자의 주요 관심사는 조회(Query)이며 판매자의 주요 관심사는 데이터의 조작(Command)에 있습니다. 따라서 액터의 분리가 자연스럽게 CQRS의 기준이 되었습니다.
 
 따라서 복잡한 로직이 필요하지 않은 방문자 API의 컨트롤러는 리포지토리에 직접 의존하는 형태로 간단한 방식의 CQRS를 구현하였습니다. 이를 통해 서비스 레이어의 구현을 생략함으로써 조회 로직을 간소화 시킬 수 있었습니다.
 
-#### Flyway 적용
+### Flyway 적용
 
 도메인을 개발해 나갈 때 변경이 발생하면, 데이터베이스에 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스의 운영에 있어 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 점에서 불안전함을 느꼈습니다. 이에 대한 관리 방법을 찾아 보면서 Flyway라는 도구에 대해 알게되었습니다. 이를 적용하여 데이터베이스의 변경 사항에 대한 이력을 관리함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.  - `resources/db/migration/**`
 
-#### JSON Merge Patch를 이용한 PATCH API 구현
+### JSON Merge Patch를 이용한 PATCH API 구현
 
 https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md[JSON Merge Patch를 이용한 PATCH API 구현하기]
 
@@ -336,7 +336,7 @@ public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
 
 하지만 이 방법은 `Reflection` 을 사용한다는 점에서 사용하기가 조금 꺼려졌습니다. 다시 다른 방법을 찾아보면서 JsonPatch(https://datatracker.ietf.org/doc/html/rfc6902[RFC6902])와 JsonMergePatch(https://datatracker.ietf.org/doc/html/rfc7386[RFC7396])에 대해서 알게 되었고, https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md[이에 대해 정리해 보면서 JsonMergePatch 를 이용해 PATCH API를 구현]해 볼 수 있었습니다.
 
-#### SQL을 이용한 `LIKE '%Keyword%'` 검색은 Index Range Scan을 할 수 없습니다.
+### SQL을 이용한 `LIKE '%Keyword%'` 검색은 Index Range Scan을 할 수 없습니다.
 
 현재 상품 검색 API의 문제점입니다. 상품 검색 API는 RDB의 `LIKE '%Keyword%'` SQL문을 사용하여 상품을 검색합니다. 이 SQL 문은 Index Range Scan(인덱스 설정을 전제)을 할 수 없고 Index Full Scan을 수행하기 때문에 조회 성능이 좋지 않습니다. 만약 이 SQL을 사용하는 API에 요청이 자주 발생한다면 서비스에 부하를 줄 수도 있습니다.
 
