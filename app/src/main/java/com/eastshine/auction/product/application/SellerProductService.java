@@ -11,7 +11,6 @@ import com.eastshine.auction.product.web.dto.SellerProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import javax.json.JsonMergePatch;
 import javax.validation.ConstraintViolation;
@@ -21,22 +20,18 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Service
 public class SellerProductService {
-    private final ProductRepository productRepository;
     private final JsonMergePatchMapper<Product> mergeMapper;
     private final Validator validator;
+    private final ProductRepository productRepository;
+    private final SellerProductOptionService sellerProductOptionService;
 
     @Transactional
     public Product registerProduct(SellerProductDto.RegistrationRequest registrationRequest) {
-        Product product = registrationRequest.toEntity();
-
-        if(!CollectionUtils.isEmpty(registrationRequest.getProductOptions())) {
-            registrationRequest.getProductOptions().stream().forEach(
-                    optionRegistrationRequest -> {
-                        product.addProductOption(optionRegistrationRequest.toEntity());
-                    });
-        }
-
-        return productRepository.save(product);
+        Product product = registrationRequest.toProductEntity();
+        productRepository.save(product);
+        sellerProductOptionService
+                .registerProductOptions(registrationRequest.toProductOptionEntities(product));
+        return product;
     }
 
     @Transactional

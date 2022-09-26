@@ -1,6 +1,7 @@
 package com.eastshine.auction.product.web.dto;
 
 import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.option.ProductOption;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SellerProductDto {
 
@@ -38,9 +40,9 @@ public class SellerProductDto {
         private Boolean onSale;
         private Integer stockQuantity;
         private String productOptionsTitle;
-        private List<ProductOption> productOptions;
+        private List<ProductOptionDto> productOptionDtos;
 
-        public Product toEntity() {
+        public Product toProductEntity() {
             return Product.builder()
                     .name(name)
                     .categoryId(categoryId)
@@ -52,12 +54,18 @@ public class SellerProductDto {
                     .build();
         }
 
+        public List<ProductOption> toProductOptionEntities(Product product) {
+            return productOptionDtos.stream()
+                    .map(productOptionDto -> productOptionDto.toEntity(product))
+                    .collect(Collectors.toList());
+        }
+
         @ToString
         @Getter
         @Builder
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class ProductOption {
+        public static class ProductOptionDto {
 
             @NotBlank
             private String productOptionName;
@@ -66,8 +74,9 @@ public class SellerProductDto {
             private Integer ordering;
             private Integer stockQuantity;
 
-            public com.eastshine.auction.product.domain.product.option.ProductOption toEntity() {
+            public ProductOption toEntity(Product product) {
                 return com.eastshine.auction.product.domain.product.option.ProductOption.builder()
+                        .product(product)
                         .productOptionName(productOptionName)
                         .stockQuantity(stockQuantity)
                         .ordering(ordering)
@@ -89,14 +98,14 @@ public class SellerProductDto {
         private Integer categoryId;
         private Boolean onSale;
         private String productOptionsTitle;
-        private List<ProductOption> productOptions;
+        private List<ProductOptionDto> productOptions;
 
         @Getter
         @Setter
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class ProductOption {
+        public static class ProductOptionDto {
             private Long id;
             private String productOptionName;
             private Integer stockQuantity;
