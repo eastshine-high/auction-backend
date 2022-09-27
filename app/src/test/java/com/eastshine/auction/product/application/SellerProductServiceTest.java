@@ -23,6 +23,7 @@ import javax.json.Json;
 import javax.json.JsonMergePatch;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -99,7 +100,7 @@ class SellerProductServiceTest extends IntegrationTest {
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name(productName)
                         .price(price)
-                        .productOptionDtos(Arrays.asList(optionInfo))
+                        .productOptions(Arrays.asList(optionInfo))
                         .build();
 
                 Product product = sellerProductService.registerProduct(productInfo);
@@ -254,6 +255,57 @@ class SellerProductServiceTest extends IntegrationTest {
                 assertThat(actual.isOnSale()).isEqualTo(onSale);
                 assertThat(actual.getStockQuantity()).isEqualTo(stockQuantity);
                 assertThat(actual.getCategoryId()).isEqualTo(categoryId);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteProduct 메소드는")
+    class Describe_deleteProduct {
+
+        @Nested
+        @DisplayName("등록되지 않은 상품을 삭제할 경우")
+        class Context_with_unregistered_product_id {
+            private final long unregisteredProductId = -1;
+
+            @Test
+            @DisplayName("EntityNotFoundException 예외를 던진다.")
+            void it_throws_EntityNotFoundException() {
+                assertThatThrownBy(() ->
+                        sellerProductService.deleteProduct(unregisteredProductId, PRODUCT_CREATOR_ID)
+                )
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("상품을 등록한 사용자가 아닌 사용자가 삭제할 경우")
+        class Context_with_inaccessible_user {
+            private final Long inaccessibleUserId = -1L;
+
+            @Test
+            @DisplayName("UnauthorizedException 예외를 던진다.")
+            void it_throws_UnauthorizedException() {
+                assertThatThrownBy(() ->
+                        sellerProductService.deleteProduct(registeredProductId, inaccessibleUserId)
+                )
+                        .isInstanceOf(UnauthorizedException.class)
+                        .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("유효한 요청 정보로 상품을 삭제할 경우")
+        class Context_with_valid_modification_info {
+
+            @Test
+            @DisplayName("상품을 삭제한다.")
+            void it_returns_modified_product() {
+                sellerProductService.deleteProduct(registeredProductId, PRODUCT_CREATOR_ID);
+
+                assertThat(productRepository.findById(registeredProductId).isEmpty())
+                        .isTrue();
             }
         }
     }
