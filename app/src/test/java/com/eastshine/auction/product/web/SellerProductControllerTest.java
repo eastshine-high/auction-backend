@@ -71,6 +71,7 @@ class SellerProductControllerTest extends RestDocsTest {
             SellerProductDto.RegistrationRequest.ProductOptionDto validOptionRegistrationRequest;
 
             @Test
+            @WithSeller("bestSeller")
             void createProduct() throws Exception {
                 validOptionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOptionDto.builder()
                         .productOptionName("300ml")
@@ -91,7 +92,6 @@ class SellerProductControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 post("/seller-api/products")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", SELLER_AUTHENTICATION)
                                         .content(createJson(validRegistrationRequest))
                         )
                         .andExpect(status().isCreated())
@@ -131,7 +131,7 @@ class SellerProductControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 post("/seller-api/products")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                                         .content(objectMapper.writeValueAsString(validRegistrationRequest))
                         )
                         .andExpect(status().isUnauthorized())
@@ -146,6 +146,7 @@ class SellerProductControllerTest extends RestDocsTest {
             int invalidPrice = 999;
 
             @Test
+            @WithSeller("bestSeller")
             @DisplayName("badRequest를 응답한다.")
             void it_responses_badRequest() throws Exception {
                 invalidRegistrationRequest = SellerProductDto.RegistrationRequest.builder()
@@ -159,7 +160,6 @@ class SellerProductControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 post("/seller-api/products")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", VALID_AUTHENTICATION)
                                         .content(objectMapper.writeValueAsString(invalidRegistrationRequest))
                         )
                         .andExpect(status().isBadRequest())
@@ -184,7 +184,6 @@ class SellerProductControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 get("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", SELLER_AUTHENTICATION)
                         )
                         .andExpect(status().isOk());
             }
@@ -200,7 +199,7 @@ class SellerProductControllerTest extends RestDocsTest {
 
                 mockMvc.perform(
                                 get("/seller-api/products/"+registeredProductId)
-                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isUnauthorized())
@@ -239,10 +238,10 @@ class SellerProductControllerTest extends RestDocsTest {
                         .productOptions(List.of(optionPatchRequest))
                         .build();
 
+                // 인증은 통과하는 데 header를 documentation을 못 쓴다 ㅡㅡ;;
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", SELLER_AUTHENTICATION)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isOk())
@@ -255,7 +254,6 @@ class SellerProductControllerTest extends RestDocsTest {
                                         fieldWithPath("onSale").description("판매 여부").optional(),
                                         fieldWithPath("productOptionsTitle").description("상품 옵션의 제목").optional(),
                                         fieldWithPath("productOptions[]").description("상품 옵션").optional(),
-                                        fieldWithPath("productOptions[].id").description("상품 옵션 식별자").optional(),
                                         fieldWithPath("productOptions[].productOptionName").description("상품 옵션의 이름").optional(),
                                         fieldWithPath("productOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
                                         fieldWithPath("productOptions[].ordering").description("옵션 순서").optional()
@@ -288,9 +286,49 @@ class SellerProductControllerTest extends RestDocsTest {
 
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
-                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchRequest))
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("seller-products-patch-401"));
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteProduct 메소드는")
+    class Describe_deleteProduct{
+
+        @Nested
+        @DisplayName("유효한 인증 정보와 상품 ID로 삭제할 경우")
+        class Context_with_valid_request{
+
+            @Test
+            @WithSeller("bestSeller")
+            @DisplayName("ok를 응답한다.")
+            void it_responses_ok() throws Exception {
+
+                mockMvc.perform(
+                                delete("/seller-api/products/"+registeredProductId)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                        )
+                        .andExpect(status().isOk());
+            }
+        }
+
+        @Nested
+        @DisplayName("유효하지 못한 인증 정보로 상품 삭제를 요청할 경우")
+        class Context_with_invalid_authentication_request{
+
+            @Test
+            @DisplayName("Unauthorized를 응답한다.")
+            void it_responses_unauthorized() throws Exception {
+
+                mockMvc.perform(
+                                delete("/seller-api/products/"+registeredProductId)
+                                        .header("Authorization", ACCESS_TOKEN)
+                                        .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("seller-products-patch-401"));

@@ -61,6 +61,13 @@ public class SellerProductService {
         }
     }
 
+    @Transactional
+    public void deleteProduct(Long productId, Long accessorId) {
+        Product product = findProduct(productId);
+        product.validateAccessibleUser(accessorId);
+        productRepository.delete(product);
+    }
+
     private Product findProduct(Long id) {
         return productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
