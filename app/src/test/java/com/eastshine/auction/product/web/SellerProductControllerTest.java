@@ -17,13 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 
 import java.util.List;
-import java.util.regex.Matcher;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class SellerProductControllerTest extends RestDocsTest {
@@ -44,7 +41,7 @@ class SellerProductControllerTest extends RestDocsTest {
 
         // Test 데이터 생성
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품");
-        SellerProductDto.RegistrationRequest.ProductOption optionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOption.builder()
+        SellerProductDto.RegistrationRequest.ProductOptionDto optionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOptionDto.builder()
                 .productOptionName("300ml")
                 .stockQuantity(50)
                 .ordering(1)
@@ -60,7 +57,7 @@ class SellerProductControllerTest extends RestDocsTest {
 
         Product registerProduct = sellerProductService.registerProduct(registrationRequest);
         registeredProductId = registerProduct.getId();
-        registeredProductOptionId = registerProduct.getProductOptions().get(0).getId();
+        // registeredProductOptionId = registerProduct.getProductOptions().get(0).getId();
     }
 
     @Nested
@@ -71,11 +68,11 @@ class SellerProductControllerTest extends RestDocsTest {
         @DisplayName("유효한 인증 정보와 상품 정보를 통해 등록을 요청할 경우,")
         class Context_with_valid_productRegistrationRequest{
             SellerProductDto.RegistrationRequest validRegistrationRequest;
-            SellerProductDto.RegistrationRequest.ProductOption validOptionRegistrationRequest;
+            SellerProductDto.RegistrationRequest.ProductOptionDto validOptionRegistrationRequest;
 
             @Test
             void createProduct() throws Exception {
-                validOptionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOption.builder()
+                validOptionRegistrationRequest = SellerProductDto.RegistrationRequest.ProductOptionDto.builder()
                         .productOptionName("300ml")
                         .stockQuantity(9999)
                         .ordering(1)
@@ -172,6 +169,47 @@ class SellerProductControllerTest extends RestDocsTest {
     }
 
     @Nested
+    @DisplayName("getProduct 메소드는")
+    class Describe_getProduct{
+
+        @Nested
+        @DisplayName("유효한 인증 정보와 상품 ID로 조회할 경우")
+        class Context_with_valid_request{
+
+            @Test
+            @WithSeller("bestSeller")
+            @DisplayName("ok를 응답한다.")
+            void it_responses_ok() throws Exception {
+
+                mockMvc.perform(
+                                get("/seller-api/products/"+registeredProductId)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", SELLER_AUTHENTICATION)
+                        )
+                        .andExpect(status().isOk());
+            }
+        }
+
+        @Nested
+        @DisplayName("유효하지 못한 인증 정보로 상품 조회를 요청할 경우")
+        class Context_with_invalid_authentication_request{
+
+            @Test
+            @DisplayName("Unauthorized를 응답한다.")
+            void it_responses_unauthorized() throws Exception {
+
+                mockMvc.perform(
+                                get("/seller-api/products/"+registeredProductId)
+                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .contentType(MediaType.APPLICATION_JSON)
+                        )
+                        .andExpect(status().isUnauthorized())
+                        .andDo(document("seller-products-patch-401"));
+            }
+        }
+    }
+
+    @Nested
     @DisplayName("patchProduct 메소드는")
     class Describe_patchProduct{
 
@@ -179,19 +217,18 @@ class SellerProductControllerTest extends RestDocsTest {
         @DisplayName("유효한 인증 정보와 상품 ID로 변경을 요청할 경우")
         class Context_with_valid_modification_request{
             SellerProductDto.PatchRequest patchRequest;
-            SellerProductDto.PatchRequest.ProductOption optionPatchRequest;
+            SellerProductDto.PatchRequest.ProductOptionDto optionPatchRequest;
 
             @Test
             @WithSeller("bestSeller")
             @DisplayName("ok를 응답한다.")
             void it_responses_ok() throws Exception {
-                optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
+                optionPatchRequest = SellerProductDto.PatchRequest.ProductOptionDto.builder()
                         .id(registeredProductOptionId)
                         .stockQuantity(30)
                         .productOptionName("300ml")
                         .ordering(1)
                         .build();
-
                 patchRequest = SellerProductDto.PatchRequest.builder()
                         .name("비판텐")
                         .price(99999)
@@ -201,9 +238,11 @@ class SellerProductControllerTest extends RestDocsTest {
                         .productOptionsTitle("용량")
                         .productOptions(List.of(optionPatchRequest))
                         .build();
+
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
+                                        .header("Authorization", SELLER_AUTHENTICATION)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isOk())
@@ -229,12 +268,12 @@ class SellerProductControllerTest extends RestDocsTest {
         @DisplayName("유효하지 못한 인증 정보로 상품 변경을 요청할 경우")
         class Context_with_invalid_authentication_request{
             SellerProductDto.PatchRequest patchRequest;
-            SellerProductDto.PatchRequest.ProductOption optionPatchRequest;
+            SellerProductDto.PatchRequest.ProductOptionDto optionPatchRequest;
 
             @Test
             @DisplayName("Unauthorized를 응답한다.")
             void it_responses_unauthorized() throws Exception {
-                optionPatchRequest = SellerProductDto.PatchRequest.ProductOption.builder()
+                optionPatchRequest = SellerProductDto.PatchRequest.ProductOptionDto.builder()
                         .id(registeredProductOptionId)
                         .stockQuantity(0)
                         .build();

@@ -79,7 +79,7 @@ class SellerProductServiceTest extends IntegrationTest {
             String productName = "비판텐";
             int price = 3200;
 
-            SellerProductDto.RegistrationRequest.ProductOption optionInfo;
+            SellerProductDto.RegistrationRequest.ProductOptionDto optionInfo;
             String productOptionName = "300ml";
             int ordering = 1;
             int optionStockQuantity = 9999;
@@ -87,7 +87,7 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("등록된 상품을 반환한다.")
             @Test
             void it_returns_registerd_product() {
-                optionInfo = SellerProductDto.RegistrationRequest.ProductOption.builder()
+                optionInfo = SellerProductDto.RegistrationRequest.ProductOptionDto.builder()
                         .productOptionName(productOptionName)
                         .ordering(ordering)
                         .stockQuantity(optionStockQuantity)
@@ -99,7 +99,7 @@ class SellerProductServiceTest extends IntegrationTest {
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name(productName)
                         .price(price)
-                        .productOptions(Arrays.asList(optionInfo))
+                        .productOptionDtos(Arrays.asList(optionInfo))
                         .build();
 
                 Product product = sellerProductService.registerProduct(productInfo);
@@ -114,6 +114,55 @@ class SellerProductServiceTest extends IntegrationTest {
                 assertThat(productOption.getProductOptionName()).isEqualTo(productOptionName);
                 assertThat(productOption.getOrdering()).isEqualTo(ordering);
                 assertThat(productOption.getStockQuantity()).isEqualTo(optionStockQuantity);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getProduct 메소드는")
+    class Describe_getProduct {
+
+        @Nested
+        @DisplayName("등록되지 않은 상품을 조회할 경우")
+        class Context_with_unregistered_product_id {
+            private final long unregisteredProductId = -1;
+
+            @Test
+            @DisplayName("EntityNotFoundException 예외를 던진다.")
+            void it_throws_EntityNotFoundException() {
+                assertThatThrownBy(() ->
+                        sellerProductService.getProduct(unregisteredProductId, PRODUCT_CREATOR_ID)
+                )
+                        .isInstanceOf(EntityNotFoundException.class)
+                        .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("상품을 등록한 사용자가 아닌 사용자가 조회할 경우")
+        class Context_with_inaccessible_user {
+            private final Long inaccessibleUserId = -1L;
+
+            @Test
+            @DisplayName("UnauthorizedException 예외를 던진다.")
+            void it_throws_UnauthorizedException() {
+                assertThatThrownBy(() ->
+                        sellerProductService.getProduct(registeredProductId, inaccessibleUserId)
+                )
+                        .isInstanceOf(UnauthorizedException.class)
+                        .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+            }
+        }
+
+        @Nested
+        @DisplayName("유효한 요청 정보로 상품을 조회할 경우")
+        class Context_with_valid_modification_info {
+
+            @Test
+            @DisplayName("수정된 상품을 반환한다.")
+            void it_returns_modified_product() {
+                assertThat(sellerProductService.getProduct(registeredProductId, PRODUCT_CREATOR_ID))
+                        .isInstanceOf(Product.class);
             }
         }
     }
