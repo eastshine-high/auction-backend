@@ -3,6 +3,7 @@ package com.eastshine.auction.product.web;
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.product.application.SellerProductService;
 import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.product.ProductMapper;
 import com.eastshine.auction.product.web.dto.SellerProductDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +46,17 @@ public class SellerProductController {
         return ResponseEntity.created(URI.create("/seller-api/products/" + registeredProduct.getId())).build();
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('SELLER')")
+    public SellerProductDto.Info getProduct(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        UserInfo userInfo = (UserInfo)authentication.getPrincipal();
+        Product productInfo = sellerProductService.getProduct(id, userInfo.getId());
+        return ProductMapper.INSTANCE.toDto(productInfo);
+    }
+
     /**
      * 상품 정보를 패치하고 패치 결과를 응답합니다.
      *
@@ -61,9 +74,7 @@ public class SellerProductController {
     ) {
         JsonValue jsonValue = objectMapper.convertValue(sellerProductPatchRequest, JsonValue.class);
         JsonMergePatch patchDocument = Json.createMergePatch(jsonValue);
-
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
-
         sellerProductService.patchProduct(productId, patchDocument, userInfo.getId());
     }
 }

@@ -34,6 +34,14 @@ public class SellerProductService {
         return product;
     }
 
+    @Transactional(readOnly = true)
+    public Product getProduct(Long productId, Long accessorId) {
+        Product product = productRepository.findEagerById(productId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND));
+        product.validateAccessibleUser(accessorId);
+        return product;
+    }
+
     @Transactional
     public Product patchProduct(Long productId, JsonMergePatch patchDocument, Long accessor) {
         Product product = findProduct(productId);

@@ -1,6 +1,7 @@
 package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.product.application.SellerProductPatchValidationBean;
+import com.eastshine.auction.product.web.dto.SellerProductDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
@@ -12,4 +13,6 @@ public interface ProductMapper {
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
     SellerProductPatchValidationBean toValidationBean(Product product);
+
+    SellerProductDto.Info toDto(Product product);
 }

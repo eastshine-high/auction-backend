@@ -40,7 +40,7 @@ public class SellerProductDto {
         private Boolean onSale;
         private Integer stockQuantity;
         private String productOptionsTitle;
-        private List<ProductOptionDto> productOptionDtos;
+        private List<ProductOptionDto> productOptions;
 
         public Product toProductEntity() {
             return Product.builder()
@@ -55,7 +55,7 @@ public class SellerProductDto {
         }
 
         public List<ProductOption> toProductOptionEntities(Product product) {
-            return productOptionDtos.stream()
+            return productOptions.stream()
                     .map(productOptionDto -> productOptionDto.toEntity(product))
                     .collect(Collectors.toList());
         }
@@ -85,6 +85,30 @@ public class SellerProductDto {
         }
     }
 
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class Info{
+        private Long id;
+        private String name;
+        private Integer price;
+        private Integer stockQuantity;
+        private Integer categoryId;
+        private Boolean onSale;
+        private String productOptionsTitle;
+        private List<ProductOptionDto> productOptions;
+
+        @Getter
+        @Setter
+        @NoArgsConstructor
+        public static class ProductOptionDto {
+            private Long id;
+            private String productOptionName;
+            private Integer stockQuantity;
+            private Integer ordering;
+        }
+    }
 
     @Getter
     @Setter
