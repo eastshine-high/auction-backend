@@ -1,6 +1,6 @@
 package com.eastshine.auction.user.web;
 
-import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.user.UserFactory;
 import com.eastshine.auction.user.web.dto.SessionDto;
 import org.junit.jupiter.api.AfterEach;
@@ -20,7 +20,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class SessionControllerTest extends RestDocsTest {
+class SessionControllerTest extends WebIntegrationTest {
     public static final String REGISTERED_EMAIL = "registered@naver.com";
     public static final String REGISTERED_USER_PW = "password";
 

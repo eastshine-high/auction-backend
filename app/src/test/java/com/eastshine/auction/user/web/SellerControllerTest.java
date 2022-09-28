@@ -1,11 +1,10 @@
 package com.eastshine.auction.user.web;
 
-import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.user.application.AuthenticationService;
 import com.eastshine.auction.user.application.SellerService;
 import com.eastshine.auction.user.domain.UserRepository;
 import com.eastshine.auction.user.domain.seller.Seller;
-import com.eastshine.auction.user.domain.seller.SellerLevelType;
 import com.eastshine.auction.user.web.dto.SellerDto;
 import com.eastshine.auction.user.web.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +24,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class SellerControllerTest extends RestDocsTest {
+class SellerControllerTest extends WebIntegrationTest {
     private static Long registeredSellerId;
     private static String registeredSellerAuthentication;
 
@@ -142,8 +141,6 @@ class SellerControllerTest extends RestDocsTest {
 
     @Test
     void getSeller() throws Exception {
-        SellerLevelType.values();
-        SellerLevelType.NEW.name();
         mockMvc.perform(
                         get("/seller-api/users/" + registeredSellerId)
                                 .contentType(MediaType.APPLICATION_JSON))
@@ -169,7 +166,7 @@ class SellerControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 patch("/user-api/users/" + registeredSellerId + "/nickname")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("seller-users-nickname-patch-401"));
@@ -207,7 +204,7 @@ class SellerControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 delete("/seller-api/users/" + registeredSellerId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("seller-users-delete-401"));

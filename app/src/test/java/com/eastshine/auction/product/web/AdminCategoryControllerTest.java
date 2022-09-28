@@ -1,6 +1,6 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class AdminCategoryControllerTest extends RestDocsTest {
+class AdminCategoryControllerTest extends WebIntegrationTest {
 
     @Autowired
     CategoryRepository categoryRepository;
@@ -99,7 +99,7 @@ class AdminCategoryControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 post("/admin-api/categories")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                                         .content(objectMapper.writeValueAsString(validRequest))
                         )
                         .andExpect(status().isUnauthorized())

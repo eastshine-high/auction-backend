@@ -1,6 +1,6 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.domain.product.Product;
 import com.eastshine.auction.product.domain.product.ProductRepository;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ProductControllerTest extends RestDocsTest {
+class ProductControllerTest extends WebIntegrationTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
     @Autowired CategoryFactory categoryFactory;

@@ -2,9 +2,11 @@ package com.eastshine.auction.common.test;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -15,7 +17,14 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.re
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 @ExtendWith(RestDocumentationExtension.class)
-public class RestDocsTest extends IntegrationTest{
+public class WebIntegrationTest extends IntegrationTest{
+    protected static final String VALID_AUTHENTICATION = "Bearer eyJhbGciOiJIUzI1NiJ9" +
+            ".eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXX19" +
+            ".2s3sfdLWmcdyT4FeXz8wzKeODyPmxkLHJSF8jmGwOPI";
+    protected static final String ACCESS_TOKEN = "Bearer ${ACCESS_TOKEN}";
+
+    @Autowired
+    protected MockMvc mockMvc;
 
     @BeforeEach
     void setUp(final WebApplicationContext context,

@@ -10,17 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class IntegrationTest {
-    protected static final String VALID_AUTHENTICATION = "Bearer eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXX19" +
-            ".2s3sfdLWmcdyT4FeXz8wzKeODyPmxkLHJSF8jmGwOPI";
-    protected static final String SELLER_AUTHENTICATION = "Bearer eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiU0VMTEVSIl19fQ" +
-            ".NzekmSlSUj2jb5eNwRcNAnTqPnXanvAAoWL23wBDIMA";
-
-    protected static final String INVALID_AUTHENTICATION = "${INVALID_TOKEN}";
-
-    @Autowired
-    protected MockMvc mockMvc;
 
     @Autowired
     protected ObjectMapper objectMapper;
