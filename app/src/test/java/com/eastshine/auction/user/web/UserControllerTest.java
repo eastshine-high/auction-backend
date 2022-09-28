@@ -1,7 +1,7 @@
 package com.eastshine.auction.user.web;
 
 import com.eastshine.auction.common.model.UserInfo;
-import com.eastshine.auction.common.test.RestDocsTest;
+import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
@@ -23,7 +23,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.requestF
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class UserControllerTest extends RestDocsTest {
+class UserControllerTest extends WebIntegrationTest {
     private static Long registeredUserId;
     private static String userAuthentication;
 
@@ -133,7 +133,7 @@ class UserControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 patch("/user-api/users/" + registeredUserId + "/nickname")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("user-users-nickname-patch-401"));
@@ -171,7 +171,7 @@ class UserControllerTest extends RestDocsTest {
                 mockMvc.perform(
                                 delete("/user-api/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", "Bearer " + INVALID_AUTHENTICATION)
+                                        .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("user-users-delete-401"));
