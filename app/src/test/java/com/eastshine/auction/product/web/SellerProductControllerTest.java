@@ -57,7 +57,7 @@ class SellerProductControllerTest extends WebIntegrationTest {
 
         Product registerProduct = sellerProductService.registerProduct(registrationRequest);
         registeredProductId = registerProduct.getId();
-        // registeredProductOptionId = registerProduct.getProductOptions().get(0).getId();
+        registeredProductOptionId = registerProduct.getProductOptions().get(0).getId();
     }
 
     @Nested
@@ -254,6 +254,7 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                         fieldWithPath("onSale").description("판매 여부").optional(),
                                         fieldWithPath("productOptionsTitle").description("상품 옵션의 제목").optional(),
                                         fieldWithPath("productOptions[]").description("상품 옵션").optional(),
+                                        fieldWithPath("productOptions[].id").description("상품 옵션 식별자").optional(),
                                         fieldWithPath("productOptions[].productOptionName").description("상품 옵션의 이름").optional(),
                                         fieldWithPath("productOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
                                         fieldWithPath("productOptions[].ordering").description("옵션 순서").optional()
