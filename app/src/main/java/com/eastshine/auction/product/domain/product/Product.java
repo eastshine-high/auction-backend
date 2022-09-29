@@ -1,6 +1,7 @@
 package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.common.exception.ErrorCode;
+import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseEntity;
 import com.eastshine.auction.product.domain.product.option.ProductOption;
@@ -8,6 +9,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+@ToString
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false, of = "id")
@@ -61,6 +64,10 @@ public class Product extends BaseEntity {
     public void addProductOption(ProductOption productOption) {
         this.productOptions.add(productOption);
         productOption.setProduct(this);
+    }
+
+    public void setProductOptions(List<ProductOption> productOptions) {
+        this.productOptions = productOptions;
     }
 
     public void validateAccessibleUser(Long userId) {

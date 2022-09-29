@@ -7,6 +7,7 @@ import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.domain.product.Product;
 import com.eastshine.auction.product.domain.product.ProductMapper;
 import com.eastshine.auction.product.domain.product.ProductRepository;
+import com.eastshine.auction.product.domain.product.option.ProductOption;
 import com.eastshine.auction.product.web.dto.SellerProductDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.json.JsonMergePatch;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -28,10 +30,8 @@ public class SellerProductService {
     @Transactional
     public Product registerProduct(SellerProductDto.RegistrationRequest registrationRequest) {
         Product product = registrationRequest.toProductEntity();
-        productRepository.save(product);
-        sellerProductOptionService
-                .registerProductOptions(registrationRequest.toProductOptionEntities(product));
-        return product;
+        sellerProductOptionService.addProductOptionsToProduct(registrationRequest, product);
+        return productRepository.save(product);
     }
 
     @Transactional(readOnly = true)
@@ -48,6 +48,9 @@ public class SellerProductService {
         product.validateAccessibleUser(accessor);
 
         Product patchedProduct = mergeMapper.apply(patchDocument, product);
+        List<ProductOption> patchedProductOptions = sellerProductOptionService.patchProductOptions(product, patchedProduct.getProductOptions());
+        patchedProduct.setProductOptions(patchedProductOptions);
+
         validatePatchedProduct(patchedProduct);
         return productRepository.save(patchedProduct);
     }
@@ -55,6 +58,7 @@ public class SellerProductService {
     private void validatePatchedProduct(Product patchedProduct) {
         SellerProductPatchValidationBean sellerProductPatchValidationBean = ProductMapper.INSTANCE.toValidationBean(patchedProduct);
         Set<ConstraintViolation<SellerProductPatchValidationBean>> violations = validator.validate(sellerProductPatchValidationBean);
+
         if (!violations.isEmpty()) {
             ConstraintViolation<SellerProductPatchValidationBean> constraintViolation = violations.stream().findFirst().get();
             throw new InvalidArgumentException(constraintViolation.getPropertyPath() + " : " +constraintViolation.getMessage());
