@@ -74,6 +74,9 @@ dependencies {
     // Spring Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // Spring Mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
     // For Json patch
     implementation 'org.apache.johnzon:johnzon-core'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr353'
@@ -114,10 +117,6 @@ dependencies {
 
 ext {
     snippetsDir = file('build/generated-snippets')
-}
-
-clean {
-    delete 'out'
 }
 
 tasks.named('test') {
