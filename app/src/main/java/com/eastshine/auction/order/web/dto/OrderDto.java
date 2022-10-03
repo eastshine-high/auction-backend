@@ -1,5 +1,6 @@
 package com.eastshine.auction.order.web.dto;
 
+import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.order.domain.Order;
 import com.eastshine.auction.order.domain.fragment.DeliveryFragment;
 import lombok.AllArgsConstructor;
@@ -19,7 +20,7 @@ public class OrderDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-        private Long userId;
+        private UserInfo userInfo;
         @NotBlank
         private String receiverName;
         @NotBlank
@@ -34,8 +35,8 @@ public class OrderDto {
         @NotNull
         private List<OrderLineRequest> orderLines;
 
-        public void setOrderer(Long userId) {
-            this.userId = userId;
+        public void setUserInfo(UserInfo userInfo) {
+            this.userInfo = userInfo;
         }
 
         public Order toEntity() {
@@ -49,7 +50,7 @@ public class OrderDto {
                     .build();
 
             return Order.builder()
-                    .userId(userId)
+                    .userId(userInfo.getId())
                     .deliveryFragment(deliveryFragment)
                     .build();
         }

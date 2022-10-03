@@ -2,9 +2,9 @@ package com.eastshine.auction.order.web;
 
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.test.WebIntegrationTest;
+import com.eastshine.auction.order.application.OrderService;
 import com.eastshine.auction.order.application.PlaceOrderService;
 import com.eastshine.auction.order.domain.Order;
-import com.eastshine.auction.order.infra.OrderRepository;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.domain.item.Item;
@@ -48,7 +48,7 @@ class OrderControllerTest extends WebIntegrationTest {
     @Autowired ItemRepository itemRepository;
     @Autowired ItemOptionRepository itemOptionRepository;
     @Autowired PlaceOrderService placeOrderService;
-    @Autowired OrderRepository orderRepository;
+    @Autowired OrderService orderService;
     @Autowired JdbcTemplate jdbcTemplate;
 
     @BeforeEach
@@ -104,17 +104,16 @@ class OrderControllerTest extends WebIntegrationTest {
 
         if (!Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
             UserInfo userInfo = (UserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            orderRequest.setOrderer(userInfo.getId());
+            orderRequest.setUserInfo(userInfo);
+            Order order = orderService.registerOrder(orderRequest);
+            registeredOrderId = order.getId();
         }
-
-        Order order = placeOrderService.placeOrder(orderRequest);
-        registeredOrderId = order.getId();
     }
 
     @AfterEach
     void tearDown() {
         jdbcTemplate.execute("delete from order_line");
-        orderRepository.deleteAll();
+        jdbcTemplate.execute("delete from orders");
         itemRepository.deleteAll();
         categoryFactory.deleteAll();
         userFactory.deleteAll();
@@ -136,15 +135,15 @@ class OrderControllerTest extends WebIntegrationTest {
             String etcMessage = "부재시 경비실에 맡겨주세요.";
 
             OrderDto.Request orderRequest = OrderDto.Request.builder()
-                    .orderLines(List.of(
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId1, 2),
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId2, 1)))
                     .receiverAddress1(receiverAddress1)
                     .receiverAddress2(receiverAddress2)
                     .receiverZipcode(receiverZipcode)
                     .receiverPhone(receiverPhone)
                     .receiverName(receiverName)
                     .etcMessage(etcMessage)
+                    .orderLines(List.of(
+                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId1, 2),
+                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId2, 1)))
                     .build();
 
             mockMvc.perform(
