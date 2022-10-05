@@ -105,7 +105,7 @@ dependencies {
 
     // Kafka
     implementation 'org.springframework.kafka:spring-kafka'
-    implementation 'org.testcontainers:kafka:1.15.3'
+    testImplementation 'org.testcontainers:kafka:1.17.5'
 
     // RDB
     runtimeOnly 'com.h2database:h2'
