@@ -62,8 +62,8 @@ public class Product extends BaseEntity {
     }
 
     public void addProductOption(ProductOption productOption) {
-        this.productOptions.add(productOption);
         productOption.setProduct(this);
+        this.productOptions.add(productOption);
     }
 
     public void setProductOptions(List<ProductOption> productOptions) {
@@ -74,5 +74,13 @@ public class Product extends BaseEntity {
         if(super.createdBy != userId){
             throw new UnauthorizedException(ErrorCode.PRODUCT_UNACCESSABLE);
         }
+    }
+
+    public void decreaseStockQuantity(int quantity) {
+        if (this.stockQuantity - quantity < 0) {
+            throw new InvalidArgumentException(ErrorCode.PRODUCT_STOCK_QUANTITY_ERROR);
+        }
+
+        this.stockQuantity -= quantity;
     }
 }
