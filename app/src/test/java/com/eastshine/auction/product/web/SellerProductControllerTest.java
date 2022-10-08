@@ -185,7 +185,8 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                 get("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
-                        .andExpect(status().isOk());
+                        .andExpect(status().isOk())
+                        .andDo(document("seller-products-id-get-200"));
             }
         }
 
@@ -203,7 +204,7 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("seller-products-patch-401"));
+                        .andDo(document("seller-products-id-get-401"));
             }
         }
     }
@@ -238,14 +239,13 @@ class SellerProductControllerTest extends WebIntegrationTest {
                         .productOptions(List.of(optionPatchRequest))
                         .build();
 
-                // 인증은 통과하는 데 header를 documentation을 못 쓴다 ㅡㅡ;;
                 mockMvc.perform(
                                 patch("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("seller-products-patch-200",
+                        .andDo(document("seller-products-id-patch-200",
                                 PayloadDocumentation.requestFields(
                                         fieldWithPath("categoryId").description("카테고리 식별자").optional(),
                                         fieldWithPath("name").description("상품명").optional(),
@@ -292,7 +292,7 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("seller-products-patch-401"));
+                        .andDo(document("seller-products-id-patch-401"));
             }
         }
     }
@@ -314,7 +314,8 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                 delete("/seller-api/products/"+registeredProductId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
-                        .andExpect(status().isOk());
+                        .andExpect(status().isOk())
+                        .andDo(document("seller-products-id-delete-200"));
             }
         }
 
@@ -332,7 +333,7 @@ class SellerProductControllerTest extends WebIntegrationTest {
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("seller-products-patch-401"));
+                        .andDo(document("seller-products-id-delete-401"));
             }
         }
     }

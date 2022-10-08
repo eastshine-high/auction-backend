@@ -118,7 +118,7 @@ class UserControllerTest extends WebIntegrationTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.email").exists())
                 .andExpect(jsonPath("$.nickname").exists())
-                .andDo(document("user-users-get-200"));
+                .andDo(document("user-users-id-get-200"));
     }
 
     @Nested
@@ -136,7 +136,7 @@ class UserControllerTest extends WebIntegrationTest {
                                         .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("user-users-nickname-patch-401"));
+                        .andDo(document("user-users-id-nickname-patch-401"));
             }
         }
 
@@ -154,7 +154,7 @@ class UserControllerTest extends WebIntegrationTest {
                                         .content(createJson(patchNickname))
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("user-users-nickname-patch-200"));
+                        .andDo(document("user-users-id-nickname-patch-200"));
             }
         }
     }
@@ -174,7 +174,7 @@ class UserControllerTest extends WebIntegrationTest {
                                         .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("user-users-delete-401"));
+                        .andDo(document("user-users-id-delete-401"));
             }
         }
 
@@ -190,7 +190,7 @@ class UserControllerTest extends WebIntegrationTest {
                                         .header("Authorization", "Bearer " + userAuthentication)
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("user-users-delete-200"));
+                        .andDo(document("user-users-id-delete-200"));
             }
         }
     }

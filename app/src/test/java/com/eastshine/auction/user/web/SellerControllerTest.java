@@ -150,7 +150,7 @@ class SellerControllerTest extends WebIntegrationTest {
                 .andExpect(jsonPath("$.nickname").exists())
                 .andExpect(jsonPath("$.businessNumber").exists())
                 .andExpect(jsonPath("$.sellerLevel").exists())
-                .andDo(document("seller-users-get-200"));
+                .andDo(document("seller-users-id-get-200"));
     }
 
 
@@ -169,7 +169,7 @@ class SellerControllerTest extends WebIntegrationTest {
                                         .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("seller-users-nickname-patch-401"));
+                        .andDo(document("seller-users-id-nickname-patch-401"));
             }
         }
 
@@ -187,7 +187,7 @@ class SellerControllerTest extends WebIntegrationTest {
                                         .content(createJson(patchNickname))
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("seller-users-nickname-patch-200"));
+                        .andDo(document("seller-users-id-nickname-patch-200"));
             }
         }
     }
@@ -207,7 +207,7 @@ class SellerControllerTest extends WebIntegrationTest {
                                         .header("Authorization", ACCESS_TOKEN)
                         )
                         .andExpect(status().isUnauthorized())
-                        .andDo(document("seller-users-delete-401"));
+                        .andDo(document("seller-users-id-delete-401"));
             }
         }
 
@@ -223,7 +223,7 @@ class SellerControllerTest extends WebIntegrationTest {
                                         .header("Authorization", "Bearer " + registeredSellerAuthentication)
                         )
                         .andExpect(status().isOk())
-                        .andDo(document("seller-users-delete-200"));
+                        .andDo(document("seller-users-id-delete-200"));
             }
         }
     }
