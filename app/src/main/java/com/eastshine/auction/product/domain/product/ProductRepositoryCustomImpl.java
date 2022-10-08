@@ -2,6 +2,7 @@ package com.eastshine.auction.product.domain.product;
 
 import com.eastshine.auction.product.web.dto.ProductDto;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -10,8 +11,9 @@ import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
 
-import static com.eastshine.auction.product.domain.product.QProduct.product;
 import static com.eastshine.auction.product.domain.category.QCategory.category;
+import static com.eastshine.auction.product.domain.product.QProduct.product;
+import static com.eastshine.auction.product.domain.product.option.QProductOption.productOption;
 import static com.eastshine.auction.user.domain.seller.QSeller.seller;
 
 public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
@@ -64,5 +66,24 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom{
                 .fetchResults();
 
         return new PageImpl<>(results.getResults(), pageable, results.getTotal());
+    }
+
+    @Override
+    public ProductDto.Info findGuestProductInfo(Long id){
+        return jpaQueryFactory.select(Projections.fields(ProductDto.Info.class,
+                        product.id,
+                        product.name,
+                        product.price,
+                        product.stockQuantity,
+                        product.productOptionsTitle,
+                        product.updatedAt,
+                        seller.nickname,
+                        seller.sellerLevel))
+                .from(product)
+                .join(seller).on(seller.id.eq(product.createdBy))
+                .where(
+                        product.id.eq(id)
+                )
+                .fetchOne();
     }
 }
