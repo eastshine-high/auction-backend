@@ -5,9 +5,7 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.test.IntegrationTest;
-import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.ProductFactory;
 import com.eastshine.auction.product.domain.product.Product;
 import com.eastshine.auction.product.domain.product.ProductRepository;
 import com.eastshine.auction.product.domain.product.option.ProductOption;
@@ -23,7 +21,6 @@ import javax.json.Json;
 import javax.json.JsonMergePatch;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -38,10 +35,8 @@ class SellerProductServiceTest extends IntegrationTest {
 
 
     @Autowired CategoryFactory categoryFactory;
-    @Autowired ProductFactory productFactory;
     @Autowired ProductRepository productRepository;
     @Autowired SellerProductService sellerProductService;
-    @Autowired JsonMergePatchMapper<Product> jsonMergePatchMapper;
 
     @BeforeEach
     void setUp() {
@@ -111,7 +106,7 @@ class SellerProductServiceTest extends IntegrationTest {
                 assertThat(product.getStockQuantity()).isEqualTo(stockQuantity);
                 assertThat(product.isOnSale()).isEqualTo(onSale);
 
-                com.eastshine.auction.product.domain.product.option.ProductOption productOption = product.getProductOptions().get(0);
+                ProductOption productOption = product.getProductOptions().get(0);
                 assertThat(productOption.getProductOptionName()).isEqualTo(productOptionName);
                 assertThat(productOption.getOrdering()).isEqualTo(ordering);
                 assertThat(productOption.getStockQuantity()).isEqualTo(optionStockQuantity);
