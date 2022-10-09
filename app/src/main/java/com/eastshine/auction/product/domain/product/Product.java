@@ -72,7 +72,7 @@ public class Product extends BaseEntity {
 
     public void validateAccessibleUser(Long userId) {
         if(super.createdBy != userId){
-            throw new UnauthorizedException(ErrorCode.PRODUCT_UNACCESSABLE);
+            throw new UnauthorizedException(ErrorCode.PRODUCT_INACCESSIBLE);
         }
     }
 

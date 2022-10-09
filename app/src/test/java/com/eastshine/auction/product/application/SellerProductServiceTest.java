@@ -146,7 +146,7 @@ class SellerProductServiceTest extends IntegrationTest {
                         sellerProductService.getProduct(registeredProductId, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
             }
         }
 
@@ -219,7 +219,7 @@ class SellerProductServiceTest extends IntegrationTest {
                         sellerProductService.patchProduct(registeredProductId, patchDocument, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
             }
         }
 
@@ -286,7 +286,7 @@ class SellerProductServiceTest extends IntegrationTest {
                         sellerProductService.deleteProduct(registeredProductId, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
             }
         }
 

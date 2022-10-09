@@ -25,7 +25,7 @@ class ProductTest {
                 () -> product.validateAccessibleUser(accessorId)
         )
                 .isExactlyInstanceOf(UnauthorizedException.class)
-                .hasMessage(ErrorCode.PRODUCT_UNACCESSABLE.getErrorMsg());
+                .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
     }
 
     @DisplayName("decreaseStockQuantity 메소드는")
