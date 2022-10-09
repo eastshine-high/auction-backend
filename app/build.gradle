@@ -116,10 +116,14 @@ tasks.named('test') {
 }
 
 asciidoctor{
+    dependsOn(test)
     sourceDir 'src/main/docs/asciidoc'
     attributes \
       'snippets': file('build/generated-snippets')
-    dependsOn(test)
+}
+
+asciidoctor.doFirst {
+    delete file('src/main/resources/static/docs')
 }
 
 bootJar {
@@ -145,4 +149,7 @@ configurations {
 }
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
+}
+compileQuerydsl.doFirst {
+    if (file(querydslDir).exists()) delete(file(querydslDir))
 }
