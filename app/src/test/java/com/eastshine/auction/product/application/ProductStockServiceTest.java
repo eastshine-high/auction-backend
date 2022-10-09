@@ -8,6 +8,7 @@ import com.eastshine.auction.product.web.dto.SystemProductDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -16,15 +17,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 @ActiveProfiles({"dev"})
 class ProductStockServiceTest extends IntegrationTest {
 
-    @Autowired
-    ProductStockService productStockService;
+    @Autowired ProductStockService productStockService;
     @Autowired ProductRepository productRepository;
-    @Autowired
-    CategoryFactory categoryFactory;
+    @Autowired CategoryFactory categoryFactory;
+    @Autowired Environment env;
 
     @BeforeEach
     void tearDown() {
@@ -34,6 +35,8 @@ class ProductStockServiceTest extends IntegrationTest {
 
     @Test
     public void 동시에_3명이_주문() throws InterruptedException {
+        assumeTrue("dev".equals(env.getActiveProfiles()[0]));
+
         categoryFactory.createCategory(500, "식품");
 
         int threadCount = 3;

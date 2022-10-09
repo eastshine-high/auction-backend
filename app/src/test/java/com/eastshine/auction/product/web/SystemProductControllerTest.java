@@ -8,11 +8,13 @@ import com.eastshine.auction.product.web.dto.SystemProductDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,6 +24,7 @@ class SystemProductControllerTest extends WebIntegrationTest {
     @Autowired SystemProductController systemProductController;
     @Autowired ProductRepository productRepository;
     @Autowired CategoryFactory categoryFactory;
+    @Autowired Environment env;
 
     @AfterEach
     void tearDown() {
@@ -31,6 +34,8 @@ class SystemProductControllerTest extends WebIntegrationTest {
 
     @Test
     public void decreaseStock() throws Exception {
+        assumeTrue("dev".equals(env.getActiveProfiles()[0]));
+
         categoryFactory.createCategory(500, "식품");
         int stockQuantity = 6;
         Product product = Product.builder()
