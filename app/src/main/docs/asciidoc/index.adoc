@@ -26,6 +26,18 @@ include::{snippets}/guest-session-post-201/http-response.adoc[]
 
 === Product
 
+==== 디스플레이 카테고리 조회
+
+GET /api/display/categories
+
+**Request**
+
+include::{snippets}/guest-displayCategories-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
+
 ==== 상품 검색
 
 GET /api/products
@@ -40,17 +52,17 @@ include::{snippets}/guest-products-get-200/http-request.adoc[]
 
 include::{snippets}/guest-products-get-200/http-response.adoc[]
 
-==== 디스플레이 카테고리 조회
+==== 상품 상세 조회
 
-GET /api/display/categories
+GET /api/products/{id}
 
 **Request**
 
-include::{snippets}/guest-displayCategories-get-200/http-request.adoc[]
+include::{snippets}/guest-products-id-get-200/http-request.adoc[]
 
 **Response**
 
-include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
+include::{snippets}/guest-products-id-get-200/http-response.adoc[]
 
 == 사용자 API
 
@@ -76,52 +88,44 @@ GET /user-api/users/{id}
 
 **Request**
 
-include::{snippets}/user-users-get-200/http-request.adoc[]
+include::{snippets}/user-users-id-get-200/http-request.adoc[]
 
 **Response**
 
-include::{snippets}/user-users-get-200/http-response.adoc[]
+include::{snippets}/user-users-id-get-200/http-response.adoc[]
 
 ==== 사용자 닉네임 변경
 
 PATCH /user-api/users/{id}/nickname
 
-**Request : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함**
+**Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/user-users-nickname-patch-200/http-request.adoc[]
+include::{snippets}/user-users-id-nickname-patch-401/http-request.adoc[]
 
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
 
-include::{snippets}/user-users-nickname-patch-401/http-request.adoc[]
+include::{snippets}/user-users-id-nickname-patch-200/http-response.adoc[]
 
-**Response : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/user-users-nickname-patch-200/http-response.adoc[]
-
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
-
-include::{snippets}/user-users-nickname-patch-401/http-response.adoc[]
+include::{snippets}/user-users-id-nickname-patch-401/http-response.adoc[]
 
 
 ==== 사용자 삭제
 
 DELETE /user-api/users/{id}
 
-**Request : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함**
+**Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/user-users-delete-200/http-request.adoc[]
+include::{snippets}/user-users-id-delete-401/http-request.adoc[]
 
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 상태 코드 200을 응답**
 
-include::{snippets}/user-users-delete-401/http-request.adoc[]
+include::{snippets}/user-users-id-delete-200/http-response.adoc[]
 
-**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/user-users-delete-200/http-response.adoc[]
-
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
-
-include::{snippets}/user-users-delete-401/http-response.adoc[]
+include::{snippets}/user-users-id-delete-401/http-response.adoc[]
 
 == 판매자 API
 
@@ -147,51 +151,43 @@ GET /seller-api/users/{id}
 
 **Request**
 
-include::{snippets}/seller-users-get-200/http-request.adoc[]
+include::{snippets}/seller-users-id-get-200/http-request.adoc[]
 
 **Response**
 
-include::{snippets}/seller-users-get-200/http-response.adoc[]
+include::{snippets}/seller-users-id-get-200/http-response.adoc[]
 
 ==== 사용자 닉네임 변경
 
 PATCH /seller-api/users/{id}/nickname
 
-**Request : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함**
+**Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-users-nickname-patch-200/http-request.adoc[]
+include::{snippets}/seller-users-id-nickname-patch-401/http-request.adoc[]
 
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
 
-include::{snippets}/seller-users-nickname-patch-401/http-request.adoc[]
+include::{snippets}/seller-users-id-nickname-patch-200/http-response.adoc[]
 
-**Response : Authorization 헤더에 수정 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-users-nickname-patch-200/http-response.adoc[]
-
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
-
-include::{snippets}/seller-users-nickname-patch-401/http-response.adoc[]
+include::{snippets}/seller-users-id-nickname-patch-401/http-response.adoc[]
 
 ==== 사용자 삭제
 
 DELETE /seller-api/users/{id}
 
-**Request : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함**
+**Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-users-delete-200/http-request.adoc[]
+include::{snippets}/seller-users-id-delete-401/http-request.adoc[]
 
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 상태 코드 200을 응답**
 
-include::{snippets}/seller-users-delete-401/http-request.adoc[]
+include::{snippets}/seller-users-id-delete-200/http-response.adoc[]
 
-**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보(JWT) 포함, 200 상태 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-users-delete-200/http-response.adoc[]
-
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
-
-include::{snippets}/seller-users-delete-401/http-response.adoc[]
+include::{snippets}/seller-users-id-delete-401/http-response.adoc[]
 
 === Product
 
@@ -201,43 +197,64 @@ POST /seller-api/products
 
 include::{snippets}/seller-products-post-201/request-fields.adoc[]
 
-**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
-
-include::{snippets}/seller-products-post-201/http-request.adoc[]
-
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Request : Authorization 헤더에 등록 권한이 있는 토큰 정보를 포함하여 요청**
 
 include::{snippets}/seller-products-post-401/http-request.adoc[]
 
-**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보를 포함, 상태 코드 201와 Location 응답**
 
 include::{snippets}/seller-products-post-201/http-response.adoc[]
 
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
 include::{snippets}/seller-products-post-401/http-response.adoc[]
 
+==== 상품 조회
+
+GET /seller-api/products/{id}
+
+**Request**
+
+include::{snippets}/seller-products-id-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/seller-products-id-get-200/http-response.adoc[]
+
 ==== 상품 수정
 
-PATCH /seller-api/products
+PATCH /seller-api/products/{id}
 
-include::{snippets}/seller-products-patch-200/request-fields.adoc[]
+include::{snippets}/seller-products-id-patch-200/request-fields.adoc[]
 
-**Request : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함**
+**Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-products-patch-200/http-request.adoc[]
+include::{snippets}/seller-products-id-patch-401/http-request.adoc[]
 
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
 
-include::{snippets}/seller-products-patch-401/http-request.adoc[]
+include::{snippets}/seller-products-id-patch-200/http-response.adoc[]
 
-**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 200 상태를 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-products-patch-200/http-response.adoc[]
+include::{snippets}/seller-products-id-patch-401/http-response.adoc[]
 
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+==== 상품 삭제
 
-include::{snippets}/seller-products-patch-401/http-response.adoc[]
+DELETE /seller-api/products/{id}
+
+**Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
+
+include::{snippets}/seller-products-id-delete-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
+
+include::{snippets}/seller-products-id-delete-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/seller-products-id-delete-401/http-response.adoc[]
+
 
 == 관리자 API
 
@@ -249,18 +266,14 @@ POST /admin-api/categories
 
 include::{snippets}/admin-categories-post-201/request-fields.adoc[]
 
-**Request : Authorization 헤더에 등록  권한이 있는 인증 정보(JWT) 포함**
-
-include::{snippets}/admin-categories-post-201/http-request.adoc[]
-
-**Request : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청**
+**Request : Authorization 헤더에 등록 권한이 있는 인증 정보를 포함**
 
 include::{snippets}/admin-categories-post-401/http-request.adoc[]
 
-**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 201 상태와 Location 응답**
+**Response : Authorization 헤더에 등록 권한이 있는 인증 정보(JWT) 포함, 상태 코드 201와 Location 응답**
 
 include::{snippets}/admin-categories-post-201/http-response.adoc[]
 
-**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 응답**
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 상태를 응답**
 
 include::{snippets}/admin-categories-post-401/http-response.adoc[]
