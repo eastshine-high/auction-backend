@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 /**
  * 권한
  */
-@EqualsAndHashCode(of = {"roleId"})
+@EqualsAndHashCode(callSuper=false, of = {"roleId"})
 @NoArgsConstructor
 @Entity
 public class Role extends BaseEntity {
