@@ -31,7 +31,7 @@ class SystemProductControllerTest extends WebIntegrationTest {
         categoryFactory.deleteAll();
     }
 
-    @Test
+    // @Test
     @EnabledOnOs(OS.MAC)
     public void decreaseStock() throws Exception {
         categoryFactory.createCategory(500, "식품");

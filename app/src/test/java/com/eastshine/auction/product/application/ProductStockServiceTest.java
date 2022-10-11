@@ -32,7 +32,7 @@ class ProductStockServiceTest extends IntegrationTest {
         categoryFactory.deleteAll();
     }
 
-    @Test
+    // @Test
     @EnabledOnOs(OS.MAC)
     public void 동시에_3명이_주문() throws InterruptedException {
         categoryFactory.createCategory(500, "식품");
