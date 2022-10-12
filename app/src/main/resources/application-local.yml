@@ -1,28 +1,26 @@
 spring:
-  messages:
-    encoding: UTF-8
-    basename: messages,errors
   datasource:
     # url: jdbc:h2:tcp://localhost/~/data/auction;DB_CLOSE_DELAY=-1
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
+
   flyway:
     enabled: false
     baseline-on-migrate: false
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
         format_sql: true
+
   cache:
     type: NONE
 
-server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      force: true
+  redis:
+    host: localhost
+    port: 6379
 
 logging:
   level:
