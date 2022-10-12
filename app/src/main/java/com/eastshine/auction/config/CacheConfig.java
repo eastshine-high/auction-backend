@@ -19,7 +19,7 @@ import java.time.Duration;
 @Profile({"dev", "prod"})
 @EnableCaching
 @Configuration
-public class RedisConfig {
+public class CacheConfig {
     public static final long CACHE_DURATION_HOURS = 6L;
 
     @Value("${spring.redis.port}")
