@@ -1,6 +1,7 @@
 package com.eastshine.auction.user.domain;
 
 import com.eastshine.auction.common.model.BaseTimeEntity;
+import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.user.domain.role.Role;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -22,6 +23,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 사용자
@@ -67,8 +69,8 @@ public class User extends BaseTimeEntity {
     }
 
     public void addRole(Role role) {
+        // 복합키(Role) 사용은 setter를 내포.
         roles.add(role);
-        // 복합키 사용은 setter를 내포.
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
@@ -87,5 +89,16 @@ public class User extends BaseTimeEntity {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public UserInfo toUserInfo() {
+        return UserInfo.builder()
+                .id(id)
+                .email(email)
+                .nickname(nickname)
+                .roles(this.roles.stream()
+                        .map(role -> role.getRoleId().getRole())
+                        .collect(Collectors.toList()))
+                .build();
     }
 }

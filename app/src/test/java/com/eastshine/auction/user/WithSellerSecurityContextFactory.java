@@ -1,6 +1,5 @@
 package com.eastshine.auction.user;
 
-import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.security.UserAuthentication;
 import com.eastshine.auction.user.application.SellerService;
 import com.eastshine.auction.user.domain.seller.Seller;
@@ -33,7 +32,7 @@ public class WithSellerSecurityContextFactory implements WithSecurityContextFact
 
         sellerService.signUpSeller(seller);
 
-        Authentication authentication = new UserAuthentication(new UserInfo(seller));
+        Authentication authentication = new UserAuthentication(seller.toUserInfo());
         SecurityContext context = SecurityContextHolder.createEmptyContext();
         context.setAuthentication(authentication);
         return context;
