@@ -27,7 +27,8 @@ public class Role extends BaseEntity {
     }
 
     public void setSelfCreation() {
-        super.createdBy = roleId.getUser().getId();
-        super.lastModifiedBy = roleId.getUser().getId();
+        Long userId = roleId.getUser().getId();
+        super.createdBy = userId;
+        super.lastModifiedBy = userId;
     }
 }
