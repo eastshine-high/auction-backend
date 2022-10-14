@@ -5,7 +5,9 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UserAuthentication extends AbstractAuthenticationToken {
@@ -17,6 +19,10 @@ public class UserAuthentication extends AbstractAuthenticationToken {
     }
 
     private static List<GrantedAuthority> authorities(UserInfo userInfo) {
+        if(Objects.isNull(userInfo.getRoles())){
+            return new ArrayList<>();
+        }
+
         return userInfo.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.name()))
                 .collect(Collectors.toList());
@@ -34,10 +40,6 @@ public class UserAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return userInfo;
-    }
-
-    public UserInfo getUserInfo() {
         return userInfo;
     }
 }
