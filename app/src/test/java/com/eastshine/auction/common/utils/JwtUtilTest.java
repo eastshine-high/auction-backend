@@ -3,6 +3,7 @@ package com.eastshine.auction.common.utils;
 import com.eastshine.auction.common.exception.AuthenticationException;
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.user.domain.role.RoleType;
+import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,39 +17,32 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class JwtUtilTest {
     private static final String SECRET = "12345678901234567890123456789012";
-
-    private static final String VALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9" +
-            ".eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiQURNSU4iXX19" +
-            ".2s3sfdLWmcdyT4FeXz8wzKeODyPmxkLHJSF8jmGwOPI";
-    private static final String INVALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9." +
-            "eyJ1c2VySWQiOjF9.ZZ3CUl0jxeLGvQ1Js5nG2Ty5qGTlqai5ubDMXZOdaD0" + "invalidxxxxxxx";
+    private static final String VALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9." +
+            "ZZ3CUl0jxeLGvQ1Js5nG2Ty5qGTlqai5ubDMXZOdaDk";
+    private static final String INVALID_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjF9." +
+            "ZZ3CUl0jxeLGvQ1Js5nG2Ty5qGTlqai5ubDMXZOdaDk" + "invalidxxxxxxx";
 
     private JwtUtil jwtUtil;
-    private UserInfo userInfo;
+    private Long userId;
 
     @BeforeEach
     void setUp(){
         jwtUtil = new JwtUtil(SECRET);
-        userInfo = UserInfo.builder()
-                .id(1L)
-                .email("test@gmail.com")
-                .nickname("nickname")
-                .roles(Arrays.asList(RoleType.USER, RoleType.ADMIN))
-                .build();
+        userId = 1L;
     }
 
     @Test
     void encode() {
-        String token = jwtUtil.encode(userInfo);
+        String token = jwtUtil.encode(userId);
 
         assertThat(token).isEqualTo(VALID_TOKEN);
     }
 
     @Test
     void decodeWithValidToken() {
-        UserInfo decodedToken = jwtUtil.decode(VALID_TOKEN);
+        Claims claims = jwtUtil.decode(VALID_TOKEN);
 
-        assertThat(decodedToken).isEqualTo(userInfo);
+        assertThat(claims.get(JwtUtil.KEY_OF_USER_ID, Long.class)).isEqualTo(userId);
     }
 
     @ParameterizedTest

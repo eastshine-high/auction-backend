@@ -1,8 +1,9 @@
 package com.eastshine.auction.user.web;
 
-import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.common.utils.JwtUtil;
+import com.eastshine.auction.user.application.AuthenticationService;
+import com.eastshine.auction.user.application.UserService;
 import com.eastshine.auction.user.domain.User;
 import com.eastshine.auction.user.domain.UserRepository;
 import com.eastshine.auction.user.web.dto.UserDto;
@@ -29,19 +30,25 @@ class UserControllerTest extends WebIntegrationTest {
 
     @Autowired UserRepository userRepository;
     @Autowired JwtUtil jwtUtil;
+    @Autowired AuthenticationService authenticationService;
+    @Autowired UserService userService;
 
     @BeforeEach
     void setUp() {
         userRepository.deleteAll();
+        String password = "nickname";
+        String email = password + "@email.com";
 
         User user = User.builder()
-                .email("nickname@email.com")
+                .email(email)
                 .nickname("nickname")
-                .password("nickname")
+                .password(password)
                 .build();
-        userRepository.save(user);
+        userService.signUpUser(user);
+        authenticationService.login(email, password);
+
         registeredUserId = user.getId();
-        userAuthentication = jwtUtil.encode(new UserInfo(user));
+        userAuthentication = jwtUtil.encode(registeredUserId);
     }
 
     @AfterEach

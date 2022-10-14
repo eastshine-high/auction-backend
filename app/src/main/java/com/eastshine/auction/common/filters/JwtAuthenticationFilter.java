@@ -2,7 +2,7 @@ package com.eastshine.auction.common.filters;
 
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.security.UserAuthentication;
-import com.eastshine.auction.common.utils.JwtUtil;
+import com.eastshine.auction.user.application.AuthenticationService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -20,11 +20,12 @@ import java.util.Objects;
  * JWT 토큰에 대한 인증을 처리
  */
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
-    private final JwtUtil jwtUtil;
+    private final AuthenticationService authenticationService;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager,
+                                   AuthenticationService authenticationService) {
         super(authenticationManager);
-        this.jwtUtil = jwtUtil;
+        this.authenticationService = authenticationService;
     }
 
     @Override
@@ -36,7 +37,8 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
         if(Objects.nonNull(authorization)){
             String accessToken =  authorization.substring("Bearer ".length());
-            UserInfo userInfo = jwtUtil.decode(accessToken);
+            Long userId = authenticationService.parseToken(accessToken);
+            UserInfo userInfo = authenticationService.findUserInfo(userId);
             Authentication authentication = new UserAuthentication(userInfo);
 
             SecurityContext context = SecurityContextHolder.getContext();

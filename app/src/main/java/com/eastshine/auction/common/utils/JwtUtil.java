@@ -1,12 +1,10 @@
 package com.eastshine.auction.common.utils;
 
-import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.AuthenticationException;
-import com.eastshine.auction.common.model.UserInfo;
+import com.eastshine.auction.common.exception.ErrorCode;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.jackson.io.JacksonDeserializer;
-import io.jsonwebtoken.lang.Maps;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +15,7 @@ import java.security.Key;
 @SuppressWarnings("unchecked")
 @Component
 public class JwtUtil {
-    public static final String KEY_OF_USER_INFO = "userInfo";
+    public static final String KEY_OF_USER_ID = "userId";
 
     private final Key signKey;
 
@@ -25,14 +23,14 @@ public class JwtUtil {
         signKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String encode(UserInfo userInfo) {
+    public String encode(Long userId) {
         return Jwts.builder()
-                .claim(KEY_OF_USER_INFO, userInfo)
+                .claim(KEY_OF_USER_ID, userId)
                 .signWith(signKey)
                 .compact();
     }
 
-    public UserInfo decode(String token) {
+    public Claims decode(String token) {
         if (token == null || token.isBlank()) {
             throw new AuthenticationException(ErrorCode.COMMON_INVALID_TOKEN);
         }
@@ -40,11 +38,9 @@ public class JwtUtil {
         try {
             return Jwts.parserBuilder()
                     .setSigningKey(signKey)
-                    .deserializeJsonWith(new JacksonDeserializer(Maps.of(KEY_OF_USER_INFO, UserInfo.class).build()))
                     .build()
                     .parseClaimsJws(token)
-                    .getBody()
-                    .get(KEY_OF_USER_INFO, UserInfo.class);
+                    .getBody();
 
         } catch (SignatureException | MalformedJwtException e) {
             throw new AuthenticationException(ErrorCode.COMMON_INVALID_TOKEN);
