@@ -34,7 +34,7 @@ class SessionControllerTest extends WebIntegrationTest {
 
     @AfterEach
     void afterEach() {
-        userFactory.deleteAllUser();
+        userFactory.deleteAll();
     }
 
     @Nested

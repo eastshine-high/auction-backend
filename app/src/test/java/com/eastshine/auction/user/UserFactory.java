@@ -57,7 +57,7 @@ public class UserFactory {
         return asLong.toString();
     }
 
-    public void deleteAllUser() {
+    public void deleteAll() {
         userRepository.deleteAll();
         roleRepository.deleteAll();
     }

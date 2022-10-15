@@ -39,7 +39,7 @@ class ProductControllerTest extends WebIntegrationTest {
         productRepository.deleteAll();
         productRepository.deleteAll();
         categoryFactory.deleteAll();
-        userFactory.deleteAllUser();
+        userFactory.deleteAll();
 
         Seller seller = userFactory.createSeller("판매왕");
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
