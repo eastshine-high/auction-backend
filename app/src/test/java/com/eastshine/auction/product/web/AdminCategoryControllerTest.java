@@ -3,6 +3,8 @@ package com.eastshine.auction.product.web;
 import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.domain.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.AdminCategoryDto;
+import com.eastshine.auction.user.WithAdmin;
+import com.eastshine.auction.user.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,11 +22,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class AdminCategoryControllerTest extends WebIntegrationTest {
 
-    @Autowired
-    CategoryRepository categoryRepository;
+    @Autowired CategoryRepository categoryRepository;
+    @Autowired UserRepository userRepository;
 
     @BeforeEach
     void setUp() {
+        userRepository.deleteAll();
         categoryRepository.deleteAll();
     }
 
@@ -42,11 +45,11 @@ class AdminCategoryControllerTest extends WebIntegrationTest {
                     .build();
 
             @Test
+            @WithAdmin("adminNickname")
             @DisplayName("created 상태를 응답한다.")
             void it_returns_created_status() throws Exception {
                 mockMvc.perform(
                                 post("/admin-api/categories")
-                                        .header("Authorization", VALID_AUTHENTICATION)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(validRequest))
                         )
@@ -70,13 +73,13 @@ class AdminCategoryControllerTest extends WebIntegrationTest {
                     .id(12345)
                     .build();
 
-            @DisplayName("badRequest 상태를 응답한다.")
             @Test
+            @WithAdmin("adminNickname")
+            @DisplayName("badRequest 상태를 응답한다.")
             void it_returns_badRequest_status() throws Exception {
                 mockMvc.perform(
                                 post("/admin-api/categories")
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .header("Authorization", VALID_AUTHENTICATION)
                                         .content(objectMapper.writeValueAsString(invalidRequest))
                         )
                         .andExpect(status().isBadRequest())
