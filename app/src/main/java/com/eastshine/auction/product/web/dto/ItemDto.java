@@ -11,7 +11,7 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
 
-public class ProductDto {
+public class ItemDto {
 
     @ToString
     @Getter
@@ -49,29 +49,29 @@ public class ProductDto {
         private String name;
         private Integer price;
         private Integer stockQuantity;
-        private String productOptionsTitle;
+        private String itemOptionsTitle;
         private String nickname;
         private SellerLevelType sellerLevel;
-        private List<ProductOption> productOptions;
+        private List<ItemOption> itemOptions;
 
-        public void setProductOptions(List<ProductOption> productOptions) {
-            this.productOptions = productOptions;
+        public void setItemOptions(List<ItemOption> itemOptions) {
+            this.itemOptions = itemOptions;
         }
 
         @Getter
         @Setter
         @NoArgsConstructor
-        public static class ProductOption {
+        public static class ItemOption {
             private long id;
-            private String productOptionName;
+            private String itemOptionName;
             private Integer stockQuantity;
             private Integer ordering;
 
-            public ProductOption(com.eastshine.auction.product.domain.product.option.ProductOption productOption) {
-                this.id = productOption.getId();
-                this.productOptionName = productOption.getProductOptionName();
-                this.stockQuantity = productOption.getStockQuantity();
-                this.ordering = productOption.getOrdering();
+            public ItemOption(com.eastshine.auction.product.domain.item.option.ItemOption itemOption) {
+                this.id = itemOption.getId();
+                this.itemOptionName = itemOption.getItemOptionName();
+                this.stockQuantity = itemOption.getStockQuantity();
+                this.ordering = itemOption.getOrdering();
             }
         }
     }

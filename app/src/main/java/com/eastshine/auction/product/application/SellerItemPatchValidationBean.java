@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SellerProductPatchValidationBean {
+public class SellerItemPatchValidationBean {
 
     @NotBlank
     private String name;

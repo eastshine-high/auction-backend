@@ -1,10 +1,10 @@
-package com.eastshine.auction.product.domain.product;
+package com.eastshine.auction.product.domain.item;
 
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseEntity;
-import com.eastshine.auction.product.domain.product.option.ProductOption;
+import com.eastshine.auction.product.domain.item.option.ItemOption;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,12 +27,12 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false, of = "id")
-@Table(name = "product")
+@Table(name = "item")
 @Entity
-public class Product extends BaseEntity {
+public class Item extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "item_id")
     private Long id;
 
     private Integer categoryId;
@@ -45,40 +45,40 @@ public class Product extends BaseEntity {
 
     private Integer stockQuantity;
 
-    private String productOptionsTitle;
+    private String itemOptionsTitle;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductOption> productOptions = new ArrayList();
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemOption> itemOptions = new ArrayList();
 
     @Builder
-    public Product(Integer categoryId, String name, int price, int stockQuantity, boolean onSale, String productOptionsTitle, List<ProductOption> productOptions) {
+    public Item(Integer categoryId, String name, int price, int stockQuantity, boolean onSale, String itemOptionsTitle, List<ItemOption> itemOptions) {
         this.categoryId = categoryId;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.onSale = onSale;
-        this.productOptionsTitle = productOptionsTitle;
-        this.productOptions = productOptions;
+        this.itemOptionsTitle = itemOptionsTitle;
+        this.itemOptions = itemOptions;
     }
 
-    public void addProductOption(ProductOption productOption) {
-        productOption.setProduct(this);
-        this.productOptions.add(productOption);
+    public void addItemOption(ItemOption itemOption) {
+        itemOption.setItem(this);
+        this.itemOptions.add(itemOption);
     }
 
-    public void setProductOptions(List<ProductOption> productOptions) {
-        this.productOptions = productOptions;
+    public void setItemOptions(List<ItemOption> itemOptions) {
+        this.itemOptions = itemOptions;
     }
 
     public void validateAccessibleUser(Long userId) {
         if(super.createdBy != userId){
-            throw new UnauthorizedException(ErrorCode.PRODUCT_INACCESSIBLE);
+            throw new UnauthorizedException(ErrorCode.ITEM_INACCESSIBLE);
         }
     }
 
     public void decreaseStockQuantity(int quantity) {
         if (this.stockQuantity - quantity < 0) {
-            throw new InvalidArgumentException(ErrorCode.PRODUCT_STOCK_QUANTITY_ERROR);
+            throw new InvalidArgumentException(ErrorCode.ITEM_STOCK_QUANTITY_ERROR);
         }
 
         this.stockQuantity -= quantity;

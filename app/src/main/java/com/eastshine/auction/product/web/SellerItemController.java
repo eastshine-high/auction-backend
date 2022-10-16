@@ -1,10 +1,10 @@
 package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.model.UserInfo;
-import com.eastshine.auction.product.application.SellerProductService;
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.ProductMapper;
-import com.eastshine.auction.product.web.dto.SellerProductDto;
+import com.eastshine.auction.product.application.SellerItemService;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemMapper;
+import com.eastshine.auction.product.web.dto.SellerItemDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,64 +28,64 @@ import javax.json.JsonValue;
 import java.net.URI;
 
 @RequiredArgsConstructor
-@RequestMapping("/seller-api/products")
+@RequestMapping("/seller-api/items")
 @RestController
-public class SellerProductController {
-    private final SellerProductService sellerProductService;
+public class SellerItemController {
+    private final SellerItemService sellerItemService;
     private final ObjectMapper objectMapper;
 
     /**
-     * 상품 정보로 상품을 등록 후, 등록된 상품의 URI를 응답한다.
+     * 아이템을 등록 후, 등록된 아이템의 URI를 응답한다.
      *
-     * @param sellerProductRegistrationRequest 등록할 상품 정보.
+     * @param sellerItemRegistrationRequest 등록할 아이템 정보.
      * @return 등록된 상품의 URI.
      */
     @PostMapping
     @PreAuthorize("hasAuthority('SELLER')")
-    public ResponseEntity registerProduct(@RequestBody @Validated SellerProductDto.RegistrationRequest sellerProductRegistrationRequest) {
-        Product registeredProduct = sellerProductService.registerProduct(sellerProductRegistrationRequest);
-        return ResponseEntity.created(URI.create("/seller-api/products/" + registeredProduct.getId())).build();
+    public ResponseEntity registerItem(@RequestBody @Validated SellerItemDto.RegistrationRequest sellerItemRegistrationRequest) {
+        Item registeredItem = sellerItemService.registerItem(sellerItemRegistrationRequest);
+        return ResponseEntity.created(URI.create("/seller-api/items/" + registeredItem.getId())).build();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('SELLER')")
-    public SellerProductDto.Info getProduct(
+    public SellerItemDto.Info getItem(
             @PathVariable Long id,
             Authentication authentication
     ) {
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
-        Product productInfo = sellerProductService.getProduct(id, userInfo.getId());
-        return ProductMapper.INSTANCE.toDto(productInfo);
+        Item itemInfo = sellerItemService.getItem(id, userInfo.getId());
+        return ItemMapper.INSTANCE.toDto(itemInfo);
     }
 
     /**
-     * 상품 정보를 패치하고 패치 결과를 응답합니다.
+     * 아이템 정보를 패치하고 패치 결과를 응답합니다.
      *
-     * @param productId 패치할 상품 정보의 식별자.
-     * @param sellerProductPatchRequest 패치 요청 정보.
+     * @param itemId 패치할 아이템 정보의 식별자.
+     * @param sellerItemPatchRequest 패치 요청 정보.
      * @param authentication 인증 정보.
      */
-    @PatchMapping("/{productId}")
+    @PatchMapping("/{itemId}")
     @PreAuthorize("hasAuthority('SELLER')")
     @ResponseStatus(HttpStatus.OK)
-    public void patchProduct(
-            @PathVariable Long productId,
-            @RequestBody SellerProductDto.PatchRequest sellerProductPatchRequest,
+    public void patchItem(
+            @PathVariable Long itemId,
+            @RequestBody SellerItemDto.PatchRequest sellerItemPatchRequest,
             Authentication authentication
     ) {
-        JsonValue jsonValue = objectMapper.convertValue(sellerProductPatchRequest, JsonValue.class);
+        JsonValue jsonValue = objectMapper.convertValue(sellerItemPatchRequest, JsonValue.class);
         JsonMergePatch patchDocument = Json.createMergePatch(jsonValue);
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
-        sellerProductService.patchProduct(productId, patchDocument, userInfo.getId());
+        sellerItemService.patchItem(itemId, patchDocument, userInfo.getId());
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('SELLER')")
-    public void deleteProduct(
+    public void deleteItem(
             @PathVariable Long id,
             Authentication authentication
     ) {
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
-        sellerProductService.deleteProduct(id, userInfo.getId());
+        sellerItemService.deleteItem(id, userInfo.getId());
     }
 }

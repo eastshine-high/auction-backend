@@ -17,10 +17,11 @@ public enum ErrorCode {
     // Category
     CATEGORY_PARENT_ENTITY_NOT_FOUND("상위 카테고리를 찾을 수 없습니다."),
 
-    // Product
-    PRODUCT_NOT_FOUND("상품을 찾을 수 없습니다."),
-    PRODUCT_INACCESSIBLE("상품에 대한 접근 권한이 없습니다."),
-    PRODUCT_STOCK_QUANTITY_ERROR("상품 재고를 확인해 주세요."),
+    // Item
+    ITEM_NOT_FOUND("물품을 찾을 수 없습니다."),
+    ITEM_OPTION_NOT_FOUND("물품 옵션을 찾을 수 없습니다."),
+    ITEM_INACCESSIBLE("물품에 대한 접근 권한이 없습니다."),
+    ITEM_STOCK_QUANTITY_ERROR("물품 재고를 확인해 주세요."),
 
     // User
     USER_DUPLICATE_EMAIL("이미 등록된 이메일입니다."),

@@ -2,13 +2,10 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.ProductRepository;
-import com.eastshine.auction.product.web.dto.SystemProductDto;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.web.dto.SystemItemDto;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,40 +16,39 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles({"dev"})
-class SystemProductControllerTest extends WebIntegrationTest {
+class SystemItemControllerTest extends WebIntegrationTest {
 
-    @Autowired SystemProductController systemProductController;
-    @Autowired ProductRepository productRepository;
+    @Autowired SystemItemController systemItemController;
+    @Autowired ItemRepository itemRepository;
     @Autowired CategoryFactory categoryFactory;
 
     @AfterEach
     void tearDown() {
-        productRepository.deleteAll();
+        itemRepository.deleteAll();
         categoryFactory.deleteAll();
     }
 
-    // @Test
-    @EnabledOnOs(OS.MAC)
+    // @Test - 공개 리포지토리에서 테스트 불가
     public void decreaseStock() throws Exception {
         categoryFactory.createCategory(500, "식품");
         int stockQuantity = 6;
-        Product product = Product.builder()
+        Item item = Item.builder()
                 .stockQuantity(stockQuantity)
                 .categoryId(500)
                 .name("김치")
                 .onSale(true)
                 .price(30000)
                 .build();
-        productRepository.save(product);
+        itemRepository.save(item);
 
-        SystemProductDto.DecreaseStock decreaseStock = new SystemProductDto.DecreaseStock(
-                List.of(new SystemProductDto.DecreaseStock.Product(product.getId(), 1,
-                        List.of(new SystemProductDto.DecreaseStock.ProductOption(null, 0))
+        SystemItemDto.DecreaseStock decreaseStock = new SystemItemDto.DecreaseStock(
+                List.of(new SystemItemDto.DecreaseStock.Item(item.getId(), 1,
+                        List.of(new SystemItemDto.DecreaseStock.ItemOption(null, 0))
                 ))
         );
 
         mockMvc.perform(
-                post("/system-api/products/decrease-stock")
+                post("/system-api/items/decrease-stock")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson(decreaseStock))
         )

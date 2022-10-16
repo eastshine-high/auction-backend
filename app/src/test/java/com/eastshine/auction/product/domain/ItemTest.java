@@ -3,7 +3,7 @@ package com.eastshine.auction.product.domain;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
-import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.item.Item;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,20 +12,20 @@ import org.springframework.test.util.ReflectionTestUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class ProductTest {
+class ItemTest {
 
     @Test
     void validateAccessibleUser() {
-        Product product = new Product();
+        Item item = new Item();
         Long creatorId = 21L;
         Long accessorId = 2000L;
-        ReflectionTestUtils.setField(product, "createdBy", creatorId);
+        ReflectionTestUtils.setField(item, "createdBy", creatorId);
 
         assertThatThrownBy(
-                () -> product.validateAccessibleUser(accessorId)
+                () -> item.validateAccessibleUser(accessorId)
         )
                 .isExactlyInstanceOf(UnauthorizedException.class)
-                .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
+                .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
     }
 
     @DisplayName("decreaseStockQuantity 메소드는")
@@ -35,7 +35,7 @@ class ProductTest {
         @Nested
         @DisplayName("보유한 재고 이상으로 재고를 차감하면")
         class Context_with_invalid_quantity{
-            Product product = Product.builder()
+            Item item = Item.builder()
                     .stockQuantity(1)
                     .build();
 
@@ -45,17 +45,17 @@ class ProductTest {
                 int invalidQuantity = 30;
 
                 assertThatThrownBy(() ->
-                        product.decreaseStockQuantity(invalidQuantity)
+                        item.decreaseStockQuantity(invalidQuantity)
                 )
                         .isInstanceOf(InvalidArgumentException.class)
-                        .hasMessage(ErrorCode.PRODUCT_STOCK_QUANTITY_ERROR.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_STOCK_QUANTITY_ERROR.getErrorMsg());
             }
         }
 
         @Nested
         @DisplayName("보유한 재고 이내의 재고를 차감하면")
         class Context_with_valid_quantity{
-            Product product = Product.builder()
+            Item item = Item.builder()
                     .stockQuantity(30)
                     .build();
 
@@ -64,8 +64,8 @@ class ProductTest {
             void it_decrease_stockQuantity() {
                 int validQuantity = 1;
 
-                product.decreaseStockQuantity(validQuantity);
-                assertThat(product.getStockQuantity())
+                item.decreaseStockQuantity(validQuantity);
+                assertThat(item.getStockQuantity())
                         .isEqualTo(29);
             }
         }

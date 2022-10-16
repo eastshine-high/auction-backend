@@ -2,10 +2,10 @@ package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.ProductRepository;
-import com.eastshine.auction.product.domain.product.option.ProductOption;
-import com.eastshine.auction.product.domain.product.option.ProductOptionRepository;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.domain.item.option.ItemOption;
+import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
 import com.eastshine.auction.user.UserFactory;
 import com.eastshine.auction.user.domain.seller.Seller;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,75 +24,75 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ProductControllerTest extends WebIntegrationTest {
+class ItemControllerTest extends WebIntegrationTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
-    private static Long registeredProductId;
+    private static Long registeredItemId;
 
     @Autowired CategoryFactory categoryFactory;
-    @Autowired ProductRepository productRepository;
-    @Autowired ProductOptionRepository productOptionRepository;
+    @Autowired ItemRepository itemRepository;
+    @Autowired ItemOptionRepository itemOptionRepository;
     @Autowired UserFactory userFactory;
 
     @BeforeEach
     void setUp() {
-        productRepository.deleteAll();
-        productRepository.deleteAll();
+        itemRepository.deleteAll();
+        itemRepository.deleteAll();
         categoryFactory.deleteAll();
         userFactory.deleteAll();
 
         Seller seller = userFactory.createSeller("판매왕");
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
 
-        Product product = Product.builder()
+        Item item = Item.builder()
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name("비판텐")
                 .stockQuantity(50000)
                 .price(50000)
                 .onSale(true)
                 .build();
-        ReflectionTestUtils.setField(product, "createdBy", seller.getId());
-        productRepository.save(product);
-        registeredProductId = product.getId();
+        ReflectionTestUtils.setField(item, "createdBy", seller.getId());
+        itemRepository.save(item);
+        registeredItemId = item.getId();
 
-        ProductOption option1 = ProductOption.builder()
-                .product(product)
-                .productOptionName("50ml")
+        ItemOption option1 = ItemOption.builder()
+                .item(item)
+                .itemOptionName("50ml")
                 .stockQuantity(30)
                 .ordering(1)
                 .build();
 
-        ProductOption option2 = ProductOption.builder()
-                .product(product)
-                .productOptionName("70ml")
+        ItemOption option2 = ItemOption.builder()
+                .item(item)
+                .itemOptionName("70ml")
                 .stockQuantity(30)
                 .ordering(2)
                 .build();
 
-        productOptionRepository.save(option1);
-        productOptionRepository.save(option2);
+        itemOptionRepository.save(option1);
+        itemOptionRepository.save(option2);
     }
 
     @Nested
-    @DisplayName("getProducts 메소드는")
-    class Describe_getProducts{
+    @DisplayName("getItems 메소드는")
+    class Describe_getItems{
 
         @Nested
         @DisplayName("필수 파라미터와 함께 요청했을 경우")
         class Context_with_required_parameter{
-            String productName = "비판텐";
-            String requiredParameter = "name=" + productName;
+            String itemName = "비판텐";
+            String requiredParameter = "name=" + itemName;
 
             @Test
             @DisplayName("파라미터 조건에 맞게 검색된 상품들을 반환한다.")
-            void it_returns_products() throws Exception {
+            void it_returns_items() throws Exception {
                 mockMvc.perform(
-                                get("/api/products?" + requiredParameter)
+                                get("/api/items?" + requiredParameter)
                                         .accept(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
-                        .andExpect(content().string(containsString(productName)))
-                        .andDo(document("guest-products-get-200",
+                        .andExpect(content().string(containsString(itemName)))
+                        .andDo(document("guest-items-get-200",
                                 requestParameters(
                                         parameterWithName("name").description("상품명"),
                                         parameterWithName("categoryId").description("카테고리 식별자").optional(),
@@ -111,7 +111,7 @@ class ProductControllerTest extends WebIntegrationTest {
                 @DisplayName("BadRequest를 응답한다.")
                 void it_responses_badRequest() throws Exception {
                     mockMvc.perform(
-                                    get("/api/products?" + notRequiredParameter)
+                                    get("/api/items?" + notRequiredParameter)
                                             .accept(MediaType.APPLICATION_JSON)
                             )
                             .andExpect(status().isBadRequest());
@@ -121,18 +121,18 @@ class ProductControllerTest extends WebIntegrationTest {
     }
 
     @Nested
-    @DisplayName("getProduct 메소드는")
-    class Describe_getProduct{
+    @DisplayName("getItem 메소드는")
+    class Describe_getItem {
 
         @Test
         @DisplayName("식별자에 해당하는 상품을 반환한다.")
-        void it_returns_products() throws Exception {
+        void it_returns_items() throws Exception {
             mockMvc.perform(
-                            get("/api/products/" + registeredProductId)
+                            get("/api/items/" + registeredItemId)
                                     .accept(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())
-                    .andDo(document("guest-products-id-get-200"));
+                    .andDo(document("guest-items-id-get-200"));
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.eastshine.auction.product.web.dto;
 
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.option.ProductOption;
+import com.eastshine.auction.product.domain.item.Item;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,9 +13,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class SellerProductDto {
+public class SellerItemDto {
 
     @ToString
     @Getter
@@ -39,25 +37,19 @@ public class SellerProductDto {
         @NotNull
         private Boolean onSale;
         private Integer stockQuantity;
-        private String productOptionsTitle;
-        private List<ProductOptionDto> productOptions;
+        private String itemOptionsTitle;
+        private List<ItemOption> itemOptions;
 
-        public Product toProductEntity() {
-            return Product.builder()
+        public Item toEntity() {
+            return Item.builder()
                     .name(name)
                     .categoryId(categoryId)
                     .price(price)
                     .onSale(onSale)
                     .stockQuantity(stockQuantity)
-                    .productOptionsTitle(productOptionsTitle)
-                    .productOptions(new ArrayList<>())
+                    .itemOptionsTitle(itemOptionsTitle)
+                    .itemOptions(new ArrayList<>())
                     .build();
-        }
-
-        public List<ProductOption> toProductOptionEntities(Product product) {
-            return productOptions.stream()
-                    .map(productOptionDto -> productOptionDto.toEntity(product))
-                    .collect(Collectors.toList());
         }
 
         @ToString
@@ -65,19 +57,19 @@ public class SellerProductDto {
         @Builder
         @AllArgsConstructor
         @NoArgsConstructor
-        public static class ProductOptionDto {
+        public static class ItemOption {
 
             @NotBlank
-            private String productOptionName;
+            private String itemOptionName;
 
             @NotNull
             private Integer ordering;
             private Integer stockQuantity;
 
-            public ProductOption toEntity(Product product) {
-                return com.eastshine.auction.product.domain.product.option.ProductOption.builder()
-                        .product(product)
-                        .productOptionName(productOptionName)
+            public com.eastshine.auction.product.domain.item.option.ItemOption toEntity(Item item) {
+                return com.eastshine.auction.product.domain.item.option.ItemOption.builder()
+                        .item(item)
+                        .itemOptionName(itemOptionName)
                         .stockQuantity(stockQuantity)
                         .ordering(ordering)
                         .build();
@@ -96,15 +88,15 @@ public class SellerProductDto {
         private Integer stockQuantity;
         private Integer categoryId;
         private Boolean onSale;
-        private String productOptionsTitle;
-        private List<ProductOptionDto> productOptions;
+        private String itemOptionsTitle;
+        private List<ItemOption> itemOptions;
 
         @Getter
         @Setter
         @NoArgsConstructor
-        public static class ProductOptionDto {
+        public static class ItemOption {
             private Long id;
-            private String productOptionName;
+            private String itemOptionName;
             private Integer stockQuantity;
             private Integer ordering;
         }
@@ -121,17 +113,17 @@ public class SellerProductDto {
         private Integer stockQuantity;
         private Integer categoryId;
         private Boolean onSale;
-        private String productOptionsTitle;
-        private List<ProductOptionDto> productOptions;
+        private String itemOptionsTitle;
+        private List<ItemOption> itemOptions;
 
         @Getter
         @Setter
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class ProductOptionDto {
+        public static class ItemOption {
             private Long id;
-            private String productOptionName;
+            private String itemOptionName;
             private Integer stockQuantity;
             private Integer ordering;
         }

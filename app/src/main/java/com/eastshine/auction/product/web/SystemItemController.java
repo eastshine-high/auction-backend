@@ -1,7 +1,7 @@
 package com.eastshine.auction.product.web;
 
-import com.eastshine.auction.product.application.ProductStockService;
-import com.eastshine.auction.product.web.dto.SystemProductDto;
+import com.eastshine.auction.product.application.ItemStockService;
+import com.eastshine.auction.product.web.dto.SystemItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,16 +11,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/system-api/products")
+@RequestMapping("/system-api/items")
 @RestController
-public class SystemProductController {
-    private final ProductStockService productStockService;
+public class SystemItemController {
+    private final ItemStockService itemStockService;
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/decrease-stock")
     public void decreaseStock(
-            @RequestBody SystemProductDto.DecreaseStock decreaseStockRequest
+            @RequestBody SystemItemDto.DecreaseStock decreaseStockRequest
     ) {
-        productStockService.decreaseStock(decreaseStockRequest);
+        itemStockService.decreaseStock(decreaseStockRequest);
     }
 }
