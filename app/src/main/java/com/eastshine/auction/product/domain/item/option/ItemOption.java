@@ -1,9 +1,9 @@
-package com.eastshine.auction.product.domain.product.option;
+package com.eastshine.auction.product.domain.item.option;
 
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.model.BaseEntity;
-import com.eastshine.auction.product.domain.product.Product;
+import com.eastshine.auction.product.domain.item.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -26,42 +26,42 @@ import javax.persistence.Table;
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false, of = "id")
-@Table(name = "product_option")
+@Table(name = "item_option")
 @Entity
-public class ProductOption extends BaseEntity {
+public class ItemOption extends BaseEntity {
 
-    @Id @Column(name = "product_option_id")
+    @Id @Column(name = "item_option_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "product_id", foreignKey = @ForeignKey(name = "fk_product_option_product"))
-    private Product product;
-    private String productOptionName;
+    @JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_item_option_item"))
+    private Item item;
+    private String itemOptionName;
     private Integer stockQuantity;
     private Integer ordering;
 
     @Builder
-    public ProductOption(
-            Product product,
-            String productOptionName,
+    public ItemOption(
+            Item item,
+            String itemOptionName,
             Integer stockQuantity,
             Integer ordering
     ) {
-        this.product = product;
-        this.productOptionName = productOptionName;
+        this.item = item;
+        this.itemOptionName = itemOptionName;
         this.stockQuantity = stockQuantity;
         this.ordering = ordering;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public void decreaseStockQuantity(int quantity) {
         if (this.stockQuantity - quantity < 0) {
-            throw new InvalidArgumentException(ErrorCode.PRODUCT_STOCK_QUANTITY_ERROR);
+            throw new InvalidArgumentException(ErrorCode.ITEM_STOCK_QUANTITY_ERROR);
         }
 
         this.stockQuantity -= quantity;

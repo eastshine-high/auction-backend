@@ -2,13 +2,10 @@ package com.eastshine.auction.product.application;
 
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.ProductRepository;
-import com.eastshine.auction.product.web.dto.SystemProductDto;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.web.dto.SystemItemDto;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -20,44 +17,43 @@ import java.util.concurrent.Executors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ActiveProfiles({"dev"})
-class ProductStockServiceTest extends IntegrationTest {
+class ItemStockServiceTest extends IntegrationTest {
 
-    @Autowired ProductStockService productStockService;
-    @Autowired ProductRepository productRepository;
+    @Autowired ItemStockService itemStockService;
+    @Autowired ItemRepository itemRepository;
     @Autowired CategoryFactory categoryFactory;
 
     @BeforeEach
     void tearDown() {
-        productRepository.deleteAll();
+        itemRepository.deleteAll();
         categoryFactory.deleteAll();
     }
 
-    // @Test
-    @EnabledOnOs(OS.MAC)
+    // @Test - 공개 리포지토리에서 테스트 불가
     public void 동시에_3명이_주문() throws InterruptedException {
         categoryFactory.createCategory(500, "식품");
 
         int threadCount = 3;
-        Product product = Product.builder()
+        Item item = Item.builder()
                 .stockQuantity(threadCount)
                 .categoryId(500)
                 .name("김치")
                 .onSale(true)
                 .price(30000)
                 .build();
-        productRepository.save(product);
+        itemRepository.save(item);
 
         ExecutorService executorService = Executors.newFixedThreadPool(32);
         CountDownLatch latch = new CountDownLatch(threadCount);
 
-        SystemProductDto.DecreaseStock request = new SystemProductDto.DecreaseStock(
-                List.of(new SystemProductDto.DecreaseStock.Product(product.getId(), 1, null))
+        SystemItemDto.DecreaseStock request = new SystemItemDto.DecreaseStock(
+                List.of(new SystemItemDto.DecreaseStock.Item(item.getId(), 1, null))
         );
 
         for (int i = 0; i < threadCount; i++) {
             executorService.submit(() -> {
                 try {
-                    productStockService.decreaseStock(request);
+                    itemStockService.decreaseStock(request);
                 } finally {
                     latch.countDown();
                 }
@@ -66,7 +62,7 @@ class ProductStockServiceTest extends IntegrationTest {
 
         latch.await();
 
-        Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
-        assertThat(updatedProduct.getStockQuantity()).isEqualTo(0);
+        Item updatedItem = itemRepository.findById(item.getId()).orElseThrow();
+        assertThat(updatedItem.getStockQuantity()).isEqualTo(0);
     }
 }

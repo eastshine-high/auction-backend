@@ -6,10 +6,10 @@ import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
-import com.eastshine.auction.product.domain.product.Product;
-import com.eastshine.auction.product.domain.product.ProductRepository;
-import com.eastshine.auction.product.domain.product.option.ProductOption;
-import com.eastshine.auction.product.web.dto.SellerProductDto;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.domain.item.option.ItemOption;
+import com.eastshine.auction.product.web.dto.SellerItemDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -25,112 +25,110 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class SellerProductServiceTest extends IntegrationTest {
+class SellerItemServiceTest extends IntegrationTest {
     private static final int REGISTERED_CATEGORY_ID = 101;
-    private static final String REGISTERED_PRODUCT_NAME = "마데카솔";
-    private static Long PRODUCT_CREATOR_ID = 4L;
+    private static final String REGISTERED_ITEM_NAME = "마데카솔";
+    private static final Long ITEM_CREATOR_ID = 4L;
 
-    private static Long registeredProductId;
-    private static Product registeredProduct;
-
+    private static Long registeredItemId;
 
     @Autowired CategoryFactory categoryFactory;
-    @Autowired ProductRepository productRepository;
-    @Autowired SellerProductService sellerProductService;
+    @Autowired ItemRepository itemRepository;
+    @Autowired SellerItemService sellerItemService;
 
     @BeforeEach
     void setUp() {
-        productRepository.deleteAll();
+        itemRepository.deleteAll();
 
-        Product product = Product.builder()
+        Item item = Item.builder()
                 .onSale(true)
-                .productOptionsTitle("용량")
+                .itemOptionsTitle("용량")
                 .categoryId(300)
-                .name(REGISTERED_PRODUCT_NAME)
+                .name(REGISTERED_ITEM_NAME)
                 .price(3000)
-                .productOptions(new ArrayList<>())
+                .itemOptions(new ArrayList<>())
                 .build();
-        ProductOption productOption = ProductOption.builder()
-                .productOptionName("500ML")
+        ItemOption itemOption = ItemOption.builder()
+                .itemOptionName("500ML")
                 .stockQuantity(500)
                 .ordering(1)
                 .build();
-        product.addProductOption(productOption);
-        ReflectionTestUtils.setField(product, "createdBy", PRODUCT_CREATOR_ID);
+        item.addItemOption(itemOption);
+        ReflectionTestUtils.setField(item, "createdBy", ITEM_CREATOR_ID);
 
-        registeredProduct = productRepository.save(product);
-        registeredProductId = product.getId();
+        itemRepository.save(item);
+        registeredItemId = item.getId();
     }
 
-    @DisplayName("registerProduct 메소드는")
+    @DisplayName("registerItem 메소드는")
     @Nested
-    class Describe_registerProduct{
+    class Describe_registerItem {
 
         @DisplayName("유효한 상품 정보로 등록할 경우")
         @Nested
         class Context_with_registered_category{
-            SellerProductDto.RegistrationRequest productInfo;
+            SellerItemDto.RegistrationRequest itemInfo;
             boolean onSale = true;
             int stockQuantity = 20;
-            String productName = "비판텐";
+            String itemName = "비판텐";
             int price = 3200;
 
-            SellerProductDto.RegistrationRequest.ProductOptionDto optionInfo;
-            String productOptionName = "300ml";
+            SellerItemDto.RegistrationRequest.ItemOption optionInfo;
+            String itemOptionName = "300ml";
             int ordering = 1;
             int optionStockQuantity = 9999;
 
             @DisplayName("등록된 상품을 반환한다.")
             @Test
-            void it_returns_registerd_product() {
-                optionInfo = SellerProductDto.RegistrationRequest.ProductOptionDto.builder()
-                        .productOptionName(productOptionName)
+            void it_returns_registerd_item() {
+                optionInfo = SellerItemDto.RegistrationRequest.ItemOption.builder()
+                        .itemOptionName(itemOptionName)
                         .ordering(ordering)
                         .stockQuantity(optionStockQuantity)
                         .build();
 
-                productInfo = SellerProductDto.RegistrationRequest.builder()
+                itemInfo = SellerItemDto.RegistrationRequest.builder()
                         .onSale(onSale)
                         .stockQuantity(stockQuantity)
                         .categoryId(REGISTERED_CATEGORY_ID)
-                        .name(productName)
+                        .name(itemName)
                         .price(price)
-                        .productOptions(Arrays.asList(optionInfo))
+                        .itemOptions(Arrays.asList(optionInfo))
                         .build();
 
-                Product product = sellerProductService.registerProduct(productInfo);
+                Item item = sellerItemService.registerItem(itemInfo);
 
-                assertThat(product).isInstanceOf(Product.class);
-                assertThat(product.getName()).isEqualTo(productName);
-                assertThat(product.getPrice()).isEqualTo(price);
-                assertThat(product.getStockQuantity()).isEqualTo(stockQuantity);
-                assertThat(product.isOnSale()).isEqualTo(onSale);
+                assertThat(item).isInstanceOf(Item.class);
+                assertThat(item.getName()).isEqualTo(itemName);
+                assertThat(item.getPrice()).isEqualTo(price);
+                assertThat(item.getStockQuantity()).isEqualTo(stockQuantity);
+                assertThat(item.isOnSale()).isEqualTo(onSale);
 
-                ProductOption productOption = product.getProductOptions().get(0);
-                assertThat(productOption.getProductOptionName()).isEqualTo(productOptionName);
-                assertThat(productOption.getOrdering()).isEqualTo(ordering);
-                assertThat(productOption.getStockQuantity()).isEqualTo(optionStockQuantity);
+                ItemOption itemOption = item.getItemOptions().get(0);
+                assertThat(itemOption.getItemOptionName()).isEqualTo(itemOptionName);
+                assertThat(itemOption.getOrdering()).isEqualTo(ordering);
+                assertThat(itemOption.getStockQuantity()).isEqualTo(optionStockQuantity);
             }
         }
     }
 
     @Nested
-    @DisplayName("getProduct 메소드는")
-    class Describe_getProduct {
+    @DisplayName("getItem 메소드는")
+    class Describe_getItem {
 
         @Nested
         @DisplayName("등록되지 않은 상품을 조회할 경우")
-        class Context_with_unregistered_product_id {
-            private final long unregisteredProductId = -1;
+        class Context_with_unregistered_item_id {
+            private final long unregisteredItemId = -1;
 
             @Test
             @DisplayName("EntityNotFoundException 예외를 던진다.")
             void it_throws_EntityNotFoundException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.getProduct(unregisteredProductId, PRODUCT_CREATOR_ID)
+                        sellerItemService.getItem(unregisteredItemId, ITEM_CREATOR_ID)
                 )
                         .isInstanceOf(EntityNotFoundException.class)
-                        .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_NOT_FOUND.getErrorMsg());
             }
         }
 
@@ -143,10 +141,10 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("UnauthorizedException 예외를 던진다.")
             void it_throws_UnauthorizedException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.getProduct(registeredProductId, inaccessibleUserId)
+                        sellerItemService.getItem(registeredItemId, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
             }
         }
 
@@ -156,21 +154,21 @@ class SellerProductServiceTest extends IntegrationTest {
 
             @Test
             @DisplayName("수정된 상품을 반환한다.")
-            void it_returns_modified_product() {
-                assertThat(sellerProductService.getProduct(registeredProductId, PRODUCT_CREATOR_ID))
-                        .isInstanceOf(Product.class);
+            void it_returns_modified_item() {
+                assertThat(sellerItemService.getItem(registeredItemId, ITEM_CREATOR_ID))
+                        .isInstanceOf(Item.class);
             }
         }
     }
 
     @Nested
-    @DisplayName("patchProduct 메소드는")
-    class Describe_patchProduct {
+    @DisplayName("patchItem 메소드는")
+    class Describe_patchItem {
 
         @Nested
         @DisplayName("등록되지 않은 상품을 수정할 경우")
-        class Context_with_unregistered_product_id {
-            private final long unregisteredProductId = -1;
+        class Context_with_unregistered_item_id {
+            private final long unregisteredItemId = -1;
             private final JsonMergePatch patchDocument = Json.createMergePatch(Json.createObjectBuilder()
                     .add("price", 99999)
                     .build());
@@ -179,16 +177,16 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("EntityNotFoundException 예외를 던진다.")
             void it_throws_EntityNotFoundException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.patchProduct(unregisteredProductId, patchDocument, PRODUCT_CREATOR_ID)
+                        sellerItemService.patchItem(unregisteredItemId, patchDocument, ITEM_CREATOR_ID)
                 )
                         .isInstanceOf(EntityNotFoundException.class)
-                        .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_NOT_FOUND.getErrorMsg());
             }
         }
 
         @Nested
         @DisplayName("유효하지 못한 요청 정보로 상품을 수정할 경우")
-        class Context_with_invalid_product_info {
+        class Context_with_invalid_item_info {
             int invalidPrice = 456;
             private final JsonMergePatch patchDocument = Json.createMergePatch(Json.createObjectBuilder()
                     .add("price", invalidPrice)
@@ -198,7 +196,7 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("InvalidArgumentException 예외를 던진다.")
             void it_throws_InvalidArgumentException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.patchProduct(registeredProductId, patchDocument, PRODUCT_CREATOR_ID)
+                        sellerItemService.patchItem(registeredItemId, patchDocument, ITEM_CREATOR_ID)
                 )
                         .isInstanceOf(InvalidArgumentException.class);
             }
@@ -216,10 +214,10 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("UnauthorizedException 예외를 던진다.")
             void it_throws_UnauthorizedException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.patchProduct(registeredProductId, patchDocument, inaccessibleUserId)
+                        sellerItemService.patchItem(registeredItemId, patchDocument, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
             }
         }
 
@@ -242,8 +240,8 @@ class SellerProductServiceTest extends IntegrationTest {
 
             @Test
             @DisplayName("수정된 상품을 반환한다.")
-            void it_returns_modified_product() {
-                Product actual = sellerProductService.patchProduct(registeredProductId, patchDocument, PRODUCT_CREATOR_ID);
+            void it_returns_modified_item() {
+                Item actual = sellerItemService.patchItem(registeredItemId, patchDocument, ITEM_CREATOR_ID);
 
                 assertThat(actual.getPrice()).isEqualTo(price);
                 assertThat(actual.getName()).isEqualTo(name);
@@ -255,22 +253,22 @@ class SellerProductServiceTest extends IntegrationTest {
     }
 
     @Nested
-    @DisplayName("deleteProduct 메소드는")
-    class Describe_deleteProduct {
+    @DisplayName("deleteItem 메소드는")
+    class Describe_deleteItem {
 
         @Nested
         @DisplayName("등록되지 않은 상품을 삭제할 경우")
-        class Context_with_unregistered_product_id {
-            private final long unregisteredProductId = -1;
+        class Context_with_unregistered_item_id {
+            private final long unregisteredItemId = -1;
 
             @Test
             @DisplayName("EntityNotFoundException 예외를 던진다.")
             void it_throws_EntityNotFoundException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.deleteProduct(unregisteredProductId, PRODUCT_CREATOR_ID)
+                        sellerItemService.deleteItem(unregisteredItemId, ITEM_CREATOR_ID)
                 )
                         .isInstanceOf(EntityNotFoundException.class)
-                        .hasMessage(ErrorCode.PRODUCT_NOT_FOUND.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_NOT_FOUND.getErrorMsg());
             }
         }
 
@@ -283,10 +281,10 @@ class SellerProductServiceTest extends IntegrationTest {
             @DisplayName("UnauthorizedException 예외를 던진다.")
             void it_throws_UnauthorizedException() {
                 assertThatThrownBy(() ->
-                        sellerProductService.deleteProduct(registeredProductId, inaccessibleUserId)
+                        sellerItemService.deleteItem(registeredItemId, inaccessibleUserId)
                 )
                         .isInstanceOf(UnauthorizedException.class)
-                        .hasMessage(ErrorCode.PRODUCT_INACCESSIBLE.getErrorMsg());
+                        .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
             }
         }
 
@@ -296,10 +294,10 @@ class SellerProductServiceTest extends IntegrationTest {
 
             @Test
             @DisplayName("상품을 삭제한다.")
-            void it_returns_modified_product() {
-                sellerProductService.deleteProduct(registeredProductId, PRODUCT_CREATOR_ID);
+            void it_returns_modified_item() {
+                sellerItemService.deleteItem(registeredItemId, ITEM_CREATOR_ID);
 
-                assertThat(productRepository.findById(registeredProductId).isEmpty())
+                assertThat(itemRepository.findById(registeredItemId).isEmpty())
                         .isTrue();
             }
         }

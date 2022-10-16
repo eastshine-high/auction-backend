@@ -6,26 +6,27 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-public class SystemProductDto {
+public class SystemItemDto {
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class DecreaseStock{
-        List<Product> products;
+        List<Item> itemDtos;
+
         @Getter
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class Product{
+        public static class Item {
             private Long id;
             private Integer quantity;
-            private List<ProductOption> productOptions;
+            private List<ItemOption> itemOptionDtos;
         }
 
         @Getter
         @NoArgsConstructor
         @AllArgsConstructor
-        public static class ProductOption{
+        public static class ItemOption {
             private Long id;
             private Integer quantity;
         }
