@@ -1,7 +1,6 @@
 package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.product.domain.item.ItemRepository;
-import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
 import com.eastshine.auction.product.web.dto.ItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,14 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.stream.Collectors;
-
 @RequiredArgsConstructor
 @RequestMapping("/api/items")
 @RestController
 public class ItemController {
     private final ItemRepository itemRepository;
-    private final ItemOptionRepository itemOptionRepository;
 
     /**
      * 물품을 조회 조건에 맞게 검색하고 검색된 물품 정보들을 응답한다.
@@ -49,11 +45,7 @@ public class ItemController {
     @ResponseStatus(HttpStatus.OK)
     public ItemDto.Info getItem(@PathVariable Long id) {
         ItemDto.Info itemInfo = itemRepository.findGuestItemInfo(id);
-        itemInfo.setItemOptions(
-                itemOptionRepository.findByItemId(id).stream()
-                        .map(ItemDto.Info.ItemOption::new)
-                        .collect(Collectors.toList())
-        );
+        itemInfo.setItemOptionDtos(itemRepository.findGuestItemOptionInfo(id));
         return itemInfo;
     }
 }

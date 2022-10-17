@@ -9,16 +9,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 import static com.eastshine.auction.product.domain.category.QCategory.category;
 import static com.eastshine.auction.product.domain.item.QItem.item;
+import static com.eastshine.auction.product.domain.item.option.QItemOption.itemOption;
 import static com.eastshine.auction.user.domain.seller.QSeller.seller;
 
 public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
-    private final JPAQueryFactory jpaQueryFactory;
+    private final JPAQueryFactory query;
 
     public ItemRepositoryCustomImpl(EntityManager entityManager) {
-        this.jpaQueryFactory = new JPAQueryFactory(entityManager);
+        this.query = new JPAQueryFactory(entityManager);
     }
 
     @Override
@@ -27,7 +29,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             return findByItemNameContaining(condition, pageable);
         }
 
-        QueryResults<ItemDto.SearchResponse> results = jpaQueryFactory.select(Projections.fields(ItemDto.SearchResponse.class,
+        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.fields(ItemDto.SearchResponse.class,
                         item.id,
                         item.name,
                         item.price,
@@ -48,7 +50,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     Page<ItemDto.SearchResponse> findByItemNameContaining(ItemDto.SearchCondition condition, Pageable pageable){
-        QueryResults<ItemDto.SearchResponse> results = jpaQueryFactory.select(Projections.fields(ItemDto.SearchResponse.class,
+        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.fields(ItemDto.SearchResponse.class,
                         item.id,
                         item.name,
                         item.price,
@@ -67,8 +69,8 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public ItemDto.Info findGuestItemInfo(Long id){
-        return jpaQueryFactory.select(Projections.fields(ItemDto.Info.class,
+    public ItemDto.Info findGuestItemInfo(Long itemId){
+        return query.select(Projections.fields(ItemDto.Info.class,
                         item.id,
                         item.name,
                         item.price,
@@ -80,8 +82,22 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
                 .from(item)
                 .join(seller).on(seller.id.eq(item.createdBy))
                 .where(
-                        item.id.eq(id)
+                        item.id.eq(itemId)
                 )
                 .fetchOne();
+    }
+
+    @Override
+    public List<ItemDto.Info.ItemOption> findGuestItemOptionInfo(Long itemId){
+        return query.select(Projections.fields(ItemDto.Info.ItemOption.class,
+                        itemOption.id,
+                        itemOption.itemOptionName,
+                        itemOption.stockQuantity,
+                        itemOption.ordering))
+                .from(itemOption)
+                .where(
+                        itemOption.item.id.eq(itemId)
+                )
+                .fetch();
     }
 }

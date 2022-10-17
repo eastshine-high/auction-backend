@@ -52,10 +52,10 @@ public class ItemDto {
         private String itemOptionsTitle;
         private String nickname;
         private SellerLevelType sellerLevel;
-        private List<ItemOption> itemOptions;
+        private List<ItemOption> itemOptionDtos;
 
-        public void setItemOptions(List<ItemOption> itemOptions) {
-            this.itemOptions = itemOptions;
+        public void setItemOptionDtos(List<ItemOption> itemOptionDtos) {
+            this.itemOptionDtos = itemOptionDtos;
         }
 
         @Getter
@@ -66,13 +66,6 @@ public class ItemDto {
             private String itemOptionName;
             private Integer stockQuantity;
             private Integer ordering;
-
-            public ItemOption(com.eastshine.auction.product.domain.item.option.ItemOption itemOption) {
-                this.id = itemOption.getId();
-                this.itemOptionName = itemOption.getItemOptionName();
-                this.stockQuantity = itemOption.getStockQuantity();
-                this.ordering = itemOption.getOrdering();
-            }
         }
     }
 }
