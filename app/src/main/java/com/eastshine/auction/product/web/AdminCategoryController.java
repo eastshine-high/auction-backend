@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import java.net.URI;
 
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('ADMIN')")
 @RestController
 public class AdminCategoryController {
     private final AdminCategoryService adminCategoryService;
 
     @PostMapping("/admin-api/categories")
-    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity registerCategory(@RequestBody @Validated AdminCategoryDto.RegistrationRequest registrationRequest) {
         Category registeredCategory = adminCategoryService.registerCategory(registrationRequest);
         return ResponseEntity.created(URI.create("/admin-api/categories/" + registeredCategory.getId())).build();

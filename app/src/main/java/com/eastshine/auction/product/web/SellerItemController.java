@@ -28,6 +28,7 @@ import javax.json.JsonValue;
 import java.net.URI;
 
 @RequiredArgsConstructor
+@PreAuthorize("hasAuthority('SELLER')")
 @RequestMapping("/seller-api/items")
 @RestController
 public class SellerItemController {
@@ -41,14 +42,12 @@ public class SellerItemController {
      * @return 등록된 상품의 URI.
      */
     @PostMapping
-    @PreAuthorize("hasAuthority('SELLER')")
     public ResponseEntity registerItem(@RequestBody @Validated SellerItemDto.RegistrationRequest sellerItemRegistrationRequest) {
         Item registeredItem = sellerItemService.registerItem(sellerItemRegistrationRequest);
         return ResponseEntity.created(URI.create("/seller-api/items/" + registeredItem.getId())).build();
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('SELLER')")
     public SellerItemDto.Info getItem(
             @PathVariable Long id,
             Authentication authentication
@@ -66,7 +65,6 @@ public class SellerItemController {
      * @param authentication 인증 정보.
      */
     @PatchMapping("/{itemId}")
-    @PreAuthorize("hasAuthority('SELLER')")
     @ResponseStatus(HttpStatus.OK)
     public void patchItem(
             @PathVariable Long itemId,
@@ -80,7 +78,6 @@ public class SellerItemController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('SELLER')")
     public void deleteItem(
             @PathVariable Long id,
             Authentication authentication
