@@ -27,19 +27,19 @@ public class ItemStockLock {
                                  int timeoutSeconds,
                                  Runnable runnable) {
 
-        try (Connection connection = dataSource.getConnection()) {
-            try {
+    try (Connection connection = dataSource.getConnection()) {
+        try {
                 log.info("start getLock=[], timeoutSeconds ], connection=[]", itemLockName, timeoutSeconds, connection);
                 getLock(connection, itemLockName, timeoutSeconds);
                 log.info("success getLock=[], timeoutSeconds ], connection=[]", itemLockName, timeoutSeconds, connection);
                 runnable.run();
 
-            } finally {
+        } finally {
                 log.info("start releaseLock=[], connection=[]", itemLockName, connection);
                 releaseLock(connection, itemLockName);
                 log.info("success releaseLock=[], connection=[]", itemLockName, connection);
-            }
-        } catch (SQLException | RuntimeException e) {
+        }
+    } catch (SQLException | RuntimeException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
