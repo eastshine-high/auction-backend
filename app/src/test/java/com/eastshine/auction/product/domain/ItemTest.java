@@ -14,18 +14,35 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ItemTest {
 
-    @Test
-    void validateAccessibleUser() {
-        Item item = new Item();
-        Long creatorId = 21L;
-        Long accessorId = 2000L;
-        ReflectionTestUtils.setField(item, "createdBy", creatorId);
+    @Nested
+    @DisplayName("validateAccessibleUser 메소드는")
+    class Describe_validateAccessibleUser{
 
-        assertThatThrownBy(
-                () -> item.validateAccessibleUser(accessorId)
-        )
-                .isExactlyInstanceOf(UnauthorizedException.class)
-                .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
+        @Test
+        @DisplayName("물품을 생성한 사용자가 아닐 경우, InvalidArgumentException 예외를 던진다.")
+        void contextWithInaccessibleUser() {
+            Item item = new Item();
+            Long creatorId = 21L;
+            Long accessorId = 2000L;
+            ReflectionTestUtils.setField(item, "createdBy", creatorId);
+
+            assertThatThrownBy(
+                    () -> item.validateAccessibleUser(accessorId)
+            )
+                    .isExactlyInstanceOf(UnauthorizedException.class)
+                    .hasMessage(ErrorCode.ITEM_INACCESSIBLE.getErrorMsg());
+        }
+
+        @Test
+        @DisplayName("물품을 생성한 사용자일 경우, 예외를 던지지 않는다.")
+        void contextWithAccessibleUser() {
+            Item item = new Item();
+            Long creatorId = 21L;
+            Long accessorId = 21L;
+            ReflectionTestUtils.setField(item, "createdBy", creatorId);
+
+            item.validateAccessibleUser(accessorId);
+        }
     }
 
     @DisplayName("decreaseStockQuantity 메소드는")
