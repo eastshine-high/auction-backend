@@ -39,6 +39,7 @@ public class ItemOption extends BaseEntity {
     @JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_item_option_item"))
     private Item item;
     private String itemOptionName;
+    private Integer additionalPrice;
     private Integer stockQuantity;
     private Integer ordering;
 
@@ -46,11 +47,13 @@ public class ItemOption extends BaseEntity {
     public ItemOption(
             Item item,
             String itemOptionName,
+            Integer additionalPrice,
             Integer stockQuantity,
             Integer ordering
     ) {
         this.item = item;
         this.itemOptionName = itemOptionName;
+        this.additionalPrice = additionalPrice;
         this.stockQuantity = stockQuantity;
         this.ordering = ordering;
     }

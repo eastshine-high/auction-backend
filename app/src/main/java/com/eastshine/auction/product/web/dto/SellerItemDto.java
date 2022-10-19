@@ -65,11 +65,13 @@ public class SellerItemDto {
             @NotNull
             private Integer ordering;
             private Integer stockQuantity;
+            private Integer additionalPrice;
 
             public com.eastshine.auction.product.domain.item.option.ItemOption toEntity(Item item) {
                 return com.eastshine.auction.product.domain.item.option.ItemOption.builder()
                         .item(item)
                         .itemOptionName(itemOptionName)
+                        .additionalPrice(additionalPrice)
                         .stockQuantity(stockQuantity)
                         .ordering(ordering)
                         .build();
@@ -97,6 +99,7 @@ public class SellerItemDto {
         public static class ItemOption {
             private Long id;
             private String itemOptionName;
+            private Integer additionalPrice;
             private Integer stockQuantity;
             private Integer ordering;
         }
@@ -124,6 +127,7 @@ public class SellerItemDto {
         public static class ItemOption {
             private Long id;
             private String itemOptionName;
+            private Integer additionalPrice;
             private Integer stockQuantity;
             private Integer ordering;
         }

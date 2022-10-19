@@ -64,6 +64,7 @@ public class ItemDto {
         public static class ItemOption {
             private long id;
             private String itemOptionName;
+            private Integer additionalPrice;
             private Integer stockQuantity;
             private Integer ordering;
         }

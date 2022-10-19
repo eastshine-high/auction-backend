@@ -37,7 +37,6 @@ class ItemControllerTest extends WebIntegrationTest {
     @BeforeEach
     void setUp() {
         itemRepository.deleteAll();
-        itemRepository.deleteAll();
         categoryFactory.deleteAll();
         userFactory.deleteAll();
 
@@ -65,6 +64,7 @@ class ItemControllerTest extends WebIntegrationTest {
         ItemOption option2 = ItemOption.builder()
                 .item(item)
                 .itemOptionName("70ml")
+                .additionalPrice(1000)
                 .stockQuantity(30)
                 .ordering(2)
                 .build();

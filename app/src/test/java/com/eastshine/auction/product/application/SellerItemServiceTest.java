@@ -51,6 +51,7 @@ class SellerItemServiceTest extends IntegrationTest {
         ItemOption itemOption = ItemOption.builder()
                 .itemOptionName("500ML")
                 .stockQuantity(500)
+                .additionalPrice(700)
                 .ordering(1)
                 .build();
         item.addItemOption(itemOption);
@@ -77,12 +78,14 @@ class SellerItemServiceTest extends IntegrationTest {
             String itemOptionName = "300ml";
             int ordering = 1;
             int optionStockQuantity = 9999;
+            int additionalPrice = 600;
 
             @DisplayName("등록된 상품을 반환한다.")
             @Test
             void it_returns_registerd_item() {
                 optionInfo = SellerItemDto.RegistrationRequest.ItemOption.builder()
                         .itemOptionName(itemOptionName)
+                        .additionalPrice(additionalPrice)
                         .ordering(ordering)
                         .stockQuantity(optionStockQuantity)
                         .build();
@@ -106,6 +109,7 @@ class SellerItemServiceTest extends IntegrationTest {
 
                 ItemOption itemOption = item.getItemOptions().get(0);
                 assertThat(itemOption.getItemOptionName()).isEqualTo(itemOptionName);
+                assertThat(itemOption.getAdditionalPrice()).isEqualTo(additionalPrice);
                 assertThat(itemOption.getOrdering()).isEqualTo(ordering);
                 assertThat(itemOption.getStockQuantity()).isEqualTo(optionStockQuantity);
             }

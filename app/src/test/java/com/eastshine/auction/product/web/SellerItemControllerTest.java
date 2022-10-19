@@ -44,6 +44,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
         SellerItemDto.RegistrationRequest.ItemOption optionRegistrationRequest = SellerItemDto.RegistrationRequest.ItemOption.builder()
                 .itemOptionName("300ml")
                 .stockQuantity(50)
+                .additionalPrice(500)
                 .ordering(1)
                 .build();
         SellerItemDto.RegistrationRequest registrationRequest = SellerItemDto.RegistrationRequest.builder()
@@ -75,6 +76,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void createItem() throws Exception {
                 validOptionRegistrationRequest = SellerItemDto.RegistrationRequest.ItemOption.builder()
                         .itemOptionName("300ml")
+                        .additionalPrice(500)
                         .stockQuantity(9999)
                         .ordering(1)
                         .build();
@@ -105,6 +107,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                                         fieldWithPath("itemOptionsTitle").description("상품 옵션의 제목"),
                                         fieldWithPath("itemOptions[]").description("상품 옵션").optional(),
                                         fieldWithPath("itemOptions[].itemOptionName").description("상품 옵션의 이름").optional(),
+                                        fieldWithPath("itemOptions[].additionalPrice").description("상품 옵션의 추가 가격").optional(),
                                         fieldWithPath("itemOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
                                         fieldWithPath("itemOptions[].ordering").description("옵션 순서").optional()
                                 )
@@ -227,6 +230,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .id(registeredItemOptionId)
                         .stockQuantity(30)
                         .itemOptionName("300ml")
+                        .additionalPrice(500)
                         .ordering(1)
                         .build();
                 patchRequest = SellerItemDto.PatchRequest.builder()
@@ -256,6 +260,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                                         fieldWithPath("itemOptions[]").description("상품 옵션").optional(),
                                         fieldWithPath("itemOptions[].id").description("상품 옵션 식별자").optional(),
                                         fieldWithPath("itemOptions[].itemOptionName").description("상품 옵션의 이름").optional(),
+                                        fieldWithPath("itemOptions[].additionalPrice").description("상품 옵션의 추가 가격").optional(),
                                         fieldWithPath("itemOptions[].stockQuantity").description("상품 옵션의 재고").optional(),
                                         fieldWithPath("itemOptions[].ordering").description("옵션 순서").optional()
                                 )

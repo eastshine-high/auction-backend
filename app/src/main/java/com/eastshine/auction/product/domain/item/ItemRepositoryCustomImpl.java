@@ -92,6 +92,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         return query.select(Projections.fields(ItemDto.Info.ItemOption.class,
                         itemOption.id,
                         itemOption.itemOptionName,
+                        itemOption.additionalPrice,
                         itemOption.stockQuantity,
                         itemOption.ordering))
                 .from(itemOption)
