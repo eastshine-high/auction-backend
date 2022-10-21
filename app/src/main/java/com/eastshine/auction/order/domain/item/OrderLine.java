@@ -76,4 +76,8 @@ public class OrderLine {
         this.orderCount = orderCount;
         this.deliveryStatus = DeliveryStatus.BEFORE_DELIVERY;
     }
+
+    public long calculateTotalAmount() {
+        return (itemPrice + itemOptionPrice) * orderCount;
+    }
 }

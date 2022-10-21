@@ -70,4 +70,10 @@ public class Order extends BaseEntity {
     public void setOrderLines(List<OrderLine> orderLineList) {
         this.orderLines = orderLineList;
     }
+
+    public long getTotalAmount() {
+        return orderLines.stream()
+                .mapToLong(OrderLine::calculateTotalAmount)
+                .sum();
+    }
 }
