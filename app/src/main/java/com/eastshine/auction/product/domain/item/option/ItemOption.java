@@ -34,7 +34,7 @@ public class ItemOption extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonIgnore
+    @JsonIgnore // JsonMergePatch의 ObjectMapper에서 발생하는 recursion 오류 방지를 위해 사용
     @ManyToOne
     @JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_item_option_item"))
     private Item item;
