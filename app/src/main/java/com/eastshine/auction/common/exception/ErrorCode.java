@@ -28,7 +28,10 @@ public enum ErrorCode {
     ITEM_NOT_FOUND("물품을 찾을 수 없습니다."),
     ITEM_OPTION_NOT_FOUND("물품 옵션을 찾을 수 없습니다."),
     ITEM_INACCESSIBLE("물품에 대한 접근 권한이 없습니다."),
-    ITEM_STOCK_QUANTITY_ERROR("물품 재고를 확인해 주세요.");
+    ITEM_STOCK_QUANTITY_ERROR("물품 재고를 확인해 주세요."),
+
+    // order
+    ORDER_ITEM_NOT_FOUND("주문 물품을 찾을 수 없습니다.");
     private final String errorMsg;
 
     public String getErrorMsg(Object... arg) {

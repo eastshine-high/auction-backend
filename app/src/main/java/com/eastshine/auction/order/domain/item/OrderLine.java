@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+@Getter
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Table(name = "order_line")
@@ -75,6 +76,10 @@ public class OrderLine {
         this.itemOptionPrice = itemOptionPrice;
         this.orderCount = orderCount;
         this.deliveryStatus = DeliveryStatus.BEFORE_DELIVERY;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 
     public long calculateTotalAmount() {
