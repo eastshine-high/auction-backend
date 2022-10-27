@@ -25,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
 
+@Getter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false, of = "id")
 @Table(name = "orders")
@@ -65,6 +66,11 @@ public class Order extends BaseEntity {
         this.userId = userId;
         this.deliveryFragment = deliveryFragment;
         this.orderStatus = OrderStatus.INIT;
+    }
+
+    public void addOrderLine(OrderLine orderLine) {
+        orderLine.setOrder(this);
+        orderLines.add(orderLine);
     }
 
     public void setOrderLines(List<OrderLine> orderLineList) {
