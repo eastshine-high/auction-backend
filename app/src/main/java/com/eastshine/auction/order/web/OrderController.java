@@ -45,4 +45,21 @@ public class OrderController {
         Order order = placeOrderService.placeOrder(request);
         return ResponseEntity.created(URI.create("/user-api/orders/" + order.getId())).build();
     }
+
+    /**
+     * 식별자에 해당하는 주문 정보를 응답합니다.
+     *
+     * @param id 주문 식별자
+     * @param authentication 인증 정보.
+     * @return 주문 정보.
+     */
+    @GetMapping("/{id}")
+    public OrderDto.Info getOrder(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        UserInfo userInfo = (UserInfo) authentication.getPrincipal();
+        Order order = orderService.getUserOrderInfo(id, userInfo.getId());
+        return OrderMapper.INSTANCE.of(order, order.getOrderLines());
+    }
 }

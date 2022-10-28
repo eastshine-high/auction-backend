@@ -32,7 +32,7 @@ public class OrderDto {
         private String receiverAddress2;
         private String etcMessage;
         @NotNull
-        private List<OrderLineRequest> orderItems;
+        private List<OrderLineRequest> orderLines;
 
         public void setOrderer(Long userId) {
             this.userId = userId;
@@ -69,17 +69,34 @@ public class OrderDto {
         private Integer orderCount;
     }
 
+    // 조회
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Info {
+        private Long orderId;
         private Long userId;
         private Long totalAmount;
-        private List<OrderLineInfo> orderLineInfos;
+        private DeliveryInfo deliveryInfo;
+        private String orderStatus;
+        private String orderStatusDescription;
+        private List<OrderLineInfo> orderLines;
     }
 
     @Getter
+    @Builder
+    public static class DeliveryInfo {
+        private final String receiverName;
+        private final String receiverPhone;
+        private final String receiverZipcode;
+        private final String receiverAddress1;
+        private final String receiverAddress2;
+        private final String etcMessage;
+    }
+
+    @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderLineInfo {
@@ -91,5 +108,8 @@ public class OrderDto {
         private Long optionName;
         private Integer itemOptionPrice;
         private Integer orderCount;
+        private Long totalAmount;
+        private String deliveryStatus;
+        private String deliveryStatusDescription;
     }
 }
