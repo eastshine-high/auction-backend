@@ -32,4 +32,9 @@ public class OrderService {
                         target.addOrderLine(orderLine);
                 });
     }
+
+    public Order getUserOrderInfo(Long orderId, Long userId) {
+        return orderRepository.findUserOrderInfo(orderId, userId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
+    }
 }

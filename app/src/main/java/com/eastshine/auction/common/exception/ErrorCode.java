@@ -6,7 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorCode {
-    // Common
+
+    // common
     COMMON_SYSTEM_ERROR("일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요."), // 장애 상황
     COMMON_INVALID_ARGUMENT("요청한 값이 올바르지 않습니다."),
     COMMON_ENTITY_NOT_FOUND("요청한 정보를 찾을 수 없습니다."),
@@ -31,6 +32,7 @@ public enum ErrorCode {
     ITEM_STOCK_QUANTITY_ERROR("물품 재고를 확인해 주세요."),
 
     // order
+    ORDER_NOT_FOUND("주문을 찾을 수 없습니다."),
     ORDER_ITEM_NOT_FOUND("주문 물품을 찾을 수 없습니다.");
     private final String errorMsg;
 

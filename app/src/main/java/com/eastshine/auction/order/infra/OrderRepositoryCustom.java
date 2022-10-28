@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface OrderRepositoryCustom {
     Optional<OrderLine> findOrderLineForInitialRegistration(OrderDto.OrderLineRequest request);
+
+    Optional<Order> findUserOrderInfo(Long orderId, Long userId);
 }
