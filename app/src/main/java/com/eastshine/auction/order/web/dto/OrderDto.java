@@ -105,7 +105,7 @@ public class OrderDto {
         private String itemName;
         private Integer itemPrice;
         private Long itemOptionId;
-        private Long itemOptionName;
+        private String itemOptionName;
         private Integer itemOptionPrice;
         private Integer orderCount;
         private Long totalAmount;
