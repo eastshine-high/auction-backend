@@ -2,71 +2,10 @@
 :toc: left
 :toclevels: 3
 
-== 게스트 API
-
-=== User
-
-==== 토큰 받기(로그인)
-
-POST /api/session
-
-include::{snippets}/guest-session-post-201/request-fields.adoc[]
-
-**Request**
-
-(보안 개선 필요. HTTPS)
-
-include::{snippets}/guest-session-post-201/http-request.adoc[]
-
-**Response**
-
-(보안 개선 필요. HTTPS)
-
-include::{snippets}/guest-session-post-201/http-response.adoc[]
-
-=== Product
-
-==== 디스플레이 카테고리 조회
-
-GET /api/display/categories
-
-**Request**
-
-include::{snippets}/guest-displayCategories-get-200/http-request.adoc[]
-
-**Response**
-
-include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
-
-==== 상품 검색
-
-GET /api/products
-
-include::{snippets}/guest-products-get-200/request-parameters.adoc[]
-
-**Request**
-
-include::{snippets}/guest-products-get-200/http-request.adoc[]
-
-**Response**
-
-include::{snippets}/guest-products-get-200/http-response.adoc[]
-
-==== 상품 상세 조회
-
-GET /api/products/{id}
-
-**Request**
-
-include::{snippets}/guest-products-id-get-200/http-request.adoc[]
-
-**Response**
-
-include::{snippets}/guest-products-id-get-200/http-response.adoc[]
 
 == 사용자 API
 
-=== User
+=== user 도메인
 
 ==== 사용자 등록
 
@@ -82,6 +21,7 @@ include::{snippets}/user-users-post-201/http-request.adoc[]
 
 include::{snippets}/user-users-post-201/http-response.adoc[]
 
+
 ==== 사용자 조회
 
 GET /user-api/users/{id}
@@ -93,6 +33,7 @@ include::{snippets}/user-users-id-get-200/http-request.adoc[]
 **Response**
 
 include::{snippets}/user-users-id-get-200/http-response.adoc[]
+
 
 ==== 사용자 닉네임 변경
 
@@ -127,9 +68,112 @@ include::{snippets}/user-users-id-delete-200/http-response.adoc[]
 
 include::{snippets}/user-users-id-delete-401/http-response.adoc[]
 
+
+=== order 도메인
+
+==== 주문
+
+POST /user-api/orders/
+
+include::{snippets}/user-orders-post-201/request-fields.adoc[]
+
+**Request : Authorization 헤더에 사용자 토큰 정보를 포함하여 요청**
+
+include::{snippets}/user-orders-post-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 유효한 인증 토큰을 포함, 상태 코드 201와 Location 응답**
+
+include::{snippets}/user-orders-post-201/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 토큰의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/user-orders-post-401/http-response.adoc[]
+
+
+==== 주문 조회
+
+GET /user-api/orders/{id}
+
+**Request : Authorization 헤더에 사용자 토큰 정보를 포함하여 조회**
+
+include::{snippets}/user-orders-id-get-200/http-request.adoc[]
+
+**Response : Authorization 헤더에 유효한 인증 토큰을 포함하여 조회**
+
+include::{snippets}/user-orders-id-get-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 토큰의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/user-orders-id-get-401/http-response.adoc[]
+
+
+
+== 게스트 API
+
+=== user 도메인
+
+==== 토큰 받기(로그인)
+
+POST /api/session
+
+include::{snippets}/guest-session-post-201/request-fields.adoc[]
+
+**Request**
+
+(보안 개선 필요. HTTPS)
+
+include::{snippets}/guest-session-post-201/http-request.adoc[]
+
+**Response**
+
+(보안 개선 필요. HTTPS)
+
+include::{snippets}/guest-session-post-201/http-response.adoc[]
+
+=== product 도메인
+
+==== 디스플레이 카테고리 조회
+
+GET /api/display/categories
+
+**Request**
+
+include::{snippets}/guest-displayCategories-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
+
+==== 물품 검색
+
+GET /api/items
+
+include::{snippets}/guest-items-get-200/request-parameters.adoc[]
+
+**Request**
+
+include::{snippets}/guest-items-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/guest-items-get-200/http-response.adoc[]
+
+==== 물품 상세 조회
+
+GET /api/items/{id}
+
+**Request**
+
+include::{snippets}/guest-items-id-get-200/http-request.adoc[]
+
+**Response**
+
+include::{snippets}/guest-items-id-get-200/http-response.adoc[]
+
+
 == 판매자 API
 
-=== User
+=== user 도메인
 
 ==== 사용자 등록
 
@@ -145,6 +189,7 @@ include::{snippets}/seller-users-post-201/http-request.adoc[]
 
 include::{snippets}/seller-users-post-201/http-response.adoc[]
 
+
 ==== 사용자 조회
 
 GET /seller-api/users/{id}
@@ -156,6 +201,7 @@ include::{snippets}/seller-users-id-get-200/http-request.adoc[]
 **Response**
 
 include::{snippets}/seller-users-id-get-200/http-response.adoc[]
+
 
 ==== 사용자 닉네임 변경
 
@@ -173,6 +219,7 @@ include::{snippets}/seller-users-id-nickname-patch-200/http-response.adoc[]
 
 include::{snippets}/seller-users-id-nickname-patch-401/http-response.adoc[]
 
+
 ==== 사용자 삭제
 
 DELETE /seller-api/users/{id}
@@ -189,76 +236,80 @@ include::{snippets}/seller-users-id-delete-200/http-response.adoc[]
 
 include::{snippets}/seller-users-id-delete-401/http-response.adoc[]
 
-=== Product
 
-==== 상품 등록
+=== product 도메인
 
-POST /seller-api/products
+==== 물품 등록
 
-include::{snippets}/seller-products-post-201/request-fields.adoc[]
+POST /seller-api/items
+
+include::{snippets}/seller-items-post-201/request-fields.adoc[]
 
 **Request : Authorization 헤더에 등록 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-products-post-401/http-request.adoc[]
+include::{snippets}/seller-items-post-401/http-request.adoc[]
 
 **Response : Authorization 헤더에 등록 권한이 있는 인증 정보를 포함, 상태 코드 201와 Location 응답**
 
-include::{snippets}/seller-products-post-201/http-response.adoc[]
+include::{snippets}/seller-items-post-201/http-response.adoc[]
 
 **Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-products-post-401/http-response.adoc[]
+include::{snippets}/seller-items-post-401/http-response.adoc[]
 
-==== 상품 조회
 
-GET /seller-api/products/{id}
+==== 물품 조회
+
+GET /seller-api/items/{id}
 
 **Request**
 
-include::{snippets}/seller-products-id-get-200/http-request.adoc[]
+include::{snippets}/seller-items-id-get-200/http-request.adoc[]
 
 **Response**
 
-include::{snippets}/seller-products-id-get-200/http-response.adoc[]
+include::{snippets}/seller-items-id-get-200/http-response.adoc[]
 
-==== 상품 수정
 
-PATCH /seller-api/products/{id}
+==== 물품 수정
 
-include::{snippets}/seller-products-id-patch-200/request-fields.adoc[]
+PATCH /seller-api/items/{id}
+
+include::{snippets}/seller-items-id-patch-200/request-fields.adoc[]
 
 **Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-products-id-patch-401/http-request.adoc[]
+include::{snippets}/seller-items-id-patch-401/http-request.adoc[]
 
 **Response : Authorization 헤더에 수정 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
 
-include::{snippets}/seller-products-id-patch-200/http-response.adoc[]
+include::{snippets}/seller-items-id-patch-200/http-response.adoc[]
 
 **Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-products-id-patch-401/http-response.adoc[]
+include::{snippets}/seller-items-id-patch-401/http-response.adoc[]
 
-==== 상품 삭제
 
-DELETE /seller-api/products/{id}
+==== 물품 삭제
+
+DELETE /seller-api/items/{id}
 
 **Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
-include::{snippets}/seller-products-id-delete-401/http-request.adoc[]
+include::{snippets}/seller-items-id-delete-401/http-request.adoc[]
 
 **Response : Authorization 헤더에 삭제 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
 
-include::{snippets}/seller-products-id-delete-200/http-response.adoc[]
+include::{snippets}/seller-items-id-delete-200/http-response.adoc[]
 
 **Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
 
-include::{snippets}/seller-products-id-delete-401/http-response.adoc[]
+include::{snippets}/seller-items-id-delete-401/http-response.adoc[]
 
 
 == 관리자 API
 
-=== Product
+=== product 도메인
 
 ==== 카테고리 등록
 
