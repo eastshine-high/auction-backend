@@ -25,14 +25,14 @@ class ItemStockServiceTest extends IntegrationTest {
     ItemRepository itemRepository;
 
     @Nested
-    @DisplayName("decreaseStock 메소드는")
+    @DisplayName("decreaseStockWithLock 메소드는")
     class Describe_decreaseStock{
 
         @Test
-        @DisplayName("100개의 재고 동시 차감 요청을 처리할 수 있다.")
-        void decreaseStock() throws InterruptedException {
+        @DisplayName("5개의 재고 동시 차감 요청을 처리할 수 있다.")
+        void decreaseStockWithLock() throws InterruptedException {
             int stockQuantity = 500;
-            int concurrentConnectionCount = 100;
+            int concurrentConnectionCount = 5;
             Item item = Item.builder()
                     .stockQuantity(stockQuantity)
                     .categoryId(500)
