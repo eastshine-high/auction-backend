@@ -21,6 +21,7 @@ application {
 }
 
 configurations {
+    asciidoctorExtensions
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -44,6 +45,7 @@ dependencies {
 
     // RestDocs
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExtensions 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 
     // google guava
     implementation 'com.google.guava:guava:30.1-jre'
@@ -121,6 +123,7 @@ tasks.named('test') {
 
 asciidoctor{
     dependsOn(test)
+    configurations 'asciidoctorExtensions'
     sourceDir 'src/main/docs/asciidoc'
     attributes \
       'snippets': file('build/generated-snippets')
@@ -130,13 +133,14 @@ asciidoctor.doFirst {
     delete file('src/main/resources/static/docs')
 }
 
-bootJar {
+task copyDocument(type: Copy) {
     dependsOn asciidoctor
+    from file("build/docs/asciidoc")
+    into file("src/main/resources/static/docs")
+}
 
-    copy{
-        from 'build/docs/asciidoc'
-        into 'src/main/resources/static/docs'
-    }
+build {
+    dependsOn copyDocument
 }
 
 //querydsl 추가 시작
