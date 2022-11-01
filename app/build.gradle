@@ -112,21 +112,24 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
 }
 
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
 clean {
     delete 'out'
 }
 
 tasks.named('test') {
-    // Use JUnit Platform for unit tests.
+    outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
 asciidoctor{
     dependsOn(test)
     configurations 'asciidoctorExtensions'
+    inputs.dir snippetsDir
     sourceDir 'src/main/docs/asciidoc'
-    attributes \
-      'snippets': file('build/generated-snippets')
 }
 
 asciidoctor.doFirst {
