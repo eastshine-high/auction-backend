@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @RequiredArgsConstructor
 @Service
 public class OrderService {
@@ -20,19 +18,17 @@ public class OrderService {
     @Transactional
     public Order registerOrder(OrderDto.Request request) {
         Order order = request.toEntity();
-        addOrderLinesToOrder(request.getOrderLines(), order);
+        request.getOrderLines().stream().forEach(orderLineRequest ->
+                order.addOrderLine(getOrderLineToRegister(orderLineRequest)));
         return orderRepository.save(order);
     }
 
-    private void addOrderLinesToOrder(List<OrderDto.OrderLineRequest> requests, Order target) {
-        requests.stream()
-                .forEach(orderLineRequest -> {
-                        OrderLine orderLine = orderRepository.findOrderLineForInitialRegistration(orderLineRequest)
-                                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_ITEM_NOT_FOUND));
-                        target.addOrderLine(orderLine);
-                });
+    private OrderLine getOrderLineToRegister(OrderDto.OrderLineRequest request) {
+        return orderRepository.findOrderLineForInitialRegistration(request)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_ITEM_NOT_FOUND));
     }
 
+    @Transactional(readOnly = true)
     public Order getUserOrderInfo(Long orderId, Long userId) {
         return orderRepository.findUserOrderInfo(orderId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
