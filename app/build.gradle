@@ -11,8 +11,6 @@ plugins {
 
     //querydsl
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
-
-    id 'org.barfuin.gradle.taskinfo' version '1.0.5'
 }
 
 application {
@@ -25,6 +23,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
 repositories {
@@ -94,6 +93,9 @@ dependencies {
     // Spring Data JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // querydsl
+    implementation 'com.querydsl:querydsl-jpa'
+
     // Spring Data Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     // Embedded Redis
@@ -101,11 +103,9 @@ dependencies {
     // Redisson
     implementation 'org.redisson:redisson-spring-boot-starter:3.17.7'
 
-    // Query parameter log
-    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
-
-    //querydsl
-    implementation 'com.querydsl:querydsl-jpa'
+    // Kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.testcontainers:kafka:1.15.3'
 
     // RDB
     runtimeOnly 'com.h2database:h2'
@@ -113,6 +113,9 @@ dependencies {
 
     // Flyway
     implementation 'org.flywaydb:flyway-core'
+
+    // Query parameter log
+    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
 }
 
 ext {
@@ -153,9 +156,6 @@ querydsl {
 }
 sourceSets {
     main.java.srcDir querydslDir
-}
-configurations {
-    querydsl.extendsFrom compileClasspath
 }
 compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
