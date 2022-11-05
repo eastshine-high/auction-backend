@@ -6,7 +6,6 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
@@ -21,9 +20,8 @@ import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 
-@Profile("local")
 @Configuration
-public class KafkaContainersConfiguration {
+public class KafkaContainersConfig {
 
     private static KafkaContainer kafkaContainer;
 
