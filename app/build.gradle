@@ -129,6 +129,11 @@ tasks.named('test') {
 
 asciidoctor{
     dependsOn(test)
+
+    onlyIf {
+        file(snippetsDir).exists()
+    }
+
     configurations 'asciidoctorExtensions'
     inputs.dir snippetsDir
     sourceDir 'src/main/docs/asciidoc'
