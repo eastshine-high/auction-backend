@@ -13,6 +13,7 @@ public enum ErrorCode {
     COMMON_ENTITY_NOT_FOUND("요청한 정보를 찾을 수 없습니다."),
     COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
     COMMON_INVALID_TOKEN("유효하지 않은 토큰입니다."),
+    COMMON_EXPIRED_TOKEN("유효 시간이 만료된 토큰입니다."),
     COMMON_UNAUTHORIZED_REQUEST("요청 권한이 없습니다."),
     COMMON_LOCK_FAIL("LOCK 을 수행하는 중에 오류가 발생하였습니다."),
 
