@@ -1,10 +1,9 @@
 package com.eastshine.auction.order.domain;
 
 
-import com.eastshine.auction.common.model.BaseEntity;
+import com.eastshine.auction.common.model.BaseTimeEntity;
 import com.eastshine.auction.order.domain.fragment.DeliveryFragment;
-import com.eastshine.auction.order.domain.item.OrderLine;
-import com.google.common.collect.Lists;
+import com.eastshine.auction.order.domain.item.OrderItem;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -17,28 +16,28 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper=false, of = "id")
+@NoArgsConstructor
 @Table(name = "orders")
 @Entity
-public class Order extends BaseEntity {
+public class Order extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
     private Long userId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.PERSIST)
-    private List<OrderLine> orderLines = Lists.newArrayList();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    private Set<OrderItem> orderItems = new HashSet<>();
 
     @Embedded
     private DeliveryFragment deliveryFragment;
@@ -50,6 +49,7 @@ public class Order extends BaseEntity {
     @RequiredArgsConstructor
     public enum OrderStatus {
         INIT("주문시작"),
+        ORDER_CANCELED("주문취소"),
         ORDER_COMPLETE("주문완료"),
         DELIVERY_PREPARE("배송준비"),
         IN_DELIVERY("배송중"),
@@ -68,18 +68,14 @@ public class Order extends BaseEntity {
         this.orderStatus = OrderStatus.INIT;
     }
 
-    public void addOrderLine(OrderLine orderLine) {
-        orderLine.setOrder(this);
-        orderLines.add(orderLine);
+    public void addOrderItem(OrderItem orderItem) {
+        orderItem.setOrder(this);
+        orderItems.add(orderItem);
     }
 
-    public void setOrderLines(List<OrderLine> orderLineList) {
-        this.orderLines = orderLineList;
-    }
-
-    public long getTotalAmount() {
-        return orderLines.stream()
-                .mapToLong(OrderLine::calculateTotalAmount)
+    public long calculateTotalAmount() {
+        return orderItems.stream()
+                .mapToLong(OrderItem::calculateTotalAmount)
                 .sum();
     }
 }
