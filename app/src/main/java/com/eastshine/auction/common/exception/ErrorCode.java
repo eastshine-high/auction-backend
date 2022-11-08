@@ -34,7 +34,8 @@ public enum ErrorCode {
 
     // order
     ORDER_NOT_FOUND("주문을 찾을 수 없습니다."),
-    ORDER_ITEM_NOT_FOUND("주문 물품을 찾을 수 없습니다.");
+    ORDER_ITEM_NOT_FOUND("주문 물품을 찾을 수 없습니다."),
+    ORDER_ITEM_OPTION_NOT_FOUND("주문 물품 옵션을 찾을 수 없습니다.");
     private final String errorMsg;
 
     public String getErrorMsg(Object... arg) {

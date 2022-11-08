@@ -16,12 +16,11 @@ public class PlaceOrderService {
     private final OrderProducer orderProducer;
 
     @Transactional
-    public Order placeOrder(OrderDto.Request request) {
-        // registerOrder.getTotalAmount(); Todo 1. 결제 검증 : '총 결제 금액'과 '총 물품 가격 합계'를 비교
-        request.getOrderLines().stream().forEach(productStockService::decreaseStock); // 2. 재고 차감
+    public Order placeOrder(OrderDto.PlaceOrderRequest request) {
+        // Todo 1. 결제 검증 : '총 결제 금액'과 '총 물품 가격 합계'를 비교
+        request.getOrderItems().stream().forEach(productStockService::decreaseStock); // 2. 재고 차감
         Order registeredOrder = orderService.registerOrder(request);// 3. 주문 등록
-
-        orderProducer.sendMail(request.getUserInfo(), registeredOrder); // 이벤트 발행
+        orderProducer.sendMail(request.getUserInfo(), registeredOrder); // 4. 메일 발송 이벤트 발행
         return registeredOrder;
     }
 }

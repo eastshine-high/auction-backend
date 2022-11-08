@@ -11,10 +11,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,44 +56,37 @@ class ProductStockServiceTest extends IntegrationTest {
     @DisplayName("decreaseStock 메소드는")
     class Describe_decreaseStock{
 
-        @ParameterizedTest
-        @NullSource
-        @ValueSource(longs = {0L})
-        @DisplayName("요청 아규먼트의 itemOptionId 속성 값이 null이거나 0일 경우, Item의 재고를 차감한다.")
-        void decreaseStockWithEmptyItemOptionId(Long itemOptionId) {
+        @Test
+        @DisplayName("요청 아규먼트의 itemOption 리스트가 비어있을 경우, Item의 재고를 차감한다.")
+        void decreaseStockWithEmptyItemOptionId() {
             int orderCount = 3;
-            OrderDto.OrderLineRequest orderLineRequest = OrderDto.OrderLineRequest.builder()
-                    .itemId(item.getId())
-                    .orderCount(orderCount)
-                    .itemOptionId(itemOptionId)
-                    .build();
+            OrderDto.PlaceOrderItem orderItem = new OrderDto.PlaceOrderItem(item.getId(), orderCount,null);
 
-            productStockService.decreaseStock(orderLineRequest);
+            productStockService.decreaseStock(orderItem);
 
             Item actualItem = itemRepository.findById(ProductStockServiceTest.item.getId()).get();
             ItemOption actualItemOption = itemOptionRepository.findById(ProductStockServiceTest.itemOption.getId()).get();
 
             assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY - orderCount);
             assertThat(actualItemOption.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
+            assertThat(actualItemOption.getStockQuantity()).isNotEqualTo(STOCK_QUANTITY - orderCount);
         }
 
         @Test
-        @DisplayName("요청 아규먼트의 itemOptionId 속성 값이 존재할 경우, ItemOption의 재고를 차감한다.")
+        @DisplayName("요청 아규먼트의 itemOption 리스트가 있을 경우, ItemOption의 재고를 차감한다.")
         void decreaseStockWithExistItemOptionId() {
             int orderCount = 3;
-            OrderDto.OrderLineRequest orderLineRequest = OrderDto.OrderLineRequest.builder()
-                    .itemId(item.getId())
-                    .itemOptionId(itemOption.getId())
-                    .orderCount(orderCount)
-                    .build();
+            OrderDto.PlaceOrderItem orderItem = new OrderDto.PlaceOrderItem(item.getId(), 0,
+                    List.of(new OrderDto.PlaceOrderItemOption(itemOption.getId(), orderCount)));
 
-            productStockService.decreaseStock(orderLineRequest);
+            productStockService.decreaseStock(orderItem);
 
             Item actualItem = itemRepository.findById(ProductStockServiceTest.item.getId()).get();
             ItemOption actualItemOption = itemOptionRepository.findById(ProductStockServiceTest.itemOption.getId()).get();
 
-            assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
             assertThat(actualItemOption.getStockQuantity()).isEqualTo(STOCK_QUANTITY - orderCount);
+            assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
+            assertThat(actualItem.getStockQuantity()).isNotEqualTo(STOCK_QUANTITY - orderCount);
         }
     }
 }

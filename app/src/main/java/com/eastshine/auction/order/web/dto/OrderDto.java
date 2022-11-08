@@ -19,7 +19,7 @@ public class OrderDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Request {
+    public static class PlaceOrderRequest { // 그냥 Request라 정의하면 Cancel인지 place인지 알 수 없다.
         private UserInfo userInfo;
         @NotBlank
         private String receiverName;
@@ -33,7 +33,7 @@ public class OrderDto {
         private String receiverAddress2;
         private String etcMessage;
         @NotNull
-        private List<OrderLineRequest> orderLines;
+        private List<PlaceOrderItem> orderItems;
 
         public void setUserInfo(UserInfo userInfo) {
             this.userInfo = userInfo;
@@ -60,13 +60,20 @@ public class OrderDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class OrderLineRequest {
-
+    public static class PlaceOrderItem {
         @NotNull
         private Long itemId;
-        private Long itemOptionId;
+        private Integer orderCount;
+        List<PlaceOrderItemOption> orderItemOptions;
+    }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PlaceOrderItemOption {
         @NotNull
+        private Long itemOptionId;
         private Integer orderCount;
     }
 
@@ -82,7 +89,7 @@ public class OrderDto {
         private DeliveryInfo deliveryInfo;
         private String orderStatus;
         private String orderStatusDescription;
-        private List<OrderLineInfo> orderLines;
+        private List<OrderItemInfo> orderItems;
     }
 
     @Getter
@@ -100,17 +107,27 @@ public class OrderDto {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class OrderLineInfo {
+    public static class OrderItemInfo {
         private Long sellerId;
         private Long itemId;
         private String itemName;
         private Integer itemPrice;
-        private Long itemOptionId;
-        private String itemOptionName;
-        private Integer itemOptionPrice;
         private Integer orderCount;
         private Long totalAmount;
         private String deliveryStatus;
         private String deliveryStatusDescription;
+        private List<OrderItemOptionInfo> orderItemOptions;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OrderItemOptionInfo {
+        private Long itemOptionId;
+        private String itemOptionName;
+        private Integer additionalPrice;
+        private Integer orderCount;
+        private Long totalAmount;
     }
 }

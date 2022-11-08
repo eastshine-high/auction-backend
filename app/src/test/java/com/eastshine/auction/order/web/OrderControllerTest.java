@@ -91,10 +91,12 @@ class OrderControllerTest extends WebIntegrationTest {
         itemOptionRepository.save(option2);
         registeredItemOptionId2 = option2.getId();
 
-        OrderDto.Request orderRequest = OrderDto.Request.builder()
-                .orderLines(List.of(
-                        new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId1, 1),
-                        new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId2, 2)))
+        OrderDto.PlaceOrderRequest orderRequest = OrderDto.PlaceOrderRequest.builder()
+                .orderItems(List.of(
+                        new OrderDto.PlaceOrderItem(registeredItemId, 0,
+                                List.of(new OrderDto.PlaceOrderItemOption(registeredItemOptionId1, 2),
+                                        new OrderDto.PlaceOrderItemOption(registeredItemOptionId2, 3)))
+                ))
                 .receiverAddress1("경기도 안양시")
                 .receiverAddress2("만안구")
                 .receiverPhone("01026799999")
@@ -112,7 +114,8 @@ class OrderControllerTest extends WebIntegrationTest {
 
     @AfterEach
     void tearDown() {
-        jdbcTemplate.execute("delete from order_line");
+        jdbcTemplate.execute("delete from order_item_option");
+        jdbcTemplate.execute("delete from order_item");
         jdbcTemplate.execute("delete from orders");
         itemRepository.deleteAll();
         categoryFactory.deleteAll();
@@ -134,16 +137,18 @@ class OrderControllerTest extends WebIntegrationTest {
             String receiverName = "최동호";
             String etcMessage = "부재시 경비실에 맡겨주세요.";
 
-            OrderDto.Request orderRequest = OrderDto.Request.builder()
+            OrderDto.PlaceOrderRequest orderRequest = OrderDto.PlaceOrderRequest.builder()
                     .receiverAddress1(receiverAddress1)
                     .receiverAddress2(receiverAddress2)
                     .receiverZipcode(receiverZipcode)
                     .receiverPhone(receiverPhone)
                     .receiverName(receiverName)
                     .etcMessage(etcMessage)
-                    .orderLines(List.of(
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId1, 2),
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId2, 1)))
+                    .orderItems(List.of(
+                            new OrderDto.PlaceOrderItem(registeredItemId, 0,
+                                    List.of(new OrderDto.PlaceOrderItemOption(registeredItemOptionId1, 2),
+                                            new OrderDto.PlaceOrderItemOption(registeredItemOptionId2, 3)))
+                    ))
                     .build();
 
             mockMvc.perform(
@@ -160,10 +165,12 @@ class OrderControllerTest extends WebIntegrationTest {
                                     fieldWithPath("receiverPhone").description("수령자 휴대폰번호"),
                                     fieldWithPath("receiverName").description("수령자명"),
                                     fieldWithPath("etcMessage").description("남기는 말").optional(),
-                                    fieldWithPath("orderLines[]").description("주문 항목"),
-                                    fieldWithPath("orderLines[].itemId").description("주문 항목의 물품 식별자"),
-                                    fieldWithPath("orderLines[].itemOptionId").description("주문 항목의 물품 옵션 식별자").optional(),
-                                    fieldWithPath("orderLines[].orderCount").description("주문 항목의 주문 수량")
+                                    fieldWithPath("orderItems[]").description("주문 물품 리스트"),
+                                    fieldWithPath("orderItems[].itemId").description("주문 물품 식별자"),
+                                    fieldWithPath("orderItems[].orderCount").description("주문 물품의 주문 수량").optional(),
+                                    fieldWithPath("orderItems[].orderItemOptions[]").description("주문 물품의 옵션 리스트"),
+                                    fieldWithPath("orderItems[].orderItemOptions[].itemOptionId").description("주문 물품 옵션의 식별자"),
+                                    fieldWithPath("orderItems[].orderItemOptions[].orderCount").description("주문 물품 옵션의 주문 수량")
                             )
                     ));
         }
@@ -178,10 +185,12 @@ class OrderControllerTest extends WebIntegrationTest {
             String receiverName = "최동호";
             String etcMessage = "부재시 경비실에 맡겨주세요.";
 
-            OrderDto.Request orderRequest = OrderDto.Request.builder()
-                    .orderLines(List.of(
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId1, 2),
-                            new OrderDto.OrderLineRequest(registeredItemId, registeredItemOptionId2, 1)))
+            OrderDto.PlaceOrderRequest orderRequest = OrderDto.PlaceOrderRequest.builder()
+                    .orderItems(List.of(
+                            new OrderDto.PlaceOrderItem(registeredItemId, 0,
+                                    List.of(new OrderDto.PlaceOrderItemOption(registeredItemOptionId1, 2),
+                                            new OrderDto.PlaceOrderItemOption(registeredItemOptionId2, 3)))
+                    ))
                     .receiverAddress1(receiverAddress1)
                     .receiverAddress2(receiverAddress2)
                     .receiverZipcode(receiverZipcode)
