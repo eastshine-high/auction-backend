@@ -1,7 +1,8 @@
 package com.eastshine.auction.order.infra;
 
 import com.eastshine.auction.order.domain.Order;
-import com.eastshine.auction.order.domain.item.OrderLine;
+import com.eastshine.auction.order.domain.item.OrderItem;
+import com.eastshine.auction.order.domain.item.OrderItemOption;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -11,7 +12,8 @@ import javax.persistence.EntityManager;
 import java.util.Optional;
 
 import static com.eastshine.auction.order.domain.QOrder.order;
-import static com.eastshine.auction.order.domain.item.QOrderLine.orderLine;
+import static com.eastshine.auction.order.domain.item.QOrderItem.orderItem;
+import static com.eastshine.auction.order.domain.item.QOrderItemOption.orderItemOption;
 import static com.eastshine.auction.product.domain.item.QItem.item;
 import static com.eastshine.auction.product.domain.item.option.QItemOption.itemOption;
 
@@ -23,22 +25,33 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Optional<OrderLine> findOrderLineForInitialRegistration(OrderDto.OrderLineRequest request) {
+    public Optional<OrderItem> findInitialOrderItemToRegister(OrderDto.PlaceOrderItem request) {
         return Optional.ofNullable(
-                query.select(Projections.fields(OrderLine.class,
+                query.select(Projections.fields(OrderItem.class,
                                 item.createdBy.as("sellerId"),
                                 item.id.as("itemId"),
                                 item.name.as("itemName"),
                                 item.price.as("itemPrice"),
-                                itemOption.id.as("itemOptionId"),
-                                itemOption.itemOptionName,
-                                itemOption.additionalPrice.coalesce(0).as("itemOptionPrice"),
                                 Expressions.as(Expressions.constant(request.getOrderCount()), "orderCount"),
-                                Expressions.as(Expressions.constant(OrderLine.DeliveryStatus.BEFORE_DELIVERY), "deliveryStatus")
+                                Expressions.as(Expressions.constant(OrderItem.DeliveryStatus.BEFORE_DELIVERY), "deliveryStatus")
                         ))
                         .from(item)
-                        .leftJoin(item.itemOptions, itemOption).on(itemOption.id.eq(request.getItemOptionId()))
                         .where(item.id.eq(request.getItemId()))
+                        .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<OrderItemOption> findInitialOrderItemOptionToRegister(OrderDto.PlaceOrderItemOption request) {
+        return Optional.ofNullable(
+                query.select(Projections.fields(OrderItemOption.class,
+                                itemOption.id.as("itemOptionId"),
+                                itemOption.itemOptionName,
+                                itemOption.additionalPrice.coalesce(0).as("additionalPrice"),
+                                Expressions.as(Expressions.constant(request.getOrderCount()), "orderCount")
+                        ))
+                        .from(itemOption)
+                        .where(itemOption.id.eq(request.getItemOptionId()))
                         .fetchOne()
         );
     }
@@ -47,7 +60,8 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     public Optional<Order> findUserOrderInfo(Long orderId, Long userId) {
         return Optional.ofNullable(
                 query.selectFrom(order)
-                        .join(order.orderLines, orderLine).fetchJoin()
+                        .join(order.orderItems, orderItem).fetchJoin()
+                        .leftJoin(orderItem.orderItemOptions, orderItemOption).fetchJoin()
                         .where(order.id.eq(orderId)
                                 .and(order.userId.eq(userId)))
                         .fetchOne()

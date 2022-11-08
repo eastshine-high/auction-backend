@@ -37,7 +37,7 @@ public class OrderController {
      */
     @PostMapping()
     public ResponseEntity placeOrder(
-            @RequestBody @Validated OrderDto.Request request,
+            @RequestBody @Validated OrderDto.PlaceOrderRequest request,
             Authentication authentication
     ) {
         UserInfo userInfo = (UserInfo) authentication.getPrincipal();
@@ -60,6 +60,6 @@ public class OrderController {
     ) {
         UserInfo userInfo = (UserInfo) authentication.getPrincipal();
         Order order = orderService.getUserOrderInfo(id, userInfo.getId());
-        return OrderMapper.INSTANCE.of(order, order.getOrderLines());
+        return OrderMapper.INSTANCE.of(order, order.getOrderItems());
     }
 }
