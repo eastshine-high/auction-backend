@@ -53,4 +53,23 @@ class ItemOptionTest {
             }
         }
     }
+
+    @DisplayName("increaseStockQuantity 메소드는")
+    @Nested
+    class Describe_increaseStockQuantity{
+
+        @Test
+        @DisplayName("재고를 증가시킨다.")
+        void it_increase_stockQuantity() {
+            int stockQuantity = 30;
+            int increaseQuantity = 1;
+            ItemOption itemOption = ItemOption.builder()
+                    .stockQuantity(stockQuantity)
+                    .build();
+
+            itemOption.increaseStockQuantity(increaseQuantity);
+
+            assertThat(itemOption.getStockQuantity()).isEqualTo(stockQuantity + increaseQuantity);
+        }
+    }
 }
