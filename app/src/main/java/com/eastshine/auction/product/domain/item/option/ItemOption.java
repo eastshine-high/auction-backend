@@ -69,4 +69,8 @@ public class ItemOption extends BaseEntity {
 
         this.stockQuantity -= quantity;
     }
+
+    public void increaseStockQuantity(int quantity) {
+        this.stockQuantity += quantity;
+    }
 }

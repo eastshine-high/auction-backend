@@ -79,4 +79,60 @@ class ItemStockServiceTest extends IntegrationTest {
                     .hasMessage(ErrorCode.ITEM_NOT_FOUND.getErrorMsg());
         }
     }
+
+    @Nested
+    @DisplayName("increaseStockWithLock 메소드는")
+    class Describe_increaseStock{
+
+        @Test
+        @DisplayName("4개의 재고 동시 증가 요청을 처리할 수 있다.") // Github action 환경의 성능 문제로 테스트 동시 요청 최소화
+        void increaseStockWithLock() throws InterruptedException {
+            int stockQuantity = 500;
+            int concurrentConnectionCount = 4;
+            Item item = Item.builder()
+                    .stockQuantity(stockQuantity)
+                    .categoryId(500)
+                    .name("김치")
+                    .onSale(true)
+                    .price(30000)
+                    .build();
+            itemRepository.save(item);
+
+            ExecutorService executorService = Executors.newFixedThreadPool(32);
+            CountDownLatch latch = new CountDownLatch(concurrentConnectionCount);
+
+            for (int i = 0; i < concurrentConnectionCount; i++) {
+                executorService.submit(() -> {
+                    try {
+                        itemStockService.increaseStockWithLock(item.getId(), 1);
+                    } finally {
+                        latch.countDown();
+                    }
+                });
+            }
+
+            latch.await();
+
+            Item updatedItem = itemRepository.findById(item.getId()).orElseThrow();
+            assertThat(updatedItem.getStockQuantity()).isEqualTo(stockQuantity + concurrentConnectionCount);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 물품의 재고를 증가할 경우, EntityNotFoundException 예외를 던진다.")
+        void increaseStockWithNotExistId() throws InterruptedException {
+            Long notExistId = 9999L;
+            Item item = Item.builder()
+                    .stockQuantity(500)
+                    .categoryId(500)
+                    .name("김치")
+                    .onSale(true)
+                    .price(30000)
+                    .build();
+            itemRepository.save(item);
+
+            assertThatThrownBy(() -> itemStockService.increaseStockWithLock(notExistId, 1))
+                    .isInstanceOf(EntityNotFoundException.class)
+                    .hasMessage(ErrorCode.ITEM_NOT_FOUND.getErrorMsg());
+        }
+    }
 }

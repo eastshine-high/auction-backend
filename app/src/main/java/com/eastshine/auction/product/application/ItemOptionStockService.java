@@ -32,4 +32,20 @@ public class ItemOptionStockService {
         option.decreaseStockQuantity(quantity);
         itemOptionRepository.saveAndFlush(option);
     }
+
+    @Transactional
+    public void increaseStockWithLock(Long optionId, Integer quantity) {
+        redissonLock.executeWithLock(
+                ITEM_OPTION_LOCK_PREFIX,
+                optionId.toString(),
+                () -> increaseItemOptionStock(optionId, quantity)
+        );
+    }
+
+    private void increaseItemOptionStock(Long optionId, Integer quantity) {
+        ItemOption option = itemOptionRepository.findById(optionId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_NOT_FOUND));
+        option.increaseStockQuantity(quantity);
+        itemOptionRepository.saveAndFlush(option);
+    }
 }

@@ -1,6 +1,8 @@
 package com.eastshine.auction.product.application;
 
 import com.eastshine.auction.common.test.IntegrationTest;
+import com.eastshine.auction.order.domain.item.OrderItem;
+import com.eastshine.auction.order.domain.item.OrderItemOption;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.ItemRepository;
@@ -12,8 +14,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -87,6 +91,54 @@ class ProductStockServiceTest extends IntegrationTest {
             assertThat(actualItemOption.getStockQuantity()).isEqualTo(STOCK_QUANTITY - orderCount);
             assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
             assertThat(actualItem.getStockQuantity()).isNotEqualTo(STOCK_QUANTITY - orderCount);
+        }
+    }
+
+    @Nested
+    @DisplayName("increaseStock 메소드는")
+    class Describe_increaseStock{
+
+        @Test
+        @DisplayName("요청 아규먼트의 OrderItemOption 리스트가 비어있을 경우, Item의 재고를 증가한다.")
+        void increaseStockWithEmptyItemOptionId() {
+            int orderCount = 3;
+            OrderItem orderItem = OrderItem.builder()
+                    .itemId(item.getId())
+                    .orderCount(orderCount)
+                    .build();
+
+            productStockService.increaseStock(orderItem);
+
+            Item actualItem = itemRepository.findById(ProductStockServiceTest.item.getId()).get();
+            ItemOption actualItemOption = itemOptionRepository.findById(ProductStockServiceTest.itemOption.getId()).get();
+
+            assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY + orderCount);
+            assertThat(actualItemOption.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
+            assertThat(actualItemOption.getStockQuantity()).isNotEqualTo(STOCK_QUANTITY + orderCount);
+        }
+
+        @Test
+        @DisplayName("요청 아규먼트의 OrderItemOption 리스트가 있을 경우, ItemOption의 재고를 증가한다.")
+        void increaseStockWithExistItemOptionId() {
+            int orderCount = 3;
+            OrderItem orderItem = OrderItem.builder()
+                    .itemId(item.getId())
+                    .orderCount(orderCount)
+                    .build();
+            OrderItemOption orderItemOption = OrderItemOption.builder()
+                    .itemOptionId(itemOption.getId())
+                    .orderCount(orderCount)
+                    .build();
+            orderItem.addOrderItemOption(orderItemOption);
+
+            productStockService.increaseStock(orderItem);
+
+            Item actualItem = itemRepository.findById(ProductStockServiceTest.item.getId()).get();
+            ItemOption actualItemOption = itemOptionRepository.findById(ProductStockServiceTest.itemOption.getId()).get();
+
+            assertThat(actualItemOption.getStockQuantity()).isEqualTo(STOCK_QUANTITY + orderCount);
+            assertThat(actualItem.getStockQuantity()).isEqualTo(STOCK_QUANTITY);
+            assertThat(actualItem.getStockQuantity()).isNotEqualTo(STOCK_QUANTITY + orderCount);
         }
     }
 }
