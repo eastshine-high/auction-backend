@@ -33,4 +33,14 @@ class OrderTest {
         // then
         assertThat(actual).isEqualTo((6000 * 3) + ((7000 + 300) * 2));
     }
+
+    @Test
+    void changeCanceledStatus() {
+        Order order = new Order();
+        ReflectionTestUtils.setField(order, "orderStatus", Order.OrderStatus.INIT);
+
+        order.changeCanceledStatus();
+
+        assertThat(order.getOrderStatus()).isEqualTo(Order.OrderStatus.CANCELED);
+    }
 }
