@@ -57,13 +57,11 @@ public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
     }
 
     @Override
-    public Optional<Order> findUserOrderInfo(Long orderId, Long userId) {
+    public Optional<Order> findByIdWithFetchJoin(Long orderId) {
         return Optional.ofNullable(
                 query.selectFrom(order)
                         .join(order.orderItems, orderItem).fetchJoin()
-                        .leftJoin(orderItem.orderItemOptions, orderItemOption).fetchJoin()
-                        .where(order.id.eq(orderId)
-                                .and(order.userId.eq(userId)))
+                        .where(order.id.eq(orderId))
                         .fetchOne()
         );
     }

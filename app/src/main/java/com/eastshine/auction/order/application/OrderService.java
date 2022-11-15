@@ -45,8 +45,8 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public Order getUserOrderInfo(Long orderId, Long userId) {
-        return orderRepository.findUserOrderInfo(orderId, userId)
+    public Order getUserOrderInfo(Long userId, Long orderId) {
+        return orderRepository.findByIdWithFetchJoin(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
     }
 }
