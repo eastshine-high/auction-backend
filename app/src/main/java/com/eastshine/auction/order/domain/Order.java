@@ -21,7 +21,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -37,7 +39,7 @@ public class Order extends BaseTimeEntity {
     private Long userId;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
-    private Set<OrderItem> orderItems = new HashSet<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     @Embedded
     private DeliveryFragment deliveryFragment;
@@ -49,7 +51,7 @@ public class Order extends BaseTimeEntity {
     @RequiredArgsConstructor
     public enum OrderStatus {
         INIT("주문시작"),
-        ORDER_CANCELED("주문취소"),
+        CANCELED("주문취소"),
         ORDER_COMPLETE("주문완료"),
         DELIVERY_PREPARE("배송준비"),
         IN_DELIVERY("배송중"),
@@ -71,6 +73,10 @@ public class Order extends BaseTimeEntity {
     public void addOrderItem(OrderItem orderItem) {
         orderItem.setOrder(this);
         orderItems.add(orderItem);
+    }
+
+    public void changeCanceledStatus() {
+        orderStatus = OrderStatus.CANCELED;
     }
 
     public long calculateTotalAmount() {
