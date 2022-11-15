@@ -12,5 +12,5 @@ public interface OrderRepositoryCustom {
 
     Optional<OrderItemOption> findInitialOrderItemOptionToRegister(OrderDto.PlaceOrderItemOption request);
 
-    Optional<Order> findUserOrderInfo(Long orderId, Long userId);
+    Optional<Order> findByIdWithFetchJoin(Long orderId);
 }

@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
 import java.util.Set;
 
 @Mapper(componentModel = "spring")
@@ -21,7 +22,7 @@ public interface OrderMapper {
             @Mapping(expression = "java(order.getOrderStatus().name())", target = "orderStatus"),
             @Mapping(expression = "java(order.getOrderStatus().getDescription())", target = "orderStatusDescription")
     })
-    OrderDto.Info of(Order order, Set<OrderItem> orderItemSet);
+    OrderDto.Info of(Order order, List<OrderItem> orderItems);
 
     @Mappings({
             @Mapping(expression = "java(orderItem.getDeliveryStatus().name())", target = "deliveryStatus"),
