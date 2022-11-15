@@ -12,14 +12,14 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Service
 public class MailConsumer {
-    public static final String TOPIC_MAIL = "topic_mail";
+    public static final String TOPIC_EMAIL = "topic_email";
 
     private final MailService mailService;
     private final ObjectMapper objectMapper;
 
-    @KafkaListener(topics = TOPIC_MAIL, groupId = "auction")
+    @KafkaListener(topics = TOPIC_EMAIL, groupId = "auction")
     public void consume(String record) throws IOException {
-        EmailMessage emailMessage = objectMapper.readValue(record, EmailMessage.class);
-        mailService.sendEmail(emailMessage);
+        EmailSent emailSent = objectMapper.readValue(record, EmailSent.class);
+        mailService.sendEmail(emailSent.toEmailMessage());
     }
 }
