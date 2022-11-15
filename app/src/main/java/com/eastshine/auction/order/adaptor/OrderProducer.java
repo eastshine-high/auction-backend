@@ -3,7 +3,7 @@ package com.eastshine.auction.order.adaptor;
 import com.eastshine.auction.common.exception.BaseException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.model.UserInfo;
-import com.eastshine.auction.infra.mail.EmailMessage;
+import com.eastshine.auction.infra.mail.EmailSent;
 import com.eastshine.auction.infra.mail.MailConsumer;
 import com.eastshine.auction.order.domain.Order;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,13 +21,13 @@ public class OrderProducer {
     private final ObjectMapper objectMapper;
 
     public void sendMail(UserInfo userInfo, Order order) {
-        EmailMessage emailMessage = EmailMessage.builder()
+        EmailSent emailMessage = EmailSent.builder()
                 .to(userInfo.getEmail())
                 .subject("주문 확인")
                 .message("주문 번호 '" + order.getId() + "'가 정상 주문되었습니다.") // Template 처리 필요.
                 .build();
         try {
-            kafkaTemplate.send(MailConsumer.TOPIC_MAIL, objectMapper.writeValueAsString(emailMessage));
+            kafkaTemplate.send(MailConsumer.TOPIC_EMAIL, objectMapper.writeValueAsString(emailMessage));
 
         } catch (JsonProcessingException exception) {
             log.error("failed to Json processing", exception);
