@@ -1,6 +1,8 @@
 package com.eastshine.auction.order.domain;
 
 
+import com.eastshine.auction.common.exception.ErrorCode;
+import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseTimeEntity;
 import com.eastshine.auction.order.domain.fragment.DeliveryFragment;
 import com.eastshine.auction.order.domain.item.OrderItem;
@@ -22,9 +24,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @EqualsAndHashCode(callSuper=false, of = "id")
@@ -73,6 +73,12 @@ public class Order extends BaseTimeEntity {
     public void addOrderItem(OrderItem orderItem) {
         orderItem.setOrder(this);
         orderItems.add(orderItem);
+    }
+
+    public void validateAccessibleUser(Long accessorId) {
+        if(this.userId != accessorId){
+            throw new UnauthorizedException(ErrorCode.ORDER_INACCESSIBLE);
+        }
     }
 
     public void changeCanceledStatus() {
