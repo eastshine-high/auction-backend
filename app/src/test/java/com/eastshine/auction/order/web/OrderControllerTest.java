@@ -31,14 +31,14 @@ import java.util.Objects;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class OrderControllerTest extends WebIntegrationTest {
     private static final Integer REGISTERED_CATEGORY_ID = 101;
 
     private static Long registeredItemId;
+    private static Long registeredItemId2;
     private static Long registeredItemOptionId1;
     private static Long registeredItemOptionId2;
     private static Long registeredOrderId;
@@ -91,21 +91,34 @@ class OrderControllerTest extends WebIntegrationTest {
         itemOptionRepository.save(option2);
         registeredItemOptionId2 = option2.getId();
 
-        OrderDto.PlaceOrderRequest orderRequest = OrderDto.PlaceOrderRequest.builder()
-                .orderItems(List.of(
-                        new OrderDto.PlaceOrderItem(registeredItemId, 0,
-                                List.of(new OrderDto.PlaceOrderItemOption(registeredItemOptionId1, 2),
-                                        new OrderDto.PlaceOrderItemOption(registeredItemOptionId2, 3)))
-                ))
-                .receiverAddress1("경기도 안양시")
-                .receiverAddress2("만안구")
-                .receiverPhone("01026799999")
-                .receiverName("최동호")
-                .etcMessage("부재시 경비실에 맡겨주세요.")
+        Item item2 = Item.builder()
+                .categoryId(REGISTERED_CATEGORY_ID)
+                .name("후시딘")
+                .itemOptionsTitle("용량")
+                .stockQuantity(30)
+                .price(51000)
+                .onSale(true)
                 .build();
+        ReflectionTestUtils.setField(item2, "createdBy", seller.getId());
+        itemRepository.save(item2);
+        registeredItemId2 = item2.getId();
 
         if (!Objects.isNull(SecurityContextHolder.getContext().getAuthentication())) {
             UserInfo userInfo = (UserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            OrderDto.PlaceOrderRequest orderRequest = OrderDto.PlaceOrderRequest.builder()
+                    .orderItems(List.of(
+                            new OrderDto.PlaceOrderItem(registeredItemId, 0,
+                                    List.of(new OrderDto.PlaceOrderItemOption(registeredItemOptionId1, 2),
+                                            new OrderDto.PlaceOrderItemOption(registeredItemOptionId2, 3))),
+                            new OrderDto.PlaceOrderItem(registeredItemId2, 2, null)
+                    ))
+                    .receiverAddress1("경기도 안양시")
+                    .receiverAddress2("만안구")
+                    .receiverPhone("01026799999")
+                    .receiverName("최동호")
+                    .etcMessage("부재시 경비실에 맡겨주세요.")
+                    .build();
+
             orderRequest.setUserInfo(userInfo);
             Order order = orderService.registerOrder(orderRequest);
             registeredOrderId = order.getId();
@@ -157,6 +170,7 @@ class OrderControllerTest extends WebIntegrationTest {
                                     .content(createJson(orderRequest))
                     )
                     .andExpect(status().isCreated())
+                    // [orderItems[].orderItemOptions[], orderItems[].orderItemOptions[].itemOptionId, orderItems[].orderItemOptions[].orderCount]
                     .andDo(document("user-orders-post-201",
                             PayloadDocumentation.requestFields(
                                     fieldWithPath("receiverAddress1").description("수령자 주소1"),
@@ -214,6 +228,8 @@ class OrderControllerTest extends WebIntegrationTest {
     @DisplayName("getOrder 메소드는")
     class Describe_getOrder{
 
+        // 조회로직 바꿔야 한다.
+
         @Test
         @WithUser("buyer1")
         @DisplayName("유효한 인증 정보와 함께 요청할 경우, 정상 응답한다.")
@@ -236,6 +252,35 @@ class OrderControllerTest extends WebIntegrationTest {
                     )
                     .andExpect(status().isUnauthorized())
                     .andDo(document("user-orders-id-get-401"));
+        }
+    }
+
+    @Nested
+    @DisplayName("cancelOrder 메소드는")
+    class Describe_cancelOrder{
+
+        @Test
+        @WithUser("buyer1")
+        @DisplayName("유효한 인증 정보와 함께 요청할 경우, 정상 응답한다.")
+        void getOrderWithAuthentication() throws Exception {
+            mockMvc.perform(
+                            delete("/user-api/orders/" + registeredOrderId)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                    )
+                    .andExpect(status().isOk())
+                    .andDo(document("user-orders-id-delete-200"));
+        }
+
+        @Test
+        @DisplayName("유효하지 못한 인증 정보를 통해 주문을 조회할 경우, Unauthorized 상태를 응답한다.")
+        void getOrderWithoutAuthentication() throws Exception {
+            mockMvc.perform(
+                            delete("/user-api/orders/" + registeredOrderId)
+                                    .contentType(MediaType.APPLICATION_JSON)
+                                    .header("Authorization", ACCESS_TOKEN)
+                    )
+                    .andExpect(status().isUnauthorized())
+                    .andDo(document("user-orders-id-delete-401"));
         }
     }
 }

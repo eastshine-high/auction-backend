@@ -1,6 +1,7 @@
 package com.eastshine.auction.order.domain.item;
 
 import com.eastshine.auction.common.model.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class OrderItemOption extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore // Producer의 ObjectMapper에서 발생하는 recursion 오류 방지를 위해 사용
     @JoinColumn(name = "order_item_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private OrderItem orderItem;

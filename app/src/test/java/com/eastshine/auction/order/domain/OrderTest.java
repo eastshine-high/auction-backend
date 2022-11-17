@@ -64,11 +64,11 @@ class OrderTest {
     }
 
     @Test
-    void changeCanceledStatus() {
+    void cancel() {
         Order order = new Order();
         ReflectionTestUtils.setField(order, "orderStatus", Order.OrderStatus.INIT);
 
-        order.changeCanceledStatus();
+        order.cancel();
 
         assertThat(order.getOrderStatus()).isEqualTo(Order.OrderStatus.CANCELED);
     }
