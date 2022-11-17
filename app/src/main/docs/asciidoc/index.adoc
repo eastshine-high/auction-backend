@@ -106,6 +106,21 @@ include::{snippets}/user-orders-id-get-200/http-response.adoc[]
 
 include::{snippets}/user-orders-id-get-401/http-response.adoc[]
 
+==== 주문 취소
+
+DELETE /user-api/orders/{id}
+
+**Request : Authorization 헤더에 토큰 정보를 포함하여 조회**
+
+include::{snippets}/user-orders-id-delete-200/http-request.adoc[]
+
+**Response : Authorization 헤더에 유효한 인증 토큰을 포함하여 조회**
+
+include::{snippets}/user-orders-id-delete-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 토큰의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/user-orders-id-delete-401/http-response.adoc[]
 
 
 == 게스트 API
