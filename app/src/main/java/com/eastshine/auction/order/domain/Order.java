@@ -51,8 +51,8 @@ public class Order extends BaseTimeEntity {
     @RequiredArgsConstructor
     public enum OrderStatus {
         INIT("주문시작"),
-        CANCELED("주문취소"),
         ORDER_COMPLETE("주문완료"),
+        CANCELED("주문취소"),
         DELIVERY_PREPARE("배송준비"),
         IN_DELIVERY("배송중"),
         DELIVERY_COMPLETE("배송완료");
@@ -81,7 +81,7 @@ public class Order extends BaseTimeEntity {
         }
     }
 
-    public void changeCanceledStatus() {
+    public void cancel() {
         orderStatus = OrderStatus.CANCELED;
     }
 
