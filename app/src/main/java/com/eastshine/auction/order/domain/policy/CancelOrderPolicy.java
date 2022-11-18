@@ -15,9 +15,9 @@ public class CancelOrderPolicy {
     }
 
     private void validateCancelableState(Order order) {
-        if (order.getOrderStatus() != Order.OrderStatus.IN_DELIVERY
-            || order.getOrderStatus() != Order.OrderStatus.DELIVERY_PREPARE
-            || order.getOrderStatus() != Order.OrderStatus.DELIVERY_COMPLETE) {
+        if (order.getOrderStatus() == Order.OrderStatus.IN_DELIVERY
+            || order.getOrderStatus() == Order.OrderStatus.DELIVERY_PREPARE
+            || order.getOrderStatus() == Order.OrderStatus.DELIVERY_COMPLETE) {
 
             throw new IllegalStatusException(ErrorCode.ON_DELIVERY_ORDER);
         }
