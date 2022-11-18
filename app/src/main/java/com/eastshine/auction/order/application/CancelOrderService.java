@@ -23,6 +23,7 @@ public class CancelOrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ORDER_NOT_FOUND));
         cancelOrderPolicy.validateCancelableOrder(order, userInfo);
+
         order.cancel(); // 1. 주문 취소
         cancelOrderProducer.increaseStock(order); // 2. 재고 증가
         cancelOrderProducer.sendMail(userInfo, order); // 3. 메일 발송 이벤트 발행
