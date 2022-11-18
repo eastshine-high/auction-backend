@@ -17,7 +17,7 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 
 @Slf4j
-@Profile("local")
+@Profile("deprecated") // EmbededKafka와 충돌하므로 사용 중단.
 @Configuration
 public class EmbeddedRedisConfig {
 
@@ -44,6 +44,7 @@ public class EmbeddedRedisConfig {
     @Bean
     @Primary
     @DependsOn("redisServer")
+    // org.redisson:redisson-spring-boot-starter의 기본 Redisson 설정을 덮어쓴다.
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
