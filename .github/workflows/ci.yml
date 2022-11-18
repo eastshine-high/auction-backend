@@ -12,6 +12,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -20,7 +35,12 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
           cache: gradle
-      - name: Docker build
+      - name: Grant execute permission for gradlew
+          run: chmod +x gradlew
+      - name: build Gradle
+          run: ./gradlew clean build
+
+      - name: build Docker
         run: |
           docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
           docker build -t auction-backend .
