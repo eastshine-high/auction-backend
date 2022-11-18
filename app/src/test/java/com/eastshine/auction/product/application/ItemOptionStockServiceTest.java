@@ -29,10 +29,10 @@ class ItemOptionStockServiceTest extends IntegrationTest {
     class Describe_decreaseStockWithLock{
 
         @Test
-        @DisplayName("4개의 재고의 동시 차감 요청을 처리할 수 있다.") // Github action 환경의 성능 문제로 테스트 동시 요청 최소화
+        @DisplayName("3개의 재고의 동시 차감 요청을 처리할 수 있다.") // Github action 환경의 성능 문제로 테스트 동시 요청 최소화
         void decreaseStockWithLock() throws InterruptedException {
             int stockQuantity = 400;
-            int concurrentConnectionCount = 4;
+            int concurrentConnectionCount = 3;
             ItemOption itemOption = ItemOption.builder()
                     .additionalPrice(9000)
                     .stockQuantity(stockQuantity)
@@ -79,10 +79,10 @@ class ItemOptionStockServiceTest extends IntegrationTest {
     class Describe_increaseStockWithLock{
 
         @Test
-        @DisplayName("4개의 재고의 동시 증가 요청을 처리할 수 있다.") // Github action 환경의 성능 문제로 테스트 동시 요청 최소화
+        @DisplayName("3개의 재고의 동시 증가 요청을 처리할 수 있다.") // Github action 환경의 성능 문제로 테스트 동시 요청 최소화
         void increaseStockWithLock() throws InterruptedException {
             int stockQuantity = 400;
-            int concurrentConnectionCount = 4;
+            int concurrentConnectionCount = 3;
             ItemOption itemOption = ItemOption.builder()
                     .additionalPrice(9000)
                     .stockQuantity(stockQuantity)
