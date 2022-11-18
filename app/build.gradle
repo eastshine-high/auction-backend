@@ -105,6 +105,7 @@ dependencies {
 
     // Kafka
     implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.testcontainers:kafka:1.17.5'
 
     // RDB
