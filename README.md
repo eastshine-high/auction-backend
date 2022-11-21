@@ -27,7 +27,8 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
 - 코드 개선하기
     - [관심사의 분리](#separation-of-concern)
     - [테스트 코드 작성을 통한 올바른 책임의 이해](#test-responsibility)
-
+- [기술 사용 배경](#why-use)
+    - JSON Merge Patch
 ## 사용 기술
 
 - Java 11, Gradle
@@ -882,5 +883,82 @@ class Describe_validateAccessibleUser{
     }
 }
 ```
+
+</details>
+
+## 기술 사용 배경 <a name = "why-use"></a>
+
+<details>
+   <summary> 본문 확인 (Click)</summary>
+<br />
+
+**JSON Merge Patch**
+
+[JSON Merge Patch를 이용한 PATCH API 구현하기](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md)
+
+리소스의 값을 변경하는 REST API를 구현할 때, 도메인 레이어에서는 다음과 같이 리소스의 값을 변경하는 메소드를 작성할 수 있습니다.
+
+```java
+@Entity
+public class Product
+    private String name;
+    private Integer price;
+    private Integer stockQuantity;
+    private boolean onSale;
+
+    public void changeWith(Product source) {
+        name = source.name;
+        price = source.price;
+        stockQuantity = source.stockQuantity;
+        onSale = source.onSale;
+    }
+}
+```
+
+이 때 위의 메소드 아규먼트 `source` 에 속성 값을 전달하지 않을 경우, 해당 객체의 속성의 값은 `null` 로 변경됩니다. 따라서 위와 같이 구현된 API를 이용해 리소스를 변경할 때는 리소스를 모두 표현(Representation)하여 변경을 요청해야 합니다. 이와 같은 방식을 HTTP에서는 `PUT` 메소드라고 합니다.
+
+하지만 HTTP의 `PUT` 메소드를 사용하면 리소스의 단일 필드를 수정해야 하는 경우에도 리소스의 전체 표현을 보내야 하므로 다소 불편합니다. 따라서 `PUT` 이 아닌 `PATCH` HTTP 메소드를 지원하는 API를 구현해 보기로 했습니다.
+
+먼저, 가장 단순한 방법으로 각 속성을 변경하기 전에 `if` 문을 추가하면 `PATCH` HTTP 메소드를 지원하는 API의 구현이 가능할 것 같습니다.
+
+```java
+@Entity
+public class Product
+    private String name;
+    private Integer price;
+    private Integer stockQuantity;
+    private boolean onSale;
+
+    public void changeWith(Product source) {
+        if(source.name != null){
+            name = source.name;
+        }
+        if(source.price != null){
+            price = source.price;
+        }
+        ...
+    }
+}
+```
+
+혹은 조금 생각을 해서 `Map` 과 `Reflection` 을 활용하는 방법도 있을 것 같습니다.
+
+```java
+public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
+    Optional<Product> product = productService.findById(id);
+    if(product.isPresent()) {
+        fields.forEach((key, value) -> {
+                Field field = ReflectionUtils.findField(Product.class, (String) key);
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, book.get(), value);
+        });
+        Product updatedProduct = productService.saveOrUpdate(product.get());
+    }
+}
+```
+
+하지만 이 방법도 `Reflection` 을 사용한다는 점에서 사용하기가 조금 꺼려집니다.
+
+또 다른 방법을 찾아보면서 JsonPatch([RFC6902](https://datatracker.ietf.org/doc/html/rfc6902)) 와 JsonMergePatch([RFC7396](https://datatracker.ietf.org/doc/html/rfc7386)) 에 대해서 알게 되었습니다. 이에 대해 정리해 보면서 [JsonMergePatch 를 이용해 PATCH API를 구현](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/web-servlet/spring-mvc/json-merge-patch.md) 해 볼 수 있었습니다.
 
 </details>
