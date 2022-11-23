@@ -19,7 +19,7 @@ class ItemTest {
     class Describe_validateAccessibleUser{
 
         @Test
-        @DisplayName("물품을 생성한 사용자가 아닐 경우, InvalidArgumentException 예외를 던진다.")
+        @DisplayName("물품을 생성하지 않은 사용자의 접근일 경우, UnauthorizedException 예외를 던진다.")
         void contextWithInaccessibleUser() {
             Item item = new Item();
             Long creatorId = 21L;
@@ -34,7 +34,7 @@ class ItemTest {
         }
 
         @Test
-        @DisplayName("물품을 생성한 사용자일 경우, 예외를 던지지 않는다.")
+        @DisplayName("물품을 생성한 사용자의 접근일 경우, 예외를 던지지 않는다.")
         void contextWithAccessibleUser() {
             Item item = new Item();
             Long creatorId = 21L;
@@ -49,42 +49,32 @@ class ItemTest {
     @Nested
     class Describe_decreaseStockQuantity{
 
-        @Nested
-        @DisplayName("보유한 재고 이상으로 재고를 차감하면")
-        class Context_with_invalid_quantity{
+        @Test
+        @DisplayName("보유한 재고 이상으로 재고를 차감하면, InvalidArgumentException 예외를 던진다.")
+        void it_throws_InvalidArgumentException() {
+            int invalidQuantity = 30;
             Item item = Item.builder()
                     .stockQuantity(1)
                     .build();
 
-            @Test
-            @DisplayName("InvalidArgumentException 예외를 던진다.")
-            void it_throws_InvalidArgumentException() {
-                int invalidQuantity = 30;
-
-                assertThatThrownBy(() ->
-                        item.decreaseStockQuantity(invalidQuantity)
-                )
-                        .isInstanceOf(InvalidArgumentException.class)
-                        .hasMessage(ErrorCode.ITEM_STOCK_QUANTITY_ERROR.getErrorMsg());
-            }
+            assertThatThrownBy(() ->
+                    item.decreaseStockQuantity(invalidQuantity)
+            )
+                    .isInstanceOf(InvalidArgumentException.class)
+                    .hasMessage(ErrorCode.ITEM_STOCK_QUANTITY_ERROR.getErrorMsg());
         }
 
-        @Nested
-        @DisplayName("보유한 재고 이내의 재고를 차감하면")
-        class Context_with_valid_quantity{
+        @Test
+        @DisplayName("보유한 재고 이내의 재고를 차감하면, 재고를 감소시킨다.")
+        void it_decrease_stockQuantity() {
+            int validQuantity = 1;
             Item item = Item.builder()
                     .stockQuantity(30)
                     .build();
 
-            @Test
-            @DisplayName("재고를 감소시킨다.")
-            void it_decrease_stockQuantity() {
-                int validQuantity = 1;
-
-                item.decreaseStockQuantity(validQuantity);
-                assertThat(item.getStockQuantity())
-                        .isEqualTo(29);
-            }
+            item.decreaseStockQuantity(validQuantity);
+            assertThat(item.getStockQuantity())
+                    .isEqualTo(29);
         }
     }
 

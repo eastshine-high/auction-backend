@@ -19,7 +19,7 @@ class OrderTest {
     class Describe_validateAccessibleUser{
 
         @Test
-        @DisplayName("주문한 사용자가 아닐 경우, InvalidArgumentException 예외를 던진다.")
+        @DisplayName("주문한 사용자가 아닐 경우, UnauthorizedException 예외를 던진다.")
         void contextWithInaccessibleUser() {
             Order order = Order.builder().userId(1L).build();
 
