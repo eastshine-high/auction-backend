@@ -17,6 +17,7 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
 
 - 프로젝트 문서
 - 프로젝트 ERD
+- [테스트](#test)
 - 기능 설명 및 설계, 구현 과정에서 배운 내용 정리
     - 공통 기능
         - [REST API의 예외(Exception) 처리](#exception)
@@ -42,7 +43,8 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
     - [테스트 코드 작성을 통한 올바른 책임의 이해](#test-responsibility)
 - [기술 사용 배경](#why-use)
     - JSON Merge Patch
-    - Redis    
+    - Redis
+    - Flyway
 
 ## 프로젝트 문서
 
@@ -57,6 +59,18 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
 <br />
 
 ![](http://dl.dropbox.com/s/xxxuc4de4ryj3mm/auction-erd.svg)
+
+</details>
+
+## 테스트 <a name = "test"></a>
+
+<details>
+   <summary> 본문 확인 (Click)</summary>
+<br />
+
+![](http://dl.dropbox.com/s/0s73r805xebz1nd/auction_test.png)
+
+총 126개의 테스트 진행
 
 </details>
 
@@ -182,9 +196,9 @@ public class ProductService {
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-API는 일부 사용자만 접근을 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 API의 보안 처리는 Spring Security를 이용합니다.
+API는 일부 사용자의 접근만 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 API의 보안 처리는 Spring Security를 이용합니다.
 
-먼저 사용자 도메인에서는 [로그인을 통한 인증으로 JWT를 발급](https://github.com/eastshine-high/auction-backend#jwt) 하였습니다. API 보안에서는 Spring Security를 이용하여 발급한 JWT를 인증한 뒤, 인가 처리를 합니다.
+먼저 사용자 도메인에서는 [로그인을 통한 인증으로 JWT를 발급](#jwt) 하였습니다. API 보안에서는 Spring Security를 이용하여 발급한 JWT를 인증한 뒤, 인가 처리를 합니다.
 
 예를 들어 아래는 상품 정보의 수정을 요청하는 HTTP 요청 메세지입니다. HTTP의 `Authorization` 헤더에 발급받은 토큰을 넣어 요청합니다.
 
@@ -210,7 +224,7 @@ Spring MVC에 위의 요청이 들어오면, 아래와 같은 흐름을 통해 �
 HTTP 요청 -> WAS -> (서블릿)필터 -> 서블릿(dispatcher) -> 스프링 인터셉터 -> 컨트롤러
 ```
 
-Spring Security는 위 흐름 중에서 서블릿 필터를 기반으로 동작합니다([Spring Security의 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/architecture.md) 에 대한 자세한 설명은 Github을 통해 정리하였습니다).
+Spring Security는 위 흐름 중에서 서블릿 필터를 기반으로 동작합니다([Spring Security의 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/architecture.md) 는 Github을 통해 정리하였습니다).
 
 **인증(Authentication)**
 
@@ -258,11 +272,11 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 ```
 
 - 시큐리티 필터의 모든 기능을 구현하기는 어려움으로,  `BasicAuthenticationFilter` 필터를 상속하여 필요한 메소드를 오버라이드합니다. `BasicAuthenticationFilter` 는 `OncePerRequestFilter` 를 상속한 클래스입니다.
-- `authenticationService.parseToken` : JWT을 인증 및 파싱합니다. JWT에 대해서는 [로그인 인증](https://github.com/eastshine-high/auction-backend#jwt) 에서 설명합니다. 여기서는 관련 내용의 링크만 참조하겠습니다.
+- `authenticationService.parseToken` : JWT을 인증 및 파싱합니다. JWT에 대해서는 [로그인 인증](#jwt) 에서 설명하였으므로, 여기서는 관련 내용만 참조하겠습니다.
     - [JWT 정리 및 활용](https://github.com/eastshine-high/til/blob/main/web/jwt.md)
     - [AuthenticationService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/user/application/AuthenticationService.java)
 - `SecurityContextHolder.getContext` : JWT가 인증되었다면, Spring Security를 통해 이를 표현합니다. 가장 간단한 방법은 SecurityContextHolder 에 누가 인증되었는 지를 직접 설정하는 것입니다(스프링 시큐리티의 다른 필터들과 통합하여 사용하지 않을 경우, AuthenticationManager 를 사용하지 않고 SecurityContextHolder 를 직접 사용하여 인증할 수 있습니다).
-- `authenticationService.findUserInfo` : **로그인 인증** 에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
+- `authenticationService.findUserInfo` : [로그인 인증](#jwt) 에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
 
 ![https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png)
 
@@ -336,11 +350,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 - `WebSecurityConfigurerAdapter` : `WebSecurityConfigurer` 인스턴스를 생성할 때, 편리한 기본 클래스를 제공합니다. 메서드를 재정의하여 커스텀할 수 있습니다.
 - `HttpSecurity` : 네임스페이스 구성에서 Spring Security의 XML `<http>` 엘러먼트와 유사합니다. 특정 `http` 요청에 대해 웹 기반 보안을 구성할 수 있습니다. 기본적으로 모든 요청에 적용되지만 `requestMatcher(RequestMatcher)` 또는 다른 유사한 방법을 사용하여 제한할 수 있습니다.
 - `csrf().disable()` : 현재 서버는 REST API로만 사용하므로 `csrf` 를 사용하지 않았습니다.
-- `@EnableGlobalMethodSecurity` : 아래 인가 처리에서 메소드 시큐리티를 활성화하기 위해 사용합니다.
+- `@EnableGlobalMethodSecurity` : 아래의 인가 처리에서 메소드 시큐리티를 활성화하기 위해 사용합니다.
 
 **인가(Authorization)**
 
-인가 처리는 [메소드 시큐리티](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html) 를 이용하여 처리하였습니다. 보호가 필요한 API에 어노테이션을 추가하여 리소스를 보호합니다.
+인가 처리는 [메소드 시큐리티](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html) 를 이용하여 처리합니다. 보호가 필요한 API에 어노테이션을 추가하여 리소스를 보호합니다.
 
 ```java
 @PostMapping
@@ -901,7 +915,7 @@ class Describe_validateAccessibleUser{
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-**JSON Merge Patch**
+### **JSON Merge Patch**
 
 [JSON Merge Patch를 이용한 PATCH API 구현하기](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/json-merge-patch.md)
 
@@ -970,7 +984,7 @@ public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
 
 또 다른 방법을 찾아보면서 JsonPatch([RFC6902](https://datatracker.ietf.org/doc/html/rfc6902)) 와 JsonMergePatch([RFC7396](https://datatracker.ietf.org/doc/html/rfc7386)) 에 대해서 알게 되었습니다. 이에 대해 정리해 보면서 [JsonMergePatch 를 이용해 PATCH API를 구현](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/json-merge-patch.md) 해 볼 수 있었습니다.
 
-**Redis**
+### **Redis**
 
 1. Cache(Look-aside)
 
@@ -978,7 +992,7 @@ public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
 
 ![https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png](https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png)
 
-이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰의 메인페이지에서 조회하는 카테고리와 같이 자주 요청이 들어오는 API의 경우에는 캐싱 처리하여 조회 성능을 개선합니다.
+이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰의 메인페이지에서 조회하는 카테고리와 같이, 자주 요청이 들어오는 API의 경우에는 캐싱 처리하여 조회 성능을 개선합니다.
 
 ```java
 @RequiredArgsConstructor
@@ -999,23 +1013,21 @@ public class CategoryController {
 
 2. 분산락
 
-멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](https://github.com/eastshine-high/auction-backend#stock) 처리를 위해 분산락을 구현할 때, 가장 좋은 저장소로 볼 수 있습니다.
+멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](#stock) 처리를 위해 분산락을 구현할 때, 가장 좋은 저장소로 볼 수 있습니다.
 
 3. In-memory 저장소
 
-로그인 인증에 성공할 경우, 세션 용도로 JWT를 발급합니다(이는 [좋은 방식이 아님](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 을 최근에 알게되었습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의( [공식 문서](https://jwt.io/introduction) 권장)해야 하기 때문에 JWT의 페이로드에는 사용자의 식별자만 담았습니다. 따라서 보안 처리가 되어있는 API의 모든 HTTP 요청에서 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, API의 성능을 개선하기 위해 인증한 성공한 사용자의 정보를 Redis(In-memory 저장소)에 저장합니다.
+로그인 인증에 성공할 경우, 세션 용도로 JWT를 발급합니다(이는 [좋은 방식이 아님](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 을 이후에 알게되었습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의( [공식 문서](https://jwt.io/introduction) 권장)해야 하기 때문에 JWT의 페이로드에는 사용자의 식별자만 담았습니다. 따라서 보안 처리가 되어있는 API의 모든 HTTP 요청에서 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, API의 성능을 개선하기 위해 인증에 성공한 사용자의 정보를 Redis(In-memory 저장소)에 저장합니다.
 
 4. 현재 Redis 사용의 개선점
 
-Redis를 캐시 이외의 용도로 사용한다면 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직에 문제가 생기기 때문입니다. 현재, 하나의 Redis만 운용중이므로 추가적인 백업 Redis 운용이 필요합니다.
+Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직들에 문제가 생기기 때문입니다. 따라서, 현재 하나의 Redis만 운용중인 서버에 추가적인 백업 Redis 운용이 필요합니다.
 
-</details>
+### **Flyway**
 
+도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다. 
 
-## ETC <a name = ""></a>
+이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
 
-<details>
-   <summary> 본문 확인 (Click)</summary>
-<br />
 
 </details>
