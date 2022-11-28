@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash("userInfo")
+@RedisHash(value = "userInfo", timeToLive = 60*100) // 100분
 public class UserInfo {
 
     @Id
