@@ -4,6 +4,7 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.model.BaseEntity;
+import com.eastshine.auction.product.domain.item.fragment.ShippingFragment;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,6 +14,7 @@ import lombok.ToString;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -39,20 +41,29 @@ public class Item extends BaseEntity {
     private Integer price;
     private boolean onSale;
     private Integer stockQuantity;
+    @Embedded private ShippingFragment shippingFragment;
     private String itemOptionsTitle;
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemOption> itemOptions = new ArrayList();
 
     @Builder
-    public Item(Integer categoryId, String name, int price, int stockQuantity, boolean onSale, String itemOptionsTitle, List<ItemOption> itemOptions) {
+    public Item(
+            Integer categoryId,
+            String name,
+            int price,
+            int stockQuantity,
+            boolean onSale,
+            ShippingFragment shippingFragment,
+            String itemOptionsTitle
+    ) {
         this.categoryId = categoryId;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.onSale = onSale;
+        this.shippingFragment = shippingFragment;
         this.itemOptionsTitle = itemOptionsTitle;
-        this.itemOptions = itemOptions;
     }
 
     public void addItemOption(ItemOption itemOption) {
