@@ -5,11 +5,9 @@ import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
-import com.eastshine.auction.product.web.dto.SellerItemDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.json.Json;
 import javax.json.JsonMergePatch;
@@ -23,15 +21,6 @@ public class SellerItemOptionService {
     private final ObjectMapper objectMapper;
     private final JsonMergePatchMapper<ItemOption> mergeMapper;
     private final ItemOptionRepository itemOptionRepository;
-
-    public void addItemOptionsToItem(SellerItemDto.RegistrationRequest registrationRequest, Item item) {
-        if(!CollectionUtils.isEmpty(registrationRequest.getItemOptions())) {
-            registrationRequest.getItemOptions().stream().forEach(
-                    optionRegistrationRequest -> {
-                        item.addItemOption(optionRegistrationRequest.toEntity(item));
-                    });
-        }
-    }
 
     public List<ItemOption> patchItemOptions(Item item, List<ItemOption> itemOptions) {
         return itemOptions.stream()
