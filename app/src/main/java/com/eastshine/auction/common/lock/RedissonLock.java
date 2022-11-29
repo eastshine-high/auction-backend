@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ public class RedissonLock {
 
             runnable.run();
         } catch (InterruptedException e) {
+            log.error("[InterruptedException] cause = {}, errorMsg = {}", NestedExceptionUtils.getMostSpecificCause(e), NestedExceptionUtils.getMostSpecificCause(e).getMessage());
             throw new BaseException(ErrorCode.COMMON_LOCK_FAIL);
         } finally {
             lock.unlock();
