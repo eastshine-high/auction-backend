@@ -3,6 +3,8 @@ package com.eastshine.auction.product.domain.item;
 import com.eastshine.auction.product.application.SellerItemPatchValidationBean;
 import com.eastshine.auction.product.web.dto.SellerItemDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 
@@ -14,5 +16,13 @@ public interface ItemMapper {
 
     SellerItemPatchValidationBean toValidationBean(Item item);
 
-    SellerItemDto.Info toDto(Item item);
+    @Mappings({
+            @Mapping(source = "item.shippingFragment", target = "shippingInfo"),
+            @Mapping(source = "item.shippingFragment.returnFragment", target = "shippingInfo.returnInfo"),
+            @Mapping(expression = "java(shippingFragment.getDeliveryMethod().name())", target = "shippingInfo.deliveryMethod"),
+            @Mapping(expression = "java(shippingFragment.getDeliveryMethod().getDescription())", target = "shippingInfo.deliveryMethodDescription"),
+            @Mapping(expression = "java(shippingFragment.getDeliveryChargePolicy().name())", target = "shippingInfo.deliveryChargePolicy"),
+            @Mapping(expression = "java(shippingFragment.getDeliveryChargePolicy().getDescription())", target = "shippingInfo.deliveryChargePolicyDescription")
+    })
+    SellerItemDto.ItemInfo toDto(Item item);
 }

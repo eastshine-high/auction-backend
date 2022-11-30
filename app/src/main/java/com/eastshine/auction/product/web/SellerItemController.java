@@ -29,7 +29,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('SELLER')")
-@RequestMapping("/seller-api/items")
+@RequestMapping("/v1/seller-api/items")
 @RestController
 public class SellerItemController {
     private final SellerItemService sellerItemService;
@@ -42,19 +42,19 @@ public class SellerItemController {
      * @return 등록된 상품의 URI.
      */
     @PostMapping
-    public ResponseEntity registerItem(@RequestBody @Validated SellerItemDto.RegistrationRequest sellerItemRegistrationRequest) {
+    public ResponseEntity registerItem(@RequestBody @Validated SellerItemDto.ItemRegistration sellerItemRegistrationRequest) {
         Item registeredItem = sellerItemService.registerItem(sellerItemRegistrationRequest);
         return ResponseEntity.created(URI.create("/seller-api/items/" + registeredItem.getId())).build();
     }
 
     @GetMapping("/{id}")
-    public SellerItemDto.Info getItem(
+    public SellerItemDto.ItemInfo getItem(
             @PathVariable Long id,
             Authentication authentication
     ) {
         UserInfo userInfo = (UserInfo)authentication.getPrincipal();
-        Item itemInfo = sellerItemService.getItem(id, userInfo.getId());
-        return ItemMapper.INSTANCE.toDto(itemInfo);
+        Item item = sellerItemService.getItem(id, userInfo.getId());
+        return ItemMapper.INSTANCE.toDto(item);
     }
 
     /**
@@ -68,7 +68,7 @@ public class SellerItemController {
     @ResponseStatus(HttpStatus.OK)
     public void patchItem(
             @PathVariable Long itemId,
-            @RequestBody SellerItemDto.PatchRequest sellerItemPatchRequest,
+            @RequestBody SellerItemDto.PatchItem sellerItemPatchRequest,
             Authentication authentication
     ) {
         JsonValue jsonValue = objectMapper.convertValue(sellerItemPatchRequest, JsonValue.class);

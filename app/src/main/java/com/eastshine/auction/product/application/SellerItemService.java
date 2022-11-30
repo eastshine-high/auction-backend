@@ -28,10 +28,10 @@ public class SellerItemService {
     private final SellerItemOptionService sellerItemOptionService;
 
     @Transactional
-    public Item registerItem(SellerItemDto.RegistrationRequest registrationRequest) {
+    public Item registerItem(SellerItemDto.ItemRegistration registrationRequest) {
         Item item = registrationRequest.toEntity();
         registrationRequest.getItemOptions().stream()
-                .forEach(optionRegistrationRequest -> item.addItemOption(optionRegistrationRequest.toEntity(item)));
+                .forEach(itemOptionRegistration -> item.addItemOption(itemOptionRegistration.toEntity()));
         return itemRepository.save(item);
     }
 
