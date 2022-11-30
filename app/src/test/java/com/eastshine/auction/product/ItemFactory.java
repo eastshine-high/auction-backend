@@ -23,7 +23,7 @@ public class ItemFactory {
     }
 
     public Item createItem(Integer categoryId, String name, Integer price, Boolean onSale, Integer stockQuantity) {
-        SellerItemDto.RegistrationRequest registrationRequest = SellerItemDto.RegistrationRequest.builder()
+        SellerItemDto.ItemRegistration registrationRequest = SellerItemDto.ItemRegistration.builder()
                 .categoryId(categoryId)
                 .name(name)
                 .price(price)
