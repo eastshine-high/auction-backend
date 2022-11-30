@@ -5,6 +5,8 @@ import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.application.SellerItemService;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.domain.item.fragment.DeliveryChargePolicyType;
+import com.eastshine.auction.product.domain.item.fragment.DeliveryMethodType;
 import com.eastshine.auction.product.web.dto.SellerItemDto;
 import com.eastshine.auction.user.WithSeller;
 import com.eastshine.auction.user.domain.UserRepository;
@@ -41,18 +43,29 @@ class SellerItemControllerTest extends WebIntegrationTest {
 
         // Test 데이터 생성
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품");
-        SellerItemDto.RegistrationRequest.ItemOption optionRegistrationRequest = SellerItemDto.RegistrationRequest.ItemOption.builder()
+        SellerItemDto.ItemOptionRegistration optionRegistrationRequest = SellerItemDto.ItemOptionRegistration.builder()
                 .itemOptionName("300ml")
                 .stockQuantity(50)
                 .additionalPrice(500)
                 .ordering(1)
                 .build();
-        SellerItemDto.RegistrationRequest registrationRequest = SellerItemDto.RegistrationRequest.builder()
+        SellerItemDto.ItemRegistration registrationRequest = SellerItemDto.ItemRegistration.builder()
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name("비판텐")
                 .price(3000)
                 .stockQuantity(0)
                 .onSale(Boolean.TRUE)
+                .deliveryChargePolicy(DeliveryChargePolicyType.CHARGE)
+                .deliveryMethod(DeliveryMethodType.SEQUENCIAL)
+                .deliveryCharge(3000)
+                .freeShipOverAmount(0)
+                .deliveryTime(2)
+                .returnContactNumber("01026799668")
+                .returnChargeName("최동호")
+                .returnZipCode("430012")
+                .returnAddress("경기도 안양시")
+                .returnAddressDetail("예술공원로")
+                .returnCharge(3000)
                 .itemOptions(List.of(optionRegistrationRequest))
                 .build();
 
@@ -67,32 +80,43 @@ class SellerItemControllerTest extends WebIntegrationTest {
 
         @Nested
         @DisplayName("유효한 인증 정보와 상품 정보를 통해 등록을 요청할 경우,")
-        class Context_with_valid_itemRegistrationRequest{
-            SellerItemDto.RegistrationRequest validRegistrationRequest;
-            SellerItemDto.RegistrationRequest.ItemOption validOptionRegistrationRequest;
+        class Context_with_valid_itemItemRegistration {
+            SellerItemDto.ItemRegistration validRegistrationRequest;
+            SellerItemDto.ItemOptionRegistration validOptionRegistrationRequest;
 
             @Test
             @WithSeller("bestSeller")
             void createItem() throws Exception {
-                validOptionRegistrationRequest = SellerItemDto.RegistrationRequest.ItemOption.builder()
+                validOptionRegistrationRequest = SellerItemDto.ItemOptionRegistration.builder()
                         .itemOptionName("300ml")
                         .additionalPrice(500)
                         .stockQuantity(9999)
                         .ordering(1)
                         .build();
 
-                validRegistrationRequest = SellerItemDto.RegistrationRequest.builder()
+                validRegistrationRequest = SellerItemDto.ItemRegistration.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(3000)
                         .stockQuantity(0)
                         .onSale(Boolean.FALSE)
+                        .deliveryChargePolicy(DeliveryChargePolicyType.CHARGE)
+                        .deliveryMethod(DeliveryMethodType.SEQUENCIAL)
+                        .deliveryCharge(3000)
+                        .freeShipOverAmount(0)
+                        .deliveryTime(2)
+                        .returnContactNumber("01026799668")
+                        .returnChargeName("최동호")
+                        .returnZipCode("430012")
+                        .returnAddress("경기도 안양시")
+                        .returnAddressDetail("예술공원로")
+                        .returnCharge(3000)
                         .itemOptionsTitle("용량")
                         .itemOptions(List.of(validOptionRegistrationRequest))
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/items")
+                                post("/v1/seller-api/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(createJson(validRegistrationRequest))
                         )
@@ -104,7 +128,18 @@ class SellerItemControllerTest extends WebIntegrationTest {
                                         fieldWithPath("price").description("상품 가격"),
                                         fieldWithPath("stockQuantity").description("상품 재고"),
                                         fieldWithPath("onSale").description("판매 여부"),
-                                        fieldWithPath("itemOptionsTitle").description("상품 옵션의 제목"),
+                                        fieldWithPath("deliveryChargePolicy").description("배송 요금 정책").optional(),
+                                        fieldWithPath("deliveryMethod").description("배송 방법").optional(),
+                                        fieldWithPath("freeShipOverAmount").description("조건부 배송 무료 금액").optional(),
+                                        fieldWithPath("deliveryTime").description("배송 시간").optional(),
+                                        fieldWithPath("deliveryCharge").description("배송비").optional(),
+                                        fieldWithPath("returnContactNumber").description("반송 연락처").optional(),
+                                        fieldWithPath("returnChargeName").description("반송 수령인").optional(),
+                                        fieldWithPath("returnZipCode").description("반송지 우편번호").optional(),
+                                        fieldWithPath("returnAddress").description("반송지 주소").optional(),
+                                        fieldWithPath("returnAddressDetail").description("반송지 주소 상세").optional(),
+                                        fieldWithPath("returnCharge").description("반송지 요금").optional(),
+                                        fieldWithPath("itemOptionsTitle").description("상품 옵션의 제목").optional(),
                                         fieldWithPath("itemOptions[]").description("상품 옵션").optional(),
                                         fieldWithPath("itemOptions[].itemOptionName").description("상품 옵션의 이름").optional(),
                                         fieldWithPath("itemOptions[].additionalPrice").description("상품 옵션의 추가 가격").optional(),
@@ -118,12 +153,12 @@ class SellerItemControllerTest extends WebIntegrationTest {
         @Nested
         @DisplayName("유효하지 못한 인증 정보를 통해 요청할 경우,")
         class Context_with_unauthorized_request{
-            SellerItemDto.RegistrationRequest validRegistrationRequest;
+            SellerItemDto.ItemRegistration validRegistrationRequest;
 
             @Test
             @DisplayName("unauthorized를 응답한다.")
             void it_responses_unauthorized() throws Exception {
-                validRegistrationRequest = SellerItemDto.RegistrationRequest.builder()
+                validRegistrationRequest = SellerItemDto.ItemRegistration.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(1000)
@@ -132,7 +167,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/items")
+                                post("/v1/seller-api/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .content(objectMapper.writeValueAsString(validRegistrationRequest))
@@ -144,15 +179,15 @@ class SellerItemControllerTest extends WebIntegrationTest {
 
         @Nested
         @DisplayName("유효하지 못한 상품 정보를 통해 등록 요청할 경우,")
-        class Context_with_invalid_itemRegistrationRequest{
-            SellerItemDto.RegistrationRequest invalidRegistrationRequest;
+        class Context_with_invalid_itemItemRegistration {
+            SellerItemDto.ItemRegistration invalidRegistrationRequest;
             int invalidPrice = 999;
 
             @Test
             @WithSeller("bestSeller")
             @DisplayName("badRequest를 응답한다.")
             void it_responses_badRequest() throws Exception {
-                invalidRegistrationRequest = SellerItemDto.RegistrationRequest.builder()
+                invalidRegistrationRequest = SellerItemDto.ItemRegistration.builder()
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .name("후시딘")
                         .price(invalidPrice)
@@ -161,7 +196,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/items")
+                                post("/v1/seller-api/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(invalidRegistrationRequest))
                         )
@@ -185,7 +220,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_ok() throws Exception {
 
                 mockMvc.perform(
-                                get("/seller-api/items/"+ registeredItemId)
+                                get("/v1/seller-api/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -202,7 +237,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_unauthorized() throws Exception {
 
                 mockMvc.perform(
-                                get("/seller-api/items/"+ registeredItemId)
+                                get("/v1/seller-api/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
@@ -219,32 +254,41 @@ class SellerItemControllerTest extends WebIntegrationTest {
         @Nested
         @DisplayName("유효한 인증 정보와 상품 ID로 변경을 요청할 경우")
         class Context_with_valid_modification_request{
-            SellerItemDto.PatchRequest patchRequest;
-            SellerItemDto.PatchRequest.ItemOption optionPatchRequest;
+            SellerItemDto.PatchItem patchRequest;
+            SellerItemDto.PatchItemOption optionPatchRequest;
+            SellerItemDto.PatchShipping patchShipping;
 
             @Test
             @WithSeller("bestSeller")
             @DisplayName("ok를 응답한다.")
             void it_responses_ok() throws Exception {
-                optionPatchRequest = SellerItemDto.PatchRequest.ItemOption.builder()
+                patchShipping = SellerItemDto.PatchShipping.builder()
+                        .deliveryChargePolicy(DeliveryChargePolicyType.CONDITIONAL)
+                        .deliveryMethod(DeliveryMethodType.SEQUENCIAL)
+                        .deliveryCharge(3000)
+                        .freeShipOverAmount(50000)
+                        .deliveryTime(3)
+                        .build();
+                optionPatchRequest = SellerItemDto.PatchItemOption.builder()
                         .id(registeredItemOptionId)
                         .stockQuantity(30)
                         .itemOptionName("300ml")
                         .additionalPrice(500)
                         .ordering(1)
                         .build();
-                patchRequest = SellerItemDto.PatchRequest.builder()
+                patchRequest = SellerItemDto.PatchItem.builder()
                         .name("비판텐")
                         .price(99999)
                         .stockQuantity(0)
                         .categoryId(REGISTERED_CATEGORY_ID)
                         .onSale(Boolean.TRUE)
+                        .shippingFragment(patchShipping)
                         .itemOptionsTitle("용량")
                         .itemOptions(List.of(optionPatchRequest))
                         .build();
 
                 mockMvc.perform(
-                                patch("/seller-api/items/"+ registeredItemId)
+                                patch("/v1/seller-api/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
@@ -256,6 +300,11 @@ class SellerItemControllerTest extends WebIntegrationTest {
                                         fieldWithPath("price").description("상품 가격").optional(),
                                         fieldWithPath("stockQuantity").description("상품 재고").optional(),
                                         fieldWithPath("onSale").description("판매 여부").optional(),
+                                        fieldWithPath("shippingFragment.deliveryChargePolicy").description("배송 요금 정책").optional(),
+                                        fieldWithPath("shippingFragment.deliveryMethod").description("배송 방법").optional(),
+                                        fieldWithPath("shippingFragment.freeShipOverAmount").description("조건부 배송 무료 금액").optional(),
+                                        fieldWithPath("shippingFragment.deliveryTime").description("배송 시간").optional(),
+                                        fieldWithPath("shippingFragment.deliveryCharge").description("배송비").optional(),
                                         fieldWithPath("itemOptionsTitle").description("상품 옵션의 제목").optional(),
                                         fieldWithPath("itemOptions[]").description("상품 옵션").optional(),
                                         fieldWithPath("itemOptions[].id").description("상품 옵션 식별자").optional(),
@@ -271,30 +320,30 @@ class SellerItemControllerTest extends WebIntegrationTest {
         @Nested
         @DisplayName("유효하지 못한 인증 정보로 상품 변경을 요청할 경우")
         class Context_with_invalid_authentication_request{
-            SellerItemDto.PatchRequest patchRequest;
-            SellerItemDto.PatchRequest.ItemOption optionPatchRequest;
+            SellerItemDto.PatchItem patchItem;
+            SellerItemDto.PatchItemOption patchItemOption;
 
             @Test
             @DisplayName("Unauthorized를 응답한다.")
             void it_responses_unauthorized() throws Exception {
-                optionPatchRequest = SellerItemDto.PatchRequest.ItemOption.builder()
+                patchItemOption = SellerItemDto.PatchItemOption.builder()
                         .id(registeredItemOptionId)
                         .stockQuantity(0)
                         .build();
 
-                patchRequest = SellerItemDto.PatchRequest.builder()
+                patchItem = SellerItemDto.PatchItem.builder()
                         .price(99999)
                         .name("modify name")
                         .stockQuantity(30)
                         .onSale(Boolean.TRUE)
-                        .itemOptions(List.of(optionPatchRequest))
+                        .itemOptions(List.of(patchItemOption))
                         .build();
 
                 mockMvc.perform(
-                                patch("/seller-api/items/"+ registeredItemId)
+                                patch("/v1/seller-api/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
-                                        .content(objectMapper.writeValueAsString(patchRequest))
+                                        .content(objectMapper.writeValueAsString(patchItem))
                         )
                         .andExpect(status().isUnauthorized())
                         .andDo(document("seller-items-id-patch-401"));
@@ -316,7 +365,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_ok() throws Exception {
 
                 mockMvc.perform(
-                                delete("/seller-api/items/"+ registeredItemId)
+                                delete("/v1/seller-api/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -333,7 +382,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_unauthorized() throws Exception {
 
                 mockMvc.perform(
-                                delete("/seller-api/items/"+ registeredItemId)
+                                delete("/v1/seller-api/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
