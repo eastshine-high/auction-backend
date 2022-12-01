@@ -9,7 +9,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import javax.persistence.EntityManager;
-import java.util.List;
+import java.util.Optional;
 
 import static com.eastshine.auction.product.domain.category.QCategory.category;
 import static com.eastshine.auction.product.domain.item.QItem.item;
@@ -29,10 +29,12 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
             return findByItemNameContaining(condition, pageable);
         }
 
-        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.fields(ItemDto.SearchResponse.class,
+        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.constructor(ItemDto.SearchResponse.class,
                         item.id,
                         item.name,
                         item.price,
+                        item.shippingFragment.deliveryChargePolicy,
+                        item.shippingFragment.deliveryCharge,
                         seller.nickname,
                         seller.sellerLevel))
                 .from(category)
@@ -50,10 +52,12 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     Page<ItemDto.SearchResponse> findByItemNameContaining(ItemDto.SearchCondition condition, Pageable pageable){
-        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.fields(ItemDto.SearchResponse.class,
+        QueryResults<ItemDto.SearchResponse> results = query.select(Projections.constructor(ItemDto.SearchResponse.class,
                         item.id,
                         item.name,
                         item.price,
+                        item.shippingFragment.deliveryChargePolicy,
+                        item.shippingFragment.deliveryCharge,
                         seller.nickname,
                         seller.sellerLevel))
                 .from(item)
@@ -69,36 +73,12 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public ItemDto.Info findGuestItemInfo(Long itemId){
-        return query.select(Projections.fields(ItemDto.Info.class,
-                        item.id,
-                        item.name,
-                        item.price,
-                        item.stockQuantity,
-                        item.itemOptionsTitle,
-                        item.updatedAt,
-                        seller.nickname,
-                        seller.sellerLevel))
-                .from(item)
-                .join(seller).on(seller.id.eq(item.createdBy))
-                .where(
-                        item.id.eq(itemId)
-                )
-                .fetchOne();
-    }
-
-    @Override
-    public List<ItemDto.Info.ItemOption> findGuestItemOptionInfo(Long itemId){
-        return query.select(Projections.fields(ItemDto.Info.ItemOption.class,
-                        itemOption.id,
-                        itemOption.itemOptionName,
-                        itemOption.additionalPrice,
-                        itemOption.stockQuantity,
-                        itemOption.ordering))
-                .from(itemOption)
-                .where(
-                        itemOption.item.id.eq(itemId)
-                )
-                .fetch();
+    public Optional<Item> findByIdWithFetchJoin(Long itemId) {
+        return Optional.ofNullable(
+                query.selectFrom(item)
+                        .join(item.itemOptions, itemOption).fetchJoin()
+                        .where(item.id.eq(itemId))
+                        .fetchOne()
+        );
     }
 }

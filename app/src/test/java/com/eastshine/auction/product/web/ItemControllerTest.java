@@ -4,6 +4,10 @@ import com.eastshine.auction.common.test.WebIntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.domain.item.fragment.DeliveryChargePolicyType;
+import com.eastshine.auction.product.domain.item.fragment.DeliveryMethodType;
+import com.eastshine.auction.product.domain.item.fragment.ReturnFragment;
+import com.eastshine.auction.product.domain.item.fragment.ShippingFragment;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
 import com.eastshine.auction.user.UserFactory;
@@ -43,12 +47,31 @@ class ItemControllerTest extends WebIntegrationTest {
         Seller seller = userFactory.createSeller("판매왕");
         categoryFactory.createCategory(REGISTERED_CATEGORY_ID, "의약품", 1);
 
+        ReturnFragment returnFragment = ReturnFragment.builder()
+                .returnContactNumber("01026799668")
+                .returnChargeName("최동호")
+                .returnZipCode("430012")
+                .returnAddress("경기도 안양시")
+                .returnAddressDetail("예술공원로")
+                .returnCharge(3000)
+                .build();
+
+        ShippingFragment shippingFragment = ShippingFragment.builder()
+                .deliveryChargePolicy(DeliveryChargePolicyType.CHARGE)
+                .deliveryMethod(DeliveryMethodType.SEQUENCIAL)
+                .deliveryCharge(3000)
+                .freeShipOverAmount(0)
+                .deliveryTime(2)
+                .returnFragment(returnFragment)
+                .build();
+
         Item item = Item.builder()
                 .categoryId(REGISTERED_CATEGORY_ID)
                 .name("비판텐")
                 .stockQuantity(50000)
                 .price(50000)
                 .onSale(true)
+                .shippingFragment(shippingFragment)
                 .build();
         ReflectionTestUtils.setField(item, "createdBy", seller.getId());
         itemRepository.save(item);
@@ -87,7 +110,7 @@ class ItemControllerTest extends WebIntegrationTest {
             @DisplayName("파라미터 조건에 맞게 검색된 상품들을 반환한다.")
             void it_returns_items() throws Exception {
                 mockMvc.perform(
-                                get("/api/items?" + requiredParameter)
+                                get("/v1/api/items?" + requiredParameter)
                                         .accept(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -111,7 +134,7 @@ class ItemControllerTest extends WebIntegrationTest {
                 @DisplayName("BadRequest를 응답한다.")
                 void it_responses_badRequest() throws Exception {
                     mockMvc.perform(
-                                    get("/api/items?" + notRequiredParameter)
+                                    get("/v1/api/items?" + notRequiredParameter)
                                             .accept(MediaType.APPLICATION_JSON)
                             )
                             .andExpect(status().isBadRequest());
@@ -128,7 +151,7 @@ class ItemControllerTest extends WebIntegrationTest {
         @DisplayName("식별자에 해당하는 상품을 반환한다.")
         void it_returns_items() throws Exception {
             mockMvc.perform(
-                            get("/api/items/" + registeredItemId)
+                            get("/v1/api/items/" + registeredItemId)
                                     .accept(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())

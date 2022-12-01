@@ -4,12 +4,10 @@ import com.eastshine.auction.product.web.dto.ItemDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepositoryCustom {
     Page<ItemDto.SearchResponse> searchItems(ItemDto.SearchCondition condition, Pageable pageable);
 
-    ItemDto.Info findGuestItemInfo(Long id);
-
-    List<ItemDto.Info.ItemOption> findGuestItemOptionInfo(Long itemId);
+    Optional<Item> findByIdWithFetchJoin(Long itemId);
 }

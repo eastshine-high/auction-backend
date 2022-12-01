@@ -1,5 +1,9 @@
 package com.eastshine.auction.product.web;
 
+import com.eastshine.auction.common.exception.EntityNotFoundException;
+import com.eastshine.auction.common.exception.ErrorCode;
+import com.eastshine.auction.product.domain.item.Item;
+import com.eastshine.auction.product.domain.item.ItemMapper;
 import com.eastshine.auction.product.domain.item.ItemRepository;
 import com.eastshine.auction.product.web.dto.ItemDto;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/api/items")
+@RequestMapping("/v1/api/items")
 @RestController
 public class ItemController {
     private final ItemRepository itemRepository;
@@ -43,9 +47,9 @@ public class ItemController {
      */
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ItemDto.Info getItem(@PathVariable Long id) {
-        ItemDto.Info itemInfo = itemRepository.findGuestItemInfo(id);
-        itemInfo.setItemOptionDtos(itemRepository.findGuestItemOptionInfo(id));
-        return itemInfo;
+    public ItemDto.ItemInfo getItem(@PathVariable Long id) {
+        Item item = itemRepository.findByIdWithFetchJoin(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ITEM_NOT_FOUND));
+        return ItemMapper.INSTANCE.toItemDto(item);
     }
 }
