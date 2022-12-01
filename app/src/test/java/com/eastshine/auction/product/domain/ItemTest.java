@@ -50,7 +50,7 @@ class ItemTest {
     class Describe_decreaseStockQuantity{
 
         @Test
-        @DisplayName("보유한 재고 이상으로 재고를 차감하면, InvalidArgumentException 예외를 던진다.")
+        @DisplayName("보유한 재고를 초과한 수량을 차감하면, InvalidArgumentException 예외를 던진다.")
         void it_throws_InvalidArgumentException() {
             int invalidQuantity = 30;
             Item item = Item.builder()
@@ -65,7 +65,7 @@ class ItemTest {
         }
 
         @Test
-        @DisplayName("보유한 재고 이내의 재고를 차감하면, 재고를 감소시킨다.")
+        @DisplayName("보유한 재고 이내의 수량을 차감하면, 재고를 감소시킨다.")
         void it_decrease_stockQuantity() {
             int validQuantity = 1;
             Item item = Item.builder()
