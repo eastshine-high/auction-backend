@@ -11,7 +11,7 @@
 
 ## 프로젝트 개요
 
-Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 고민했던 것들에 대해 블로그 형식으로 기록한 개인 프로젝트입니다.
+Auction Backend는 쇼핑몰의 REST API를 설계하고 구현한 개인 프로젝트입니다. 이 과정에서 고민하고 배운 내용들을 블로그 형식으로 기록하였습니다.
 
 ## 목차
 
@@ -39,16 +39,17 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
         - [외래키와 복합키 사용에 대하여](#constraints)
          
 - 코드 개선하기
+    - [테스트 코드 작성을 통한 올바른 책임의 이해(캡슐화)](#test-responsibility)
     - [관심사의 분리](#separation-of-concern)
-    - [테스트 코드 작성을 통한 올바른 책임의 이해](#test-responsibility)
 - [기술 사용 배경](#why-use)
-    - JSON Merge Patch
     - Redis
     - Flyway
+    - JSON Merge Patch
+    - Kafka
 
 ## 프로젝트 문서
 
-- [API 문서(AWS 배포)](http://3.36.136.227/docs/index.html)
+- [API 문서(Spring REST Docs 활용)](http://3.36.136.227/docs/index.html)
 
 - [API 유스 케이스](https://eastshine.notion.site/5802417b375e474380a1a092e07e79fe?v=65b6e4f02626434597726a247cb3bf2e)
 
@@ -58,7 +59,7 @@ Auction Backend는 쇼핑몰 REST API를 설계, 구현하고 이 과정에서 �
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-![](http://dl.dropbox.com/s/xxxuc4de4ryj3mm/auction-erd.svg)
+![](http://dl.dropbox.com/s/ocsyfifqx945ere/auction_erd.png)
 
 </details>
 
@@ -271,7 +272,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 }
 ```
 
-- 시큐리티 필터의 모든 기능을 구현하기는 어려움으로,  `BasicAuthenticationFilter` 필터를 상속하여 필요한 메소드를 오버라이드합니다. `BasicAuthenticationFilter` 는 `OncePerRequestFilter` 를 상속한 클래스입니다.
+- 시큐리티 필터의 모든 기능을 구현하지 않고,  `BasicAuthenticationFilter` 필터를 상속하여 필요한 메소드만 오버라이드하였습니다. `BasicAuthenticationFilter` 는 `OncePerRequestFilter` 를 상속한 클래스입니다.
 - `authenticationService.parseToken` : JWT을 인증 및 파싱합니다. JWT에 대해서는 [로그인 인증](#jwt) 에서 설명하였으므로, 여기서는 관련 내용만 참조하겠습니다.
     - [JWT 정리 및 활용](https://github.com/eastshine-high/til/blob/main/web/jwt.md)
     - [AuthenticationService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/user/application/AuthenticationService.java)
@@ -280,7 +281,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
 ![https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png)
 
-- `new UserAuthentication(userInfo)` : SecurityContextHolder는 위의 그림과 같이 내부에 현재 인증된 사용자를 표현하는 Authentication 인터페이스를 포함합니다. 따라서 이를 구현한 구현체를 설정해야 합니다. 아래는 이를 구현한 코드입니다.
+- `new UserAuthentication(userInfo)` : Spring Security 인증 모델의 핵심인 SecurityContextHolder는 위의 그림과 같이 내부에 현재 인증된 사용자를 표현하는 Authentication 인터페이스를 포함합니다. 따라서 이를 구현한 구현체를 설정합니다. 아래는 이를 구현한 코드입니다.
 
 ```java
 public class UserAuthentication extends AbstractAuthenticationToken {
@@ -318,7 +319,7 @@ public class UserAuthentication extends AbstractAuthenticationToken {
 }
 ```
 
-- `AbstractAuthenticationToken` : Authentication 인터페이스를 구현한 기본 클래스입니다. Authentication를 처음부터 구현하기는 어려우므로 AbstractAuthenticationToken을 상속하여 구현하였습니다.
+- `AbstractAuthenticationToken` : AbstractAuthenticationToken : Authentication 인터페이스를 구현한 기본 클래스입니다. Authentication을 처음부터 구현하지 않고 AbstractAuthenticationToken을 상속하여 구현합니다.
 
 이제 구현한 필터를 HTTP 요청에 적용하기 위해 Spring Security의 구성에 추가합니다.
 
@@ -486,12 +487,13 @@ public class RedissonLock {
             boolean isAvailable = lock.tryLock(10, 1, TimeUnit.SECONDS);
 
             if (!isAvailable) {
-                log.info(prefix + id + " : redisson getLock timeout");
+                log.info(prefix + "-" + id + " : redisson getLock timeout");
                 return;
             }
 
             runnable.run();
         } catch (InterruptedException e) {
+            log.error("[RedissonLock-InterruptedException] cause = {}, errorMsg = {}", NestedExceptionUtils.getMostSpecificCause(e), NestedExceptionUtils.getMostSpecificCause(e).getMessage());
             throw new BaseException(ErrorCode.COMMON_LOCK_FAIL);
         } finally {
             lock.unlock();
@@ -730,87 +732,7 @@ public class AuthenticationService {
 
 ## 코드 개선하기
 
-### 관심사의 분리 <a name = "separation-of-concern"></a>
-
-<details>
-   <summary> 본문 확인 (Click)</summary>
-<br />
-
-다음은 카테고리( `Category` )를 등록하는 서비스 코드입니다. 단순히 요청 객체(DTO)의 값을 검증하고 이를 도메인 객체로 매핑한 뒤에, 리포지토리에 저장하는 간단한 로직입니다.
-
-```java
-@RequiredArgsConstructor
-@Service
-public class CategoryService {
-    private final CategoryRepository categoryRepository;
-
-    @Transactional
-    public Category registerCategory(CategoryRegistrationRequest request) {
-        Category parentCategory = null;
-        if(Objects.nonNull(request.getParentId())) {
-            parentCategory = categoryRepository.findById(request.getParentId())
-                    .orElseThrow(CategoryEntityNotFoundException::new);
-        }
-    
-        Category category = Category.builder()
-                .id(request.getId())
-                .parent(parentCategory)
-                .ordering(request.getOrdering())
-                .name(request.getName())
-                .build();
-        
-        return categoryRepository.save(category);
-    }
-}
-```
-
-간단한 로직이지만 코드의 길이가 길어지면서 코드의 가독성이 떨어집니다. 이렇게 코드가 복잡해진 이유는 DTO 객체의 필드를 도메인 객체의 필드로 매핑하는 책임을 서비스가 가지고 있기 때문입니다.
-
-매핑하는 책임은 매핑할 정보를 알고 있는 DTO 객체에서 수행하는 것이 조금 더 적합해 보입니다. 따라서 매핑하는 책임을 DTO 객체에 위임하여 관심사를 분리합니다.
-
-```java
-
-public class CategoryRegistrationRequest {
-
-    @NotNull
-    private Integer id;
-    private Integer parentId;
-
-    @NotBlank
-    private String name;
-
-    @NotNull
-    private Integer ordering;
-
-    public Category toEntity(Category parentCategory) {
-        return Category.builder()
-                .id(id)
-                .parent(parentCategory)
-                .name(name)
-                .ordering(ordering)
-                .build();
-    }
-}
-```
-
-이제 다음과 같이 코드의 길이가 짧아지면서 서비스 코드의 가독성이 개선되는 것을 확인할 수 있습니다. 또한 getter와 같이 메소드를 필요 이상으로 사용하지 않을 수 있습니다.
-
-```java
-@Transactional
-public Category registerCategory(CategoryRegistrationRequest categoryRegistrationRequest) {
-    Category parentCategory = null;
-    if(Objects.nonNull(categoryRegistrationRequest.getParentId())) {
-        parentCategory = categoryRepository.findById(categoryRegistrationRequest.getParentId())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CATEGORY_PARENT_ENTITY_NOT_FOUND));
-    }
-
-    return categoryRepository.save(categoryRegistrationRequest.toEntity(parentCategory));
-}
-```
-
-</details>
-
-### 테스트 코드 작성을 통한 올바른 책임의 이해 <a name = "test-responsibility"></a>
+### 테스트 코드 작성을 통한 올바른 책임의 이해(캡슐화) <a name = "test-responsibility"></a>
 
 <details>
    <summary> 본문 확인 (Click)</summary>
@@ -820,7 +742,7 @@ public Category registerCategory(CategoryRegistrationRequest categoryRegistratio
 
 테스트 코드를 작성하다보면, 객체에 책임을 잘못 할당한 것을 깨닫게 되는 경우가 있습니다. 객체에 할당한 잘못된 책임은 테스트 코드 작성에도 영향을 주기 때문입니다. 이를 고치는 과정에서 객체의 책임을 더 잘 이해할 수 있었습니다.
 
-“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 권한 검사를 예로 들어보겠습니다. 이 책임을 수행하기 좋은 객체는 `컨트롤러` , `서비스` , `도메인 객체` 중에 어디일까요? 결론부터 이야기 하면, ‘물품 정보를 생성한 사용자’ 정보를 알고 있는 `도메인 객체` 입니다.
+“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 권한 검사를 예로 들어보겠습니다. 이 책임을 수행하기 좋은 객체는 `컨트롤러` , `서비스` , `도메인 객체` 중에 어디일까요? 먼저, 결론은 ‘물품 정보를 생성한 사용자’ 정보를 알고 있는 `도메인 객체` 입니다.
 
 하지만 저는 처음에, 이 권한 검사를 컨트롤러에서 처리하도록 하였습니다. 이렇게 했던 이유로는, 컨트롤러에서 접근 검증을 마친다면 서비스와 도메인 엔터티에서는 이를 신경쓸 필요가 없기 때문입니다. 또한 서비스 메소드에 접근하려는 사용자의 식별자를 전달할 필요가 없으므로, 서비스 메소드의 아규먼트 갯수를 줄일 수 있기 때문입니다(클린코드에서는 메소드의 아규먼트가 적을 수록 좋다고 합니다).
 
@@ -858,11 +780,11 @@ private void validateAccessableUser(Item item, Authentication authentication) {
 ```java
 @Entity
 public class Item {
-		...
+    ...
 
-		private Long createdBy;
+    private Long createdBy;
 
-		public void validateAccessibleUser(Long userId) {
+    public void validateAccessibleUser(Long userId) {
         if(createdBy != userId){
             throw new UnauthorizedException(ErrorCode.ITEM_INACCESSIBLE);
         }
@@ -909,11 +831,136 @@ class Describe_validateAccessibleUser{
 
 </details>
 
+### 관심사의 분리 <a name = "separation-of-concern"></a>
+
+<details>
+   <summary> 본문 확인 (Click)</summary>
+<br />
+
+다음은 카테고리( `Category` )를 등록하는 서비스 코드입니다. 단순히 요청 객체(DTO)의 값을 확인하고 도메인 객체로 매핑한 뒤에, 이를 리포지토리에 저장하는 로직입니다.
+
+```java
+@RequiredArgsConstructor
+@Service
+public class CategoryService {
+    private final CategoryRepository categoryRepository;
+
+    @Transactional
+    public Category registerCategory(CategoryRegistrationRequest request) {
+        Category parentCategory = null;
+        if(Objects.nonNull(request.getParentId())) {
+            parentCategory = categoryRepository.findById(request.getParentId())
+                    .orElseThrow(CategoryEntityNotFoundException::new);
+        }
+    
+        Category category = Category.builder()
+                .id(request.getId())
+                .parent(parentCategory)
+                .ordering(request.getOrdering())
+                .name(request.getName())
+                .build();
+        
+        return categoryRepository.save(category);
+    }
+}
+```
+
+간단한 로직이지만 코드의 길이가 길어지면서 코드의 가독성이 떨어집니다. 이렇게 코드가 복잡해진 이유는 DTO 객체의 필드를 도메인 객체로 매핑하는 책임을 서비스가 가지고 있기 때문입니다.
+
+매핑하는 책임은 매핑할 정보를 알고 있는 DTO 객체에서 수행하는 것이 조금 더 적합해 보입니다. 따라서 매핑하는 책임을 DTO 객체에 위임하여 관심사를 분리합니다.
+
+```java
+
+public class CategoryRegistrationRequest {
+
+    @NotNull
+    private Integer id;
+    private Integer parentId;
+
+    @NotBlank
+    private String name;
+
+    @NotNull
+    private Integer ordering;
+
+    public Category toEntity(Category parentCategory) {
+        return Category.builder()
+                .id(id)
+                .parent(parentCategory)
+                .name(name)
+                .ordering(ordering)
+                .build();
+    }
+}
+```
+
+매핑에 대한 책임을 DTO가 가져가면서 서비스 코드의 가독성이 개선된 것을 확인할 수 있습니다. 또한 DTO는 getter와 같은 메소드를 필요 이상으로 만들지 않을 수 있습니다.
+
+```java
+@Transactional
+public Category registerCategory(CategoryRegistrationRequest request) {
+    Category parentCategory = null;
+    if(Objects.nonNull(request.getParentId())) {
+        parentCategory = categoryRepository.findById(request.getParentId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.CATEGORY_PARENT_ENTITY_NOT_FOUND));
+    }
+
+    return categoryRepository.save(request.toEntity(parentCategory));
+}
+```
+
+</details>
+
 ## 기술 사용 배경 <a name = "why-use"></a>
 
 <details>
    <summary> 본문 확인 (Click)</summary>
 <br />
+
+### **Redis**
+
+1. Cache(Look-aside)
+
+카테고리 엔터티는 다음과 같이 재귀 구조로 설계되어 있습니다.
+
+![https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png](https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png)
+
+이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰의 메인페이지에서 조회하는 카테고리와 같이, 자주 요청이 들어오는 API의 경우에는 캐싱 처리하여 조회 성능을 개선합니다.
+
+```java
+@RequiredArgsConstructor
+@RestController
+public class CategoryController {
+    private final CategoryRepository categoryRepository;
+
+    @GetMapping("/v1/api/display/categories")
+    @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
+    public List<CategoryDto.DisplayMain> getDisplayCategories() {
+        List<Category> categories = categoryRepository.findDisplayCategories();
+        return categories.stream()
+                .map(CategoryDto.DisplayMain::new)
+                .collect(Collectors.toList());
+    }
+}
+```
+
+2. 분산락
+
+멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](#stock) 처리를 위해 분산락을 구현할 때, 가장 좋은 저장소로 볼 수 있습니다.
+
+3. In-memory 저장소
+
+로그인 인증에 성공할 경우, 세션 용도로 JWT를 발급합니다(이는 [좋은 방식이 아님](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 을 이후에 알게되었습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의( [공식 문서](https://jwt.io/introduction) 권장)해야 하기 때문에 JWT의 페이로드에는 사용자의 식별자만 담았습니다. 따라서 보안 처리가 되어있는 API의 모든 HTTP 요청에서 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, API의 성능을 개선하기 위해 인증에 성공한 사용자의 정보를 Redis(In-memory 저장소)에 저장합니다.
+
+4. 현재 Redis 사용의 개선점
+
+Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직들에 문제가 생기기 때문입니다. 따라서, 현재 하나의 Redis만 운용중인 서버에 추가적인 백업 Redis 운용이 필요합니다.
+
+### **Flyway**
+
+도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다. 
+
+이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
 
 ### **JSON Merge Patch**
 
@@ -984,50 +1031,8 @@ public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
 
 또 다른 방법을 찾아보면서 JsonPatch([RFC6902](https://datatracker.ietf.org/doc/html/rfc6902)) 와 JsonMergePatch([RFC7396](https://datatracker.ietf.org/doc/html/rfc7386)) 에 대해서 알게 되었습니다. 이에 대해 정리해 보면서 [JsonMergePatch 를 이용해 PATCH API를 구현](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/json-merge-patch.md) 해 볼 수 있었습니다.
 
-### **Redis**
+### **Kafka**
 
-1. Cache(Look-aside)
-
-카테고리 엔터티는 다음과 같이 재귀 구조로 설계되어 있습니다.
-
-![https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png](https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png)
-
-이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰의 메인페이지에서 조회하는 카테고리와 같이, 자주 요청이 들어오는 API의 경우에는 캐싱 처리하여 조회 성능을 개선합니다.
-
-```java
-@RequiredArgsConstructor
-@RestController
-public class CategoryController {
-    private final CategoryRepository categoryRepository;
-
-    @GetMapping("/v1/api/display/categories")
-    @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
-    public List<CategoryDto.DisplayMain> getDisplayCategories() {
-        List<Category> categories = categoryRepository.findDisplayCategories();
-        return categories.stream()
-                .map(CategoryDto.DisplayMain::new)
-                .collect(Collectors.toList());
-    }
-}
-```
-
-2. 분산락
-
-멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](#stock) 처리를 위해 분산락을 구현할 때, 가장 좋은 저장소로 볼 수 있습니다.
-
-3. In-memory 저장소
-
-로그인 인증에 성공할 경우, 세션 용도로 JWT를 발급합니다(이는 [좋은 방식이 아님](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 을 이후에 알게되었습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의( [공식 문서](https://jwt.io/introduction) 권장)해야 하기 때문에 JWT의 페이로드에는 사용자의 식별자만 담았습니다. 따라서 보안 처리가 되어있는 API의 모든 HTTP 요청에서 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, API의 성능을 개선하기 위해 인증에 성공한 사용자의 정보를 Redis(In-memory 저장소)에 저장합니다.
-
-4. 현재 Redis 사용의 개선점
-
-Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직들에 문제가 생기기 때문입니다. 따라서, 현재 하나의 Redis만 운용중인 서버에 추가적인 백업 Redis 운용이 필요합니다.
-
-### **Flyway**
-
-도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다. 
-
-이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
-
+주문 도메인은 업무 특성상 다른 도메인과의 협력이 많이 필요합니다. 이 때, 이벤트를 활용하면 도메인 간의 결합도를 낮추며 협력할 수 있습니다. 따라서 [주문 및 주문 취소 업무](#order-process) 에서는 Kafka를 이용한 비동기 이벤트 처리를 통해 도메인 간의 결합도를 낮추었습니다. 사실 MSA가 아닌 모놀리틱 아키텍처에서 비동기 이벤트 처리는 Spring이 지원하는 기능만으로 충분합니다. Kafka는 도메인 주도 개발을 공부하면서 관심이 커져 프로젝트에도 활용해 보았습니다.
 
 </details>
