@@ -1,7 +1,4 @@
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-name: Java CI with Gradle
+name: CI for Auction backend
 
 on:
   push:
@@ -10,13 +7,11 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  ci-job:
     runs-on: ubuntu-20.04
     services:
-      # Label used to access the service container
-      redis:
-        # Docker Hub image
-        image: redis
+      redis: # Label used to access the service container
+        image: redis # Docker Hub image
         # Set health checks to wait until redis has started
         options: >-
           --health-cmd "redis-cli ping"
@@ -24,7 +19,6 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps port 6379 on service container to the host
           - 6379:6379
 
     steps:
@@ -42,7 +36,6 @@ jobs:
 
       - name: build Docker
         run: |
+          docker build -t eastshine/auction-backend:${GITHUB_SHA::7} .
           docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
-          docker build -t auction-backend .
-          docker tag auction-backend eastshine/auction-backend:${GITHUB_SHA::7}
           docker push eastshine/auction-backend:${GITHUB_SHA::7}
