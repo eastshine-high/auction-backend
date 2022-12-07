@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/session")
+@RequestMapping("/api/v1/session")
 public class SessionController {
     public static final String TOKEN_TYPE_BEARER = "Bearer";
 

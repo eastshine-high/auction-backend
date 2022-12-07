@@ -165,7 +165,7 @@ class OrderControllerTest extends WebIntegrationTest {
                     .build();
 
             mockMvc.perform(
-                            post("/user-api/orders")
+                            post("/user-api/v1/orders")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(createJson(orderRequest))
                     )
@@ -214,7 +214,7 @@ class OrderControllerTest extends WebIntegrationTest {
                     .build();
 
             mockMvc.perform(
-                            post("/user-api/orders")
+                            post("/user-api/v1/orders")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .header("Authorization", ACCESS_TOKEN)
                                     .content(createJson(orderRequest))
@@ -235,7 +235,7 @@ class OrderControllerTest extends WebIntegrationTest {
         @DisplayName("유효한 인증 정보와 함께 요청할 경우, 정상 응답한다.")
         void getOrderWithAuthentication() throws Exception {
             mockMvc.perform(
-                            get("/user-api/orders/" + registeredOrderId)
+                            get("/user-api/v1/orders/" + registeredOrderId)
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())
@@ -246,7 +246,7 @@ class OrderControllerTest extends WebIntegrationTest {
         @DisplayName("유효하지 못한 인증 정보를 통해 주문을 조회할 경우, Unauthorized 상태를 응답한다.")
         void getOrderWithoutAuthentication() throws Exception {
             mockMvc.perform(
-                            get("/user-api/orders/" + registeredOrderId)
+                            get("/user-api/v1/orders/" + registeredOrderId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .header("Authorization", ACCESS_TOKEN)
                     )
@@ -264,7 +264,7 @@ class OrderControllerTest extends WebIntegrationTest {
         @DisplayName("유효한 인증 정보와 함께 요청할 경우, 정상 응답한다.")
         void getOrderWithAuthentication() throws Exception {
             mockMvc.perform(
-                            delete("/user-api/orders/" + registeredOrderId)
+                            delete("/user-api/v1/orders/" + registeredOrderId)
                                     .contentType(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())
@@ -275,7 +275,7 @@ class OrderControllerTest extends WebIntegrationTest {
         @DisplayName("유효하지 못한 인증 정보를 통해 주문을 조회할 경우, Unauthorized 상태를 응답한다.")
         void getOrderWithoutAuthentication() throws Exception {
             mockMvc.perform(
-                            delete("/user-api/orders/" + registeredOrderId)
+                            delete("/user-api/v1/orders/" + registeredOrderId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .header("Authorization", ACCESS_TOKEN)
                     )

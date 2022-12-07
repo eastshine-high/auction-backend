@@ -24,7 +24,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @PreAuthorize("isAuthenticated()")
-@RequestMapping("/user-api/orders")
+@RequestMapping("/user-api/v1/orders")
 @RestController
 public class OrderController {
     private final OrderService orderService;
@@ -46,7 +46,7 @@ public class OrderController {
         UserInfo userInfo = (UserInfo) authentication.getPrincipal();
         request.setUserInfo(userInfo);
         Order order = placeOrderService.placeOrder(request);
-        return ResponseEntity.created(URI.create("/user-api/orders/" + order.getId())).build();
+        return ResponseEntity.created(URI.create("/user-api/v1/orders/" + order.getId())).build();
     }
 
     /**

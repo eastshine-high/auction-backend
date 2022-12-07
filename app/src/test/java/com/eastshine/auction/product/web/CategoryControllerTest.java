@@ -39,7 +39,7 @@ class CategoryControllerTest extends WebIntegrationTest {
     @Test
     void getDisplayCategories() throws Exception {
         mockMvc.perform(
-                        get("/api/display/categories")
+                        get("/api/v1/display/categories")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())

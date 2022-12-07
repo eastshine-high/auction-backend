@@ -27,7 +27,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/seller-api/users")
+@RequestMapping("/seller-api/v1/users")
 public class SellerController {
     private final SellerService sellerService;
     private final UserService userService;
@@ -39,7 +39,7 @@ public class SellerController {
 
         Seller signedUpSeller = sellerService.signUpSeller(requestSignup);
 
-        return ResponseEntity.created(URI.create("/seller-api/users/" + signedUpSeller.getId())).build();
+        return ResponseEntity.created(URI.create("/seller-api/v1/users/" + signedUpSeller.getId())).build();
     }
 
     @GetMapping("{id}")

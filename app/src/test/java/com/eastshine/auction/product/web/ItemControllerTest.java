@@ -110,7 +110,7 @@ class ItemControllerTest extends WebIntegrationTest {
             @DisplayName("파라미터 조건에 맞게 검색된 상품들을 반환한다.")
             void it_returns_items() throws Exception {
                 mockMvc.perform(
-                                get("/v1/api/items?" + requiredParameter)
+                                get("/api/v1/items?" + requiredParameter)
                                         .accept(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -134,7 +134,7 @@ class ItemControllerTest extends WebIntegrationTest {
                 @DisplayName("BadRequest를 응답한다.")
                 void it_responses_badRequest() throws Exception {
                     mockMvc.perform(
-                                    get("/v1/api/items?" + notRequiredParameter)
+                                    get("/api/v1/items?" + notRequiredParameter)
                                             .accept(MediaType.APPLICATION_JSON)
                             )
                             .andExpect(status().isBadRequest());
@@ -151,7 +151,7 @@ class ItemControllerTest extends WebIntegrationTest {
         @DisplayName("식별자에 해당하는 상품을 반환한다.")
         void it_returns_items() throws Exception {
             mockMvc.perform(
-                            get("/v1/api/items/" + registeredItemId)
+                            get("/api/v1/items/" + registeredItemId)
                                     .accept(MediaType.APPLICATION_JSON)
                     )
                     .andExpect(status().isOk())

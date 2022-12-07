@@ -75,7 +75,7 @@ class UserControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/user-api/users")
+                                post("/user-api/v1/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
@@ -105,7 +105,7 @@ class UserControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/user-api/users")
+                                post("/user-api/v1/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
@@ -119,7 +119,7 @@ class UserControllerTest extends WebIntegrationTest {
     void getUser() throws Exception {
 
         mockMvc.perform(
-                        get("/user-api/users/" + registeredUserId)
+                        get("/user-api/v1/users/" + registeredUserId)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -138,7 +138,7 @@ class UserControllerTest extends WebIntegrationTest {
             @Test
             void 상태코드_401_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
-                                patch("/user-api/users/" + registeredUserId + "/nickname")
+                                patch("/user-api/v1/users/" + registeredUserId + "/nickname")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                         )
@@ -155,7 +155,7 @@ class UserControllerTest extends WebIntegrationTest {
                 UserDto.PatchNickname patchNickname = new UserDto.PatchNickname("newNickname");
 
                 mockMvc.perform(
-                                patch("/user-api/users/" + registeredUserId + "/nickname")
+                                patch("/user-api/v1/users/" + registeredUserId + "/nickname")
                                         .header("Authorization", "Bearer " + userAuthentication)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(createJson(patchNickname))
@@ -176,7 +176,7 @@ class UserControllerTest extends WebIntegrationTest {
             @Test
             void 상태코드_401_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
-                                delete("/user-api/users/" + registeredUserId)
+                                delete("/user-api/v1/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                         )
@@ -192,7 +192,7 @@ class UserControllerTest extends WebIntegrationTest {
             void 상태코드_200을_응답한다() throws Exception {
 
                 mockMvc.perform(
-                                delete("/user-api/users/" + registeredUserId)
+                                delete("/user-api/v1/users/" + registeredUserId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", "Bearer " + userAuthentication)
                         )

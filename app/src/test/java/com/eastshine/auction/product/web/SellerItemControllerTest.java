@@ -116,7 +116,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/v1/seller-api/items")
+                                post("/seller-api/v1/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(createJson(validRegistrationRequest))
                         )
@@ -167,7 +167,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/v1/seller-api/items")
+                                post("/seller-api/v1/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .content(objectMapper.writeValueAsString(validRegistrationRequest))
@@ -196,7 +196,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/v1/seller-api/items")
+                                post("/seller-api/v1/items")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(invalidRegistrationRequest))
                         )
@@ -220,7 +220,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_ok() throws Exception {
 
                 mockMvc.perform(
-                                get("/v1/seller-api/items/"+ registeredItemId)
+                                get("/seller-api/v1/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -237,7 +237,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_unauthorized() throws Exception {
 
                 mockMvc.perform(
-                                get("/v1/seller-api/items/"+ registeredItemId)
+                                get("/seller-api/v1/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
@@ -288,7 +288,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                patch("/v1/seller-api/items/"+ registeredItemId)
+                                patch("/seller-api/v1/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchRequest))
                         )
@@ -340,7 +340,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                patch("/v1/seller-api/items/"+ registeredItemId)
+                                patch("/seller-api/v1/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(patchItem))
@@ -365,7 +365,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_ok() throws Exception {
 
                 mockMvc.perform(
-                                delete("/v1/seller-api/items/"+ registeredItemId)
+                                delete("/seller-api/v1/items/"+ registeredItemId)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
                         .andExpect(status().isOk())
@@ -382,7 +382,7 @@ class SellerItemControllerTest extends WebIntegrationTest {
             void it_responses_unauthorized() throws Exception {
 
                 mockMvc.perform(
-                                delete("/v1/seller-api/items/"+ registeredItemId)
+                                delete("/seller-api/v1/items/"+ registeredItemId)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .contentType(MediaType.APPLICATION_JSON)
                         )
