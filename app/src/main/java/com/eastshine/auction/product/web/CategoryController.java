@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class CategoryController {
     private final CategoryRepository categoryRepository;
 
-    @GetMapping("/api/display/categories")
+    @GetMapping("/api/v1/display/categories")
     @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
     public List<CategoryDto.DisplayMain> getDisplayCategories() {
         List<Category> categories = categoryRepository.findDisplayCategories();

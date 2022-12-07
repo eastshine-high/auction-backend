@@ -25,7 +25,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/user-api/users")
+@RequestMapping("/user-api/v1/users")
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
@@ -36,7 +36,7 @@ public class UserController {
 
         User signedUpUser = userService.signUpUser(requestSignup);
 
-        return ResponseEntity.created(URI.create("/user-api/users/" + signedUpUser.getId())).build();
+        return ResponseEntity.created(URI.create("/user-api/v1/users/" + signedUpUser.getId())).build();
     }
 
     @GetMapping("{id}")

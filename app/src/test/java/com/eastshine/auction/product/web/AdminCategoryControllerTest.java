@@ -49,7 +49,7 @@ class AdminCategoryControllerTest extends WebIntegrationTest {
             @DisplayName("created 상태를 응답한다.")
             void it_returns_created_status() throws Exception {
                 mockMvc.perform(
-                                post("/admin-api/categories")
+                                post("/admin-api/v1/categories")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(validRequest))
                         )
@@ -78,7 +78,7 @@ class AdminCategoryControllerTest extends WebIntegrationTest {
             @DisplayName("badRequest 상태를 응답한다.")
             void it_returns_badRequest_status() throws Exception {
                 mockMvc.perform(
-                                post("/admin-api/categories")
+                                post("/admin-api/v1/categories")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(invalidRequest))
                         )
@@ -100,7 +100,7 @@ class AdminCategoryControllerTest extends WebIntegrationTest {
             @Test
             void it_returns_badRequest_status() throws Exception {
                 mockMvc.perform(
-                                post("/admin-api/categories")
+                                post("/admin-api/v1/categories")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                                         .content(objectMapper.writeValueAsString(validRequest))

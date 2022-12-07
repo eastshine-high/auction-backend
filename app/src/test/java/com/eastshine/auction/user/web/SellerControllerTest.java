@@ -75,7 +75,7 @@ class SellerControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/users")
+                                post("/seller-api/v1/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(requestSignup))
                         )
@@ -106,7 +106,7 @@ class SellerControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/users")
+                                post("/seller-api/v1/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(createJson(sellerSignupDto))
                         )
@@ -129,7 +129,7 @@ class SellerControllerTest extends WebIntegrationTest {
                         .build();
 
                 mockMvc.perform(
-                                post("/seller-api/users")
+                                post("/seller-api/v1/users")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(objectMapper.writeValueAsString(sellerSignupDto))
                         )
@@ -142,7 +142,7 @@ class SellerControllerTest extends WebIntegrationTest {
     @Test
     void getSeller() throws Exception {
         mockMvc.perform(
-                        get("/seller-api/users/" + registeredSellerId)
+                        get("/seller-api/v1/users/" + registeredSellerId)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").exists())
@@ -164,7 +164,7 @@ class SellerControllerTest extends WebIntegrationTest {
             @Test
             void 상태코드_401_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
-                                patch("/user-api/users/" + registeredSellerId + "/nickname")
+                                patch("/user-api/v1/users/" + registeredSellerId + "/nickname")
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                         )
@@ -181,7 +181,7 @@ class SellerControllerTest extends WebIntegrationTest {
                 UserDto.PatchNickname patchNickname = new UserDto.PatchNickname("newNickname");
 
                 mockMvc.perform(
-                                patch("/user-api/users/" + registeredSellerId + "/nickname")
+                                patch("/user-api/v1/users/" + registeredSellerId + "/nickname")
                                         .header("Authorization", "Bearer " + registeredSellerAuthentication)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .content(createJson(patchNickname))
@@ -202,7 +202,7 @@ class SellerControllerTest extends WebIntegrationTest {
             @Test
             void 상태코드_400_Unauthorized를_응답한다() throws Exception {
                 mockMvc.perform(
-                                delete("/seller-api/users/" + registeredSellerId)
+                                delete("/seller-api/v1/users/" + registeredSellerId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", ACCESS_TOKEN)
                         )
@@ -218,7 +218,7 @@ class SellerControllerTest extends WebIntegrationTest {
             void 상태코드_200을_응답한다() throws Exception {
 
                 mockMvc.perform(
-                                delete("/seller-api/users/" + registeredSellerId)
+                                delete("/seller-api/v1/users/" + registeredSellerId)
                                         .contentType(MediaType.APPLICATION_JSON)
                                         .header("Authorization", "Bearer " + registeredSellerAuthentication)
                         )

@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
-@RequestMapping("/v1/api/items")
+@RequestMapping("/api/v1/items")
 @RestController
 public class ItemController {
     private final ItemRepository itemRepository;
