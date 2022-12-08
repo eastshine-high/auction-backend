@@ -52,9 +52,11 @@ Auction Backend는 쇼핑몰의 REST API를 설계하고 구현한 개인 프로
 
 ## 프로젝트 문서 <a name = "document"></a>
 
-- [API 문서(Spring REST Docs 활용)](http://3.36.136.227/docs/index.html)
+- [API 문서(Spring REST Docs 활용)](http://52.79.43.121/docs/index.html)
 
 - [API 유스 케이스](https://eastshine.notion.site/5802417b375e474380a1a092e07e79fe?v=65b6e4f02626434597726a247cb3bf2e)
+
+- [도메인 언어 탐구](https://github.com/eastshine-high/auction-backend/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%96%B8%EC%96%B4-%ED%83%90%EA%B5%AC)
 
 ## 프로젝트 ERD <a name = "erd"></a>
 
@@ -126,7 +128,6 @@ jobs:
           - 6379:6379
 
     steps:
-      - name: Checkout repository
       - uses: actions/checkout@v2
       - name: Set up JDK 11
         uses: actions/setup-java@v2
@@ -188,7 +189,6 @@ Job 안에서 어떤 순서대로 명령을 수행하는 지를 Step들을 통�
 
 ```yaml
 steps:
-  - name: Checkout repository
   - uses: actions/checkout@v2
   - name: Set up JDK 11
     uses: actions/setup-java@v2
