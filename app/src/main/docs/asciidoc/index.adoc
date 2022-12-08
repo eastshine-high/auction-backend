@@ -9,7 +9,7 @@
 
 ==== 사용자 등록
 
-POST /user-api/users
+POST /user-api/v1/users
 
 include::{snippets}/user-users-post-201/request-fields.adoc[]
 
@@ -24,7 +24,7 @@ include::{snippets}/user-users-post-201/http-response.adoc[]
 
 ==== 사용자 조회
 
-GET /user-api/users/{id}
+GET /user-api/v1/users/{id}
 
 **Request**
 
@@ -37,7 +37,7 @@ include::{snippets}/user-users-id-get-200/http-response.adoc[]
 
 ==== 사용자 닉네임 변경
 
-PATCH /user-api/users/{id}/nickname
+PATCH /user-api/v1/users/{id}/nickname
 
 **Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
@@ -54,7 +54,7 @@ include::{snippets}/user-users-id-nickname-patch-401/http-response.adoc[]
 
 ==== 사용자 삭제
 
-DELETE /user-api/users/{id}
+DELETE /user-api/v1/users/{id}
 
 **Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
@@ -73,7 +73,7 @@ include::{snippets}/user-users-id-delete-401/http-response.adoc[]
 
 ==== 주문
 
-POST /user-api/orders/
+POST /user-api/v1/orders/
 
 include::{snippets}/user-orders-post-201/request-fields.adoc[]
 
@@ -92,7 +92,7 @@ include::{snippets}/user-orders-post-401/http-response.adoc[]
 
 ==== 주문 조회
 
-GET /user-api/orders/{id}
+GET /user-api/v1/orders/{id}
 
 **Request : Authorization 헤더에 사용자 토큰 정보를 포함하여 조회**
 
@@ -108,7 +108,7 @@ include::{snippets}/user-orders-id-get-401/http-response.adoc[]
 
 ==== 주문 취소
 
-DELETE /user-api/orders/{id}
+DELETE /user-api/v1/orders/{id}
 
 **Request : Authorization 헤더에 토큰 정보를 포함하여 조회**
 
@@ -129,7 +129,7 @@ include::{snippets}/user-orders-id-delete-401/http-response.adoc[]
 
 ==== 토큰 받기(로그인)
 
-POST /api/session
+POST /api/v1/session
 
 include::{snippets}/guest-session-post-201/request-fields.adoc[]
 
@@ -149,7 +149,7 @@ include::{snippets}/guest-session-post-201/http-response.adoc[]
 
 ==== 디스플레이 카테고리 조회
 
-GET /api/display/categories
+GET /api/v1/display/categories
 
 **Request**
 
@@ -161,7 +161,7 @@ include::{snippets}/guest-displayCategories-get-200/http-response.adoc[]
 
 ==== 물품 검색
 
-GET /api/items
+GET /api/v1/items
 
 include::{snippets}/guest-items-get-200/request-parameters.adoc[]
 
@@ -175,7 +175,7 @@ include::{snippets}/guest-items-get-200/http-response.adoc[]
 
 ==== 물품 상세 조회
 
-GET /api/items/{id}
+GET /api/v1/items/{id}
 
 **Request**
 
@@ -192,7 +192,7 @@ include::{snippets}/guest-items-id-get-200/http-response.adoc[]
 
 ==== 사용자 등록
 
-POST /seller-api/users
+POST /seller-api/v1/users
 
 include::{snippets}/seller-users-post-201/request-fields.adoc[]
 
@@ -207,7 +207,7 @@ include::{snippets}/seller-users-post-201/http-response.adoc[]
 
 ==== 사용자 조회
 
-GET /seller-api/users/{id}
+GET /seller-api/v1/users/{id}
 
 **Request**
 
@@ -220,7 +220,7 @@ include::{snippets}/seller-users-id-get-200/http-response.adoc[]
 
 ==== 사용자 닉네임 변경
 
-PATCH /seller-api/users/{id}/nickname
+PATCH /seller-api/v1/users/{id}/nickname
 
 **Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
 
@@ -237,7 +237,7 @@ include::{snippets}/seller-users-id-nickname-patch-401/http-response.adoc[]
 
 ==== 사용자 삭제
 
-DELETE /seller-api/users/{id}
+DELETE /seller-api/v1/users/{id}
 
 **Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
@@ -256,7 +256,7 @@ include::{snippets}/seller-users-id-delete-401/http-response.adoc[]
 
 ==== 물품 등록
 
-POST /seller-api/items
+POST /seller-api/v1/items
 
 include::{snippets}/seller-items-post-201/request-fields.adoc[]
 
@@ -275,7 +275,7 @@ include::{snippets}/seller-items-post-401/http-response.adoc[]
 
 ==== 물품 조회
 
-GET /seller-api/items/{id}
+GET /seller-api/v1/items/{id}
 
 **Request**
 
@@ -288,7 +288,7 @@ include::{snippets}/seller-items-id-get-200/http-response.adoc[]
 
 ==== 물품 수정
 
-PATCH /seller-api/items/{id}
+PATCH /seller-api/v1/items/{id}
 
 include::{snippets}/seller-items-id-patch-200/request-fields.adoc[]
 
@@ -307,7 +307,7 @@ include::{snippets}/seller-items-id-patch-401/http-response.adoc[]
 
 ==== 물품 삭제
 
-DELETE /seller-api/items/{id}
+DELETE /seller-api/v1/items/{id}
 
 **Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
 
@@ -328,7 +328,7 @@ include::{snippets}/seller-items-id-delete-401/http-response.adoc[]
 
 ==== 카테고리 등록
 
-POST /admin-api/categories
+POST /admin-api/v1/categories
 
 include::{snippets}/admin-categories-post-201/request-fields.adoc[]
 

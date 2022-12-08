@@ -29,7 +29,7 @@ import java.net.URI;
 
 @RequiredArgsConstructor
 @PreAuthorize("hasAuthority('SELLER')")
-@RequestMapping("/v1/seller-api/items")
+@RequestMapping("/seller-api/v1/items")
 @RestController
 public class SellerItemController {
     private final SellerItemService sellerItemService;
@@ -44,7 +44,7 @@ public class SellerItemController {
     @PostMapping
     public ResponseEntity registerItem(@RequestBody @Validated SellerItemDto.ItemRegistration sellerItemRegistrationRequest) {
         Item registeredItem = sellerItemService.registerItem(sellerItemRegistrationRequest);
-        return ResponseEntity.created(URI.create("/seller-api/items/" + registeredItem.getId())).build();
+        return ResponseEntity.created(URI.create("/seller-api/v1/items/" + registeredItem.getId())).build();
     }
 
     @GetMapping("/{id}")

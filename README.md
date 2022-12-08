@@ -394,7 +394,7 @@ API는 일부 사용자의 접근만 허용해야할 때가 있습니다. 이러
 예를 들어 아래는 상품 정보의 수정을 요청하는 HTTP 요청 메세지입니다. HTTP의 `Authorization` 헤더에 발급받은 토큰을 넣어 요청합니다.
 
 ```java
-PATCH /seller-api/products/1 HTTP/1.1
+PATCH /seller-api/v1/products/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiU0VMTEVSIl19fQ
 Content-Length: 160
@@ -552,7 +552,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 @PreAuthorize("hasAuthority('SELLER')")
 public ResponseEntity registerProduct(@RequestBody @Validated ProductDto productDto) {
     Product registeredProduct = sellerProductService.registerProduct(productDto);
-    return ResponseEntity.created(URI.create("/api/products/" + registeredProduct.getId())).build();
+    return ResponseEntity.created(URI.create("/api/v1/products/" + registeredProduct.getId())).build();
 }
 ```
 
@@ -909,16 +909,16 @@ public class ItemStockService {
 [REST API 디자인 가이드](https://github.com/eastshine-high/til/blob/main/web/http/rest/api/resource-modeling.md) 를 따라 ‘상품 조회 API’를 설계하면, 일반적으로 다음과 같을 것입니다.
 
 ```
-GET /api/products/{id}
+GET /api/v1/products/{id}
 ```
 
 그런데 사이트 방문자(Guest)가 조회할 상품 정보와 판매자(Seller)가 조회할 상품 정보는 다릅니다. 따라서 이를 구분할 필요가 있었습니다. 이 경우에는 단일 책임 원칙(”하나의 모듈은 하나의, 오직 하나의 액터에 대해서만 책임져야 한다”)을 URI에 적용해 볼 수 있었습니다. 다음과 같이 액터를 URI에 추가하여 표현합니다.
 
-방문자 상품 조회 URI : `guest-api/products/{id}`
+방문자 상품 조회 URI : `/guest-api/v1/products/{id}`
 
-판매자 상품 조회 URI : `seller-api/products/{id}`
+판매자 상품 조회 URI : `/seller-api/v1/products/{id}`
 
-> 이 프로젝트에서 `guest-api` 는 편의상 `api` 로 표현하였습니다.
+> 이 프로젝트에서 `guest-api` 는 편의상 `guest` 를 생략하여 `api` 로 표현하였습니다.
 >
 
 실제 [쿠팡](https://developers.coupangcorp.com/hc/ko/articles/360033877853-%EC%83%81%ED%92%88-%EC%83%9D%EC%84%B1) 에서도 다음과 같이 액터를 구분하여 URI를 설계하는 것을 확인해 볼 수 있었습니다.
@@ -1300,7 +1300,7 @@ public Category registerCategory(CategoryRegistrationRequest request) {
 public class CategoryController {
     private final CategoryRepository categoryRepository;
 
-    @GetMapping("/v1/api/display/categories")
+    @GetMapping("/api/v1/display/categories")
     @Cacheable(value = "displayCategories", cacheManager = "cacheManager")
     public List<CategoryDto.DisplayMain> getDisplayCategories() {
         List<Category> categories = categoryRepository.findDisplayCategories();

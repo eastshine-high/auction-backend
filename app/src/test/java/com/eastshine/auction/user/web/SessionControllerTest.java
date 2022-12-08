@@ -49,7 +49,7 @@ class SessionControllerTest extends WebIntegrationTest {
                     .build();
 
             mockMvc.perform(
-                            post("/api/session")
+                            post("/api/v1/session")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(sessionRequestDto))
                     )
@@ -75,7 +75,7 @@ class SessionControllerTest extends WebIntegrationTest {
                     .build();
 
             mockMvc.perform(
-                            post("/api/session")
+                            post("/api/v1/session")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsString(sessionRequestDto))
                     )
