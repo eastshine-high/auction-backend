@@ -27,7 +27,7 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
         - [API의 보안(Security)](#security)
         - [Auditing](#auditing)
     - 주문
-        - 모델링
+        - [모델링](#order)
         - [주문 프로세스(비동기 이벤트)](#order-process)
         - [Hibernate - MultipleBagFetchException 해결하기](#multiple-bag-fetch-exception)
     - 상품
@@ -720,9 +720,27 @@ ORM에서 Auditing은 영속 엔터티와 관련된 이벤트를 추적하고 �
 </details>
 
 
-## 주문 도메인
+## 주문 도메인 <a name = "order"></a>
 
 ### 모델링
+
+<details>
+   <summary> 본문 확인 (Click)</summary>
+<br />
+
+### 도메인 모델링
+
+다음은 도메인 주도 설계 개념을 적용한 **주문 도메인 모델**입니다.
+
+![http://dl.dropbox.com/s/0wfivcgtgx49awf/order_diagram.png](http://dl.dropbox.com/s/0wfivcgtgx49awf/order_diagram.png)
+
+위 모델은 주문에 대한 책임을 가지고 있는 에그리게잇이며 루트 엔터티인 주문(Order), Order의 값 객체(VO)인 배달정보(DeliveryFragment), Order와 일대다 관계인 주문물품(OrderItem), OrderItem과 일대다 관계인 주문물품옵션(OrderItemOption)으로 구성됩니다.
+
+### 데이터 모델링
+
+![http://dl.dropbox.com/s/pgedo149dlo3buf/order_erd.png](http://dl.dropbox.com/s/pgedo149dlo3buf/order_erd.png)
+
+</details>
 
 ### 주문 프로세스(비동기 이벤트)<a name = "order-process"></a>
 
