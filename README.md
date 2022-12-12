@@ -37,7 +37,7 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
         - [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design)
         - [상품 검색](#searching-product)
     - 사용자
-        - 모델링
+        - [모델링](#user)
         - [인증(JWT)](#jwt)
         - [외래키와 복합키 사용에 대하여](#constraints)
 
@@ -1146,7 +1146,26 @@ GET /api/v1/products/{id}
 </details>
 
 
-## 사용자 도메인
+## 사용자 도메인 <a name = "user"></a>
+
+### 모델링
+
+<details>
+   <summary> 본문 확인 (Click)</summary>
+<br />
+
+### Class diagram
+
+![http://dl.dropbox.com/s/tuldntbumwo0608/user_diagram.png](http://dl.dropbox.com/s/tuldntbumwo0608/user_diagram.png)
+
+- 권한 (`Role`)클래스는 JPA의 [복합 식별자](https://github.com/eastshine-high/til/blob/main/java/specification/jpa-hibernate/domain-model/composite-identifiers.md) (`RoleId`)를 이용하여 구성하였습니다. 권한 설계는 JPA의 ManyToMany 관계로도 구성해볼 수 있는데, 이 때는 권한의 종류(`RoleType`)를 ENUM이 아닌 Table로 관리하게 됩니다. 따라서 권한에 대한 변경이 자주 발생할 경우에는 ManyToMany 로 설계하는 것이 더 나은 방식으로 볼 수 있습니다.
+- `Seller` 는 `User` 를 상속합니다. RDB에서는 `JOIN` 관계로 표현합니다.
+
+### ERD
+
+![http://dl.dropbox.com/s/xid2l7fou0j88p8/user](http://dl.dropbox.com/s/xid2l7fou0j88p8/user)
+
+</details>
 
 ### 인증(JWT) <a name = "jwt"></a>
 
