@@ -1019,7 +1019,7 @@ where
 
 재고 관리는 동시성 이슈를 고려하여 로직을 작성해야 합니다.
 
-[재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md) 와 이를 [MySQL에서 해결하는 방법](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md) 에 대해 Github을 통해 정리하였습니다(Redis를 이용한 해결 방법은 추후 정리하겠습니다).
+[재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md) 와 이를 [MySQL에서 해결하는 방법](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md) 은 Github을 통해 정리하였습니다(Redis를 이용한 해결 방법은 추후 정리하겠습니다).
 
 이 프로젝트에서는 동시성 이슈 문제의 해결을 위해, MySQL의 Named Lock을 이용한 분산 락과 Redis의 Redisson 클라이언트를 이용한 분산 락을 구현하였습니다. 두 코드 모두 템플릿-콜백 패턴을 이용하여 Lock을 획득한 후에, 구현 로직을 호출하도록 설계하였습니다.
 
@@ -1111,7 +1111,7 @@ GET /api/v1/products/{id}
 ```
 /v2/providers/seller_api/apis/api/v1/marketplace/seller-products
 ```
-그리고 URI와 함께, 클래스 또한 액터에 따라 분리하였습니다. 이렇게 분리한 클래스들은 더욱 단일 책임 원칙을 준수하는 것을 확인할 수 있었습니다.
+URI 분리와 함께, 클래스 또한 액터에 따라 분리합니다. 이렇게 분리한 클래스들은 더욱 단일 책임 원칙을 준수하는 것을 확인할 수 있었습니다.
 
 또한 액터에 따른 분리는 [CQRS](https://github.com/eastshine-high/til/blob/main/domain-driven-design/cqrs.md) 의 기준이 될 수도 있었습니다. 상품에 대한 방문자의 주요 관심사는 조회(Query)이며 판매자의 주요 관심사는 데이터의 조작(Command)입니다. 따라서 액터의 분리가 자연스럽게 CQRS의 기준이 되었습니다.
 
