@@ -1019,7 +1019,7 @@ where
 
 재고 관리는 동시성 이슈를 고려하여 로직을 작성해야 합니다.
 
-먼저, [재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md) 를 알아보고 이를 [MySQL에서 해결하는 방법](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md) 을 Github을 통해 정리하였습니다. 또한 싱글 스레드, 인메모리 데이터베이스인 Redis를 통해서도 이를 해결할 수 있습니다(이 방법은 추후 정리하겠습니다).
+[재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md) 와 이를 [MySQL에서 해결하는 방법](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md) 에 대해 Github을 통해 정리하였습니다(Redis를 이용한 해결 방법은 추후 정리하겠습니다).
 
 이 프로젝트에서는 동시성 이슈 문제의 해결을 위해, MySQL의 Named Lock을 이용한 분산 락과 Redis의 Redisson 클라이언트를 이용한 분산 락을 구현하였습니다. 두 코드 모두 템플릿-콜백 패턴을 이용하여 Lock을 획득한 후에, 구현 로직을 호출하도록 설계하였습니다.
 
