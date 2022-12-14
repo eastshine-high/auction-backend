@@ -39,7 +39,7 @@ public class WebIntegrationTest extends IntegrationTest{
                         .and()
                         .uris()
                             .withScheme("http")
-                            .withHost("3.36.136.227")
+                            .withHost("52.79.43.121")
                             .withPort(80)
                 )
                 .apply(springSecurity())
