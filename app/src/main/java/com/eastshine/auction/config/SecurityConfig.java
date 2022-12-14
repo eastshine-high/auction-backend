@@ -1,7 +1,7 @@
 package com.eastshine.auction.config;
 
-import com.eastshine.auction.common.filters.JwtAuthenticationErrorFilter;
-import com.eastshine.auction.common.filters.JwtAuthenticationFilter;
+import com.eastshine.auction.common.security.JwtAuthenticationErrorFilter;
+import com.eastshine.auction.common.security.JwtAuthenticationFilter;
 import com.eastshine.auction.user.application.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

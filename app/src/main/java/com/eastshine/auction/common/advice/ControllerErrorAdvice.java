@@ -1,6 +1,6 @@
 package com.eastshine.auction.common.advice;
 
-import com.eastshine.auction.common.dto.ErrorResponse;
+import com.eastshine.auction.common.model.ErrorResponse;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;

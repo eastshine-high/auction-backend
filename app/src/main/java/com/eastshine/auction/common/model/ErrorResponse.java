@@ -1,4 +1,4 @@
-package com.eastshine.auction.common.dto;
+package com.eastshine.auction.common.model;
 
 import com.eastshine.auction.common.exception.ErrorCode;
 import lombok.AllArgsConstructor;

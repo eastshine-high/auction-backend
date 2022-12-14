@@ -1,4 +1,4 @@
-package com.eastshine.auction.common.filters;
+package com.eastshine.auction.common.security;
 
 import com.eastshine.auction.common.exception.AuthenticationException;
 import org.springframework.http.HttpStatus;

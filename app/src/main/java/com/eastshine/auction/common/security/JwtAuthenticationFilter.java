@@ -1,4 +1,4 @@
-package com.eastshine.auction.common.filters;
+package com.eastshine.auction.common.security;
 
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.security.UserAuthentication;
