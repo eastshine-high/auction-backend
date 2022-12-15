@@ -16,7 +16,7 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 ## 목차
 
 - [프로젝트 문서](#document)
-- [프로젝트 ERD](#erd)
+- [프로젝트 ERD](#entity-relationship-diagram)
 - [테스트](#test)
 - 지속적 통합 및 배포
     - [Github Actions, Docker를 활용한 CI 구축](#ci)
@@ -58,7 +58,7 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 
 - [도메인 언어 탐구](https://github.com/eastshine-high/auction-backend/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%96%B8%EC%96%B4-%ED%83%90%EA%B5%AC)
 
-## 프로젝트 ERD <a name = "erd"></a>
+## 프로젝트 ERD <a name = "entity-relationship-diagram"></a>
 
 <details>
    <summary> 본문 확인 (Click)</summary>
@@ -642,7 +642,7 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
     - [JWT 정리 및 활용](https://github.com/eastshine-high/til/blob/main/web/jwt.md)
     - [AuthenticationService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/user/application/AuthenticationService.java)
 - `Authentication` : JWT가 인증되었다면, 누가 인증되었는 지를 나타내는 `Authentication` 객체를 통해 이를 표현합니다.
-- `authenticationService.findUserInfo` : [로그인 인증](https://github.com/eastshine-high/auction-backend#jwt) ****에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
+- `authenticationService.findUserInfo` : [로그인 인증](https://github.com/eastshine-high/auction-backend#jwt) 에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
 - `SecurityContextHolder` 는 스프링 시큐리티 인증 모델의 핵심입니다. 스프링 시큐리티를 통해 인증하는 가장 간단한 방법은 `SecurityContextHolder` 에 누가 인증되었는 지를 직접 설정하는 것입니다(스프링 시큐리티의 다른 필터들과 통합하여 사용하지 않을 경우, `AuthenticationManager` 를 사용하지 않고 `SecurityContextHolder` 를 직접 사용하여 인증할 수 있습니다).
 
 ![https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png)
