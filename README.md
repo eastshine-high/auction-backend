@@ -221,7 +221,7 @@ steps:
 
 ## Docker
 
-Docker는 컨테이너 관리도구입니다. 컨테이너는 하나의 운영 체제 안에서 커널을 공유하며 개별적인 실행 환경을 제공하는 격리된 공간입니다. 여기서 개별적인 실행 환경이란 CPU, 네트워크, 메모리와 같은 시스템 자원을 독자적으로 사용하도록 할당된 환경을 말합니다.
+Docker는 컨테이너 관리도구입니다. 컨테이너는 하나의 운영 체제 안에서 커널을 공유하며 개별적인 실행 환경을 제공하는 격리된 공간입니다. 여기서 개별적인 실행 환경이란 CPU, 네트워크, 메모리와 같은 시스템 자원을 독자적으로 사용하도록 할당된 환경을 말합니다.
 
 이러한 컨테이너 기술을 사용하는 이유는 개발하는 환경과 배포 실행하는 환경을 일치시키기 위해서입니다. 보통 이것이 달라질 때 마다 문제가 자주 생깁니다. 그래서 도커를 사용하여 배포를 할 때 실행할 어플리케이션 뿐 아니라 애플리케이션이 실행되는 환경까지 같이 배포합니다.
 
@@ -422,8 +422,6 @@ auction-backend
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-### REST API의 예외(Exception) 처리
-
 (1) 일관성 있는 오류 표현
 
 [REST API 디자인 규칙(마크 마세 저)](https://digital.kyobobook.co.kr/digital/ebook/ebookDetail.ink?selectedLargeCategory=001&barcode=480D150507640&orderClick=LAG&Kc=) 에서는 “오류는 일관성 있게 표현하여 응답”하는 것을 권합니다.
@@ -435,7 +433,7 @@ auction-backend
 }
 ```
 
-따라서 아래와 같은 형식으로 오류 메세지를 정의합니다.
+이를 위해 공통으로 사용할 오류 응답을 정의합니다.
 
 ```java
 public class ErrorResponse {
@@ -444,7 +442,7 @@ public class ErrorResponse {
 }
 ```
 
-`errorCode` 는 내부적으로 Enum을 통해 관리하며 `message` 를 매핑합니다.
+오류 응답(`ErrorResponse`)의 `errorCode`와 `message`는 내부적으로 Enum을 통해 관리합니다.
 
 ```java
 public enum ErrorCode {
@@ -459,7 +457,7 @@ public enum ErrorCode {
 }
 ```
 
-예외는 `ErrorCode` 를 기반으로 처리하기 때문에 `RuntimeException` 을 확장한 기반 클래스를 만듭니다.
+위에서 정의한 Enum(`ErrorCode`)을 기반으로 예외를 처리하기 위해서는 `RuntimeException`을 상속하여 클래스를 정의해야 합니다.
 
 ```java
 @Getter
@@ -476,9 +474,11 @@ public class BaseException extends RuntimeException {
 }
 ```
 
-그리고 기반 클래스인 `BaseException` 을 확장하여 실제 비즈니스 로직에서 표현할 예외 클래스들을 만듭니다.
+그리고 `RuntimeException`을 상속한 기반 클래스(`BaseException`) 를 다시 상속하여 실제 비즈니스 로직에서 표현할 예외 클래스들을 만듭니다.
 
 ![http://dl.dropbox.com/s/g3rwsw09kf8l2rs/exception%20hierarchy.png](http://dl.dropbox.com/s/g3rwsw09kf8l2rs/exception%20hierarchy.png)
+
+이제 '일관성 있는 오류 표현'을 위한 준비는 마쳤습니다.  
 
 (2) HTTP 응답 상태 코드
 
@@ -507,7 +507,7 @@ public class ControllerErrorAdvice {
     - `@ExceptionHandler` : 처리하고 싶은 예외를 지정합니다.
 - 초기에 정의한 `ErrorResponse` 를 사용하여 일관성 있는 표현으로 오류를 응답합니다.
 
-이제 예외 처리를 위한 준비를 마쳤으니 비즈니스 로직에서 예외 처리를 합니다.
+이제 REST API의 예외(Exception) 처리를 위한 준비를 마쳤습니다. 비즈니스 로직에서는 이를 활용하여 예외룰 처리합니다.
 
 ```java
 @RequiredArgsConstructor
@@ -524,7 +524,7 @@ public class ProductService {
 
 - `new EntityNotFoundException(ErrorCode.PRODUCT_NOT_FOUND)`
     - 식별자의 엔터티를 찾지 못했을 경우, 이를 표현하는 `EntityNotFoundException` 을 던집니다.
-    - `ErrorCode.PRODUCT_NOT_FOUND` 를 통해 예외 상황을 좀 더 자세히 설명합니다. 같은 상황일 경우, 코드를 재사용함으로서 메세지를 통일할 수 있습니다.
+    - `ErrorCode.PRODUCT_NOT_FOUND` 를 통해 미리 정의된 메세지로 예외 상황을 설명합니다.
 
 </details>
 
@@ -534,9 +534,9 @@ public class ProductService {
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-API는 일부 사용자의 접근만 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 API의 보안 처리는 Spring Security를 이용합니다.
+API는 일부 사용자만 접근을 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 이를 이용해 API의 보안 처리를 합니다.
 
-먼저 사용자 도메인에서는 [로그인을 통한 인증으로 JWT를 발급](#jwt) 하였습니다. API 보안에서는 Spring Security를 이용하여 발급한 JWT를 인증한 뒤, 인가 처리를 합니다.
+먼저 사용자 도메인에서 [로그인을 통한 인증으로 JWT를 발급](https://github.com/eastshine-high/auction-backend#jwt) 하였습니다. API 보안에서는 Spring Security를 이용하여 사용자 도메인에서 발급한 JWT를 인증한 뒤, 인가 처리를 합니다.
 
 예를 들어 아래는 상품 정보의 수정을 요청하는 HTTP 요청 메세지입니다. HTTP의 `Authorization` 헤더에 발급받은 토큰을 넣어 요청합니다.
 
@@ -545,7 +545,7 @@ PATCH /seller-api/v1/products/1 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer eyJ1c2VySW5mbyI6eyJpZCI6MSwiZW1haWwiOiJ0ZXN0QGdtYWlsLmNvbSIsIm5pY2tuYW1lIjoibmlja25hbWUiLCJyb2xlcyI6WyJVU0VSIiwiU0VMTEVSIl19fQ
 Content-Length: 160
-Host: 3.36.136.227
+Host: 52.79.43.121
 
 {
   "name" : "modify name",
@@ -562,13 +562,41 @@ Spring MVC에 위의 요청이 들어오면, 아래와 같은 흐름을 통해 �
 HTTP 요청 -> WAS -> (서블릿)필터 -> 서블릿(dispatcher) -> 스프링 인터셉터 -> 컨트롤러
 ```
 
-Spring Security는 위 흐름 중에서 서블릿 필터를 기반으로 동작합니다([Spring Security의 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/architecture.md) 는 Github을 통해 정리하였습니다).
+Spring Security는 위 흐름 중에서 서블릿 필터를 기반으로 동작합니다([Spring Security의 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/architecture.md) 에 대한 자세한 설명은 Github을 통해 정리하였습니다). `Authorization` 헤더에 담긴 JWT 를 인증하기 위해서는 스프링 시큐리티 구성(Config)에 이를 인증하기 위한 필터를 추가합니다.
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+		@Autowired
+    AuthenticationService authenticationService;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        Filter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), authenticationService);
+        Filter authenticationErrorFilter = new JwtAuthenticationErrorFilter();
+
+        http
+                .csrf().disable()
+                .headers()
+                    .frameOptions().disable() // H2 데이터베이스 콘솔을 위한 설정.
+                .and()
+                .addFilter(authenticationFilter)
+                .addFilterBefore(authenticationErrorFilter, JwtAuthenticationFilter.class);
+    }
+}
+```
+
+- `WebSecurityConfigurerAdapter` : `WebSecurity` 를 위한 구성 인스턴스를 생성할 때, 편리한 기본 클래스를 제공합니다. 일반적으로 `@EnableWebSecurity` 어노테이션과 함께 사용합니다. 필요한 메서드를 재정의하여 커스텀할 수 있습니다.
+- `HttpSecurity` : 네임스페이스 구성에서 Spring Security의 XML `<http>` 엘러먼트와 유사합니다. 특정 `http` 요청에 대해 웹 기반 보안을 구성할 수 있습니다. 기본적으로 모든 요청에 적용되지만 `requestMatcher(RequestMatcher)` 또는 다른 유사한 방법을 사용하여 제한할 수 있습니다.
+- `csrf().disable()` : 현재 서버는 REST API로만 사용하므로 `csrf` 를 사용하지 않았습니다.
+- `@EnableGlobalMethodSecurity` : 아래 인가 처리에서 메소드 시큐리티를 활성화하기 위해 사용합니다.
 
 **인증(Authentication)**
 
-스프링 시큐리티를 이용해 JWT를 인증하는 방법은 다양합니다. 예를 들어 [JwtAuthenticationProvider](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/server/resource/authentication/JwtAuthenticationProvider.html) 혹은 [BearerTokenAuthenticationFilter](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/server/resource/web/BearerTokenAuthenticationFilter.html) 를 이용해 인증할 수 있습니다.
-
-여기서는 스프링 시큐리티의 필터를 직접 구현하였습니다.
+위의 시큐리티 구성(`SecurityConfig`)에 등록한 [JwtAuthenticationFilter](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/common/security/JwtAuthenticationFilter.java) 를 살펴보겠습니다.
 
 ```java
 package com.eastshine.auction.common.filters;
@@ -609,16 +637,19 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 }
 ```
 
-- 시큐리티 필터의 모든 기능을 구현하지 않고,  `BasicAuthenticationFilter` 필터를 상속하여 필요한 메소드만 오버라이드합니다. `BasicAuthenticationFilter` 는 `OncePerRequestFilter` 를 상속한 클래스입니다.
-- `authenticationService.parseToken` : JWT을 인증 및 파싱합니다. JWT에 대해서는 [로그인 인증](#jwt) 에서 설명하였으므로, 여기서는 관련 내용만 참조하겠습니다.
+- `BasicAuthenticationFilter` : 위의 시큐리티 구성(`SecurityConfig`)에서 사용한 `addFilter` 메소드는 스프링 시큐리티에서 제공하는 필터만 등록이 가능합니다. 따라서 스프링 시큐리티에서 제공하는 필터 중의 하나인 `BasicAuthenticationFilter` 를 상속하여 필터를 구현하였습니다. `BasicAuthenticationFilter` 는 내부적으로 `OncePerRequestFilter` 를 상속합니다.
+- `authenticationService.parseToken` : JWT을 인증하고 파싱합니다. JWT에 대해서는 [로그인 인증](https://github.com/eastshine-high/auction-backend#jwt) 에서 설명하므로, 여기서는 관련 내용의 링크만 참조하겠습니다.
     - [JWT 정리 및 활용](https://github.com/eastshine-high/til/blob/main/web/jwt.md)
     - [AuthenticationService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/user/application/AuthenticationService.java)
-- `SecurityContextHolder.getContext` : JWT가 인증되었다면, Spring Security를 통해 이를 표현합니다. 가장 간단한 방법은 SecurityContextHolder 에 누가 인증되었는 지를 직접 설정하는 것입니다(스프링 시큐리티의 다른 필터들과 통합하여 사용하지 않을 경우, AuthenticationManager 를 사용하지 않고 SecurityContextHolder 를 직접 사용하여 인증할 수 있습니다).
-- `authenticationService.findUserInfo` : [로그인 인증](#jwt) 에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
+- `Authentication` : JWT가 인증되었다면, 누가 인증되었는 지를 나타내는 `Authentication` 객체를 통해 이를 표현합니다.
+- `authenticationService.findUserInfo` : [로그인 인증](https://github.com/eastshine-high/auction-backend#jwt) ****에서는 보안 상의 이유로 사용자의 식별 정보만을 JWT 페이로드에 담았었습니다. 따라서 인증 객체(Authentication)를 생성할 때 필요한 사용자 권한 등의 추가 정보를 데이터베이스(Redis)에서 조회합니다.
+- `SecurityContextHolder` 는 스프링 시큐리티 인증 모델의 핵심입니다. 스프링 시큐리티를 통해 인증하는 가장 간단한 방법은 `SecurityContextHolder` 에 누가 인증되었는 지를 직접 설정하는 것입니다(스프링 시큐리티의 다른 필터들과 통합하여 사용하지 않을 경우, `AuthenticationManager` 를 사용하지 않고 `SecurityContextHolder` 를 직접 사용하여 인증할 수 있습니다).
 
 ![https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png](https://docs.spring.io/spring-security/reference/_images/servlet/authentication/architecture/securitycontextholder.png)
 
-- `new UserAuthentication(userInfo)` : Spring Security 인증 모델의 핵심인 SecurityContextHolder는 위의 그림과 같이 내부에 현재 인증된 사용자를 표현하는 Authentication 인터페이스를 포함합니다. 따라서 이를 구현한 구현체를 설정합니다. 아래는 이를 구현한 코드입니다.
+- `new UserAuthentication(userInfo)` : 누가 인증되었는 지를 나타내는 `Authentication` 은 인터페이스이므로 이를 구현해 사용해야 합니다.
+
+[UserAuthentication](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/common/security/UserAuthentication.java)
 
 ```java
 public class UserAuthentication extends AbstractAuthenticationToken {
@@ -656,50 +687,19 @@ public class UserAuthentication extends AbstractAuthenticationToken {
 }
 ```
 
-- `AbstractAuthenticationToken` : AbstractAuthenticationToken : Authentication 인터페이스를 구현한 기본 클래스입니다. Authentication을 처음부터 구현하지 않고 AbstractAuthenticationToken을 상속하여 구현합니다.
-
-이제 구현한 필터를 HTTP 요청에 적용하기 위해 Spring Security의 구성에 추가합니다.
-
-```java
-@Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-		@Autowired
-    AuthenticationService authenticationService;
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        Filter authenticationFilter = new JwtAuthenticationFilter(authenticationManager(), authenticationService);
-        Filter authenticationErrorFilter = new JwtAuthenticationErrorFilter();
-
-        http
-                .csrf().disable()
-                .headers()
-                    .frameOptions().disable() // H2 데이터베이스 콘솔을 위한 설정.
-                .and()
-                .addFilter(authenticationFilter)
-                .addFilterBefore(authenticationErrorFilter, JwtAuthenticationFilter.class);
-    }
-}
-```
-
-- `WebSecurityConfigurerAdapter` : `WebSecurityConfigurer` 인스턴스를 생성할 때, 편리한 기본 클래스를 제공합니다. 메서드를 재정의하여 커스텀할 수 있습니다.
-- `HttpSecurity` : 네임스페이스 구성에서 Spring Security의 XML `<http>` 엘러먼트와 유사합니다. 특정 `http` 요청에 대해 웹 기반 보안을 구성할 수 있습니다. 기본적으로 모든 요청에 적용되지만 `requestMatcher(RequestMatcher)` 또는 다른 유사한 방법을 사용하여 제한할 수 있습니다.
-- `csrf().disable()` : 현재 서버는 REST API로만 사용하므로 `csrf` 를 사용하지 않았습니다.
-- `@EnableGlobalMethodSecurity` : 아래의 인가 처리에서 메소드 시큐리티를 활성화하기 위해 사용합니다.
+- `AbstractAuthenticationToken` : Authentication 인터페이스를 구현한 기본 클래스입니다. Authentication을 처음부터 구현하지 않고 기본 클래스인 `AbstractAuthenticationToken`을 상속하여 구현합니다.
+- `SimpleGrantedAuthority` : `GrantedAuthority` 인터페이스를 구현하는 가장 간단한 구현 클래스입니다.
+- `credentials` : 암호를 보관하는 필드이나, 사용자 인증이 된 후에는 암호 유출 방지를 위해 일반적으로 비웁니다.
 
 **인가(Authorization)**
 
-인가 처리는 [메소드 시큐리티](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html) 를 이용하여 처리합니다. 보호가 필요한 API에 어노테이션을 추가하여 리소스를 보호합니다.
+인가 처리는 [메소드 시큐리티](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html) 를 이용하여 처리하였습니다. 보호가 필요한 API에 어노테이션을 추가하여 리소스를 보호합니다.
 
 ```java
-@PostMapping
+@PatchMapping("/seller-api/v1/products/{id}")
 @PreAuthorize("hasAuthority('SELLER')")
-public ResponseEntity registerProduct(@RequestBody @Validated ProductDto productDto) {
-    Product registeredProduct = sellerProductService.registerProduct(productDto);
-    return ResponseEntity.created(URI.create("/api/v1/products/" + registeredProduct.getId())).build();
+public ResponseEntity patchProduct(@PathVariable Long itemId, @RequestBody @Validated PatchProductDto productDto) {
+        ...
 }
 ```
 
@@ -916,7 +916,7 @@ org.hibernate.loader.MultipleBagFetchException: cannot simultaneously fetch mult
 
 **해결 1**
 
-먼저, [Stack overflow](https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl) 를 통해 `List` 자료형을 `Set` 자료형으로 바꾸어 해결할 수 있다는 것을 확인할 수 있습니다. 하지만 **Set 자료형을 사용할 경우에는 다음과 같은 단점**이 있었습니다.
+먼저, [Stack overflow](https://stackoverflow.com/questions/4334970/hibernate-throws-multiplebagfetchexception-cannot-simultaneously-fetch-multipl) 를 통해 `List` 자료형을 `Set` 자료형으로 바꾸어 해결할 수 있다는 것을 확인할 수 있습니다. 하지만 **Set 자료형을 사용할 경우에는 다음과 같은 단점**이 있었습니다.
 
 ```java
 @EqualsAndHashCode(of = "id")
@@ -1529,7 +1529,7 @@ Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업�
 
 ### **Flyway**
 
-도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.
+도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.
 
 이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
 
