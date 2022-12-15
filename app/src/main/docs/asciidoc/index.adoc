@@ -135,13 +135,9 @@ include::{snippets}/guest-session-post-201/request-fields.adoc[]
 
 **Request**
 
-(보안 개선 필요. HTTPS)
-
 include::{snippets}/guest-session-post-201/http-request.adoc[]
 
 **Response**
-
-(보안 개선 필요. HTTPS)
 
 include::{snippets}/guest-session-post-201/http-response.adoc[]
 
