@@ -1,10 +1,10 @@
 package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.common.test.WebIntegrationTest;
-import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.repository.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import com.eastshine.auction.user.WithAdmin;
-import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

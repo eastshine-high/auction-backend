@@ -6,7 +6,7 @@ import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.utils.JsonMergePatchMapper;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.ItemMapper;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import com.eastshine.auction.product.web.dto.SellerItemDto;
 import lombok.RequiredArgsConstructor;

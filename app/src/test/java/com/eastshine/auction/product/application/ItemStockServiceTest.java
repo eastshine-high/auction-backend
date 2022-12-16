@@ -4,7 +4,7 @@ import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.domain.item.Item;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

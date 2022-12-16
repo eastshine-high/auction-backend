@@ -1,7 +1,7 @@
 package com.eastshine.auction.user.application;
 
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.repository.UserRepository;
 import com.eastshine.auction.user.domain.role.Role;
 import com.eastshine.auction.user.domain.role.RoleId;
 import com.eastshine.auction.user.domain.role.RoleType;

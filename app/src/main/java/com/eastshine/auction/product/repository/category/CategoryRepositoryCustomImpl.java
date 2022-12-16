@@ -1,5 +1,7 @@
-package com.eastshine.auction.product.domain.category;
+package com.eastshine.auction.product.repository.category;
 
+import com.eastshine.auction.product.domain.category.Category;
+import com.eastshine.auction.product.domain.category.QCategory;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;

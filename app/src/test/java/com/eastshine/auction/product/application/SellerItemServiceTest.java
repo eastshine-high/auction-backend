@@ -7,7 +7,7 @@ import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.domain.item.Item;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.domain.item.fragment.DeliveryChargePolicyType;
 import com.eastshine.auction.product.domain.item.fragment.DeliveryMethodType;
 import com.eastshine.auction.product.domain.item.fragment.ReturnFragment;

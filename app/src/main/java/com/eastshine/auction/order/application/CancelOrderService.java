@@ -6,7 +6,7 @@ import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.order.adaptor.CancelOrderProducer;
 import com.eastshine.auction.order.domain.Order;
 import com.eastshine.auction.order.domain.policy.CancelOrderPolicy;
-import com.eastshine.auction.order.infra.OrderRepository;
+import com.eastshine.auction.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

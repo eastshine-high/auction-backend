@@ -5,7 +5,7 @@ import com.eastshine.auction.order.domain.item.OrderItem;
 import com.eastshine.auction.order.domain.item.OrderItemOption;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import com.eastshine.auction.product.domain.item.Item;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -14,10 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -1,4 +1,4 @@
-package com.eastshine.auction.user.domain.seller;
+package com.eastshine.auction.user.repository.seller;
 
 import com.eastshine.auction.user.web.dto.SellerDto;
 
