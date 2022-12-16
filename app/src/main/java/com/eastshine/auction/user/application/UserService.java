@@ -5,7 +5,7 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.exception.UnauthorizedException;
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.repository.UserRepository;
 import com.eastshine.auction.user.web.dto.UserDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

@@ -5,7 +5,7 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.order.domain.Order;
 import com.eastshine.auction.order.domain.item.OrderItem;
 import com.eastshine.auction.order.domain.item.OrderItemOption;
-import com.eastshine.auction.order.infra.OrderRepository;
+import com.eastshine.auction.order.repository.OrderRepository;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

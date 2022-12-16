@@ -1,5 +1,6 @@
-package com.eastshine.auction.product.domain.item;
+package com.eastshine.auction.product.repository.item;
 
+import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.web.dto.ItemDto;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;

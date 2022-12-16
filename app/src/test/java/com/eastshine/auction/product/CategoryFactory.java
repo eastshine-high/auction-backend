@@ -2,7 +2,7 @@ package com.eastshine.auction.product;
 
 import com.eastshine.auction.product.application.AdminCategoryService;
 import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.repository.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

@@ -8,7 +8,7 @@ import com.eastshine.auction.order.domain.Order;
 import com.eastshine.auction.order.web.dto.OrderDto;
 import com.eastshine.auction.product.CategoryFactory;
 import com.eastshine.auction.product.domain.item.Item;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.domain.item.option.ItemOption;
 import com.eastshine.auction.product.domain.item.option.ItemOptionRepository;
 import com.eastshine.auction.user.UserFactory;

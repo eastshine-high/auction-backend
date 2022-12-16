@@ -3,7 +3,7 @@ package com.eastshine.auction.product.application;
 import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.repository.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.AdminCategoryDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

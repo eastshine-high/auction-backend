@@ -7,7 +7,7 @@ import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.common.model.UserInfoRedisRepository;
 import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -2,7 +2,7 @@ package com.eastshine.auction.product;
 
 import com.eastshine.auction.product.application.SellerItemService;
 import com.eastshine.auction.product.domain.item.Item;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.web.dto.SellerItemDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

@@ -1,7 +1,7 @@
 package com.eastshine.auction.product.web;
 
 import com.eastshine.auction.product.domain.category.Category;
-import com.eastshine.auction.product.domain.category.CategoryRepository;
+import com.eastshine.auction.product.repository.category.CategoryRepository;
 import com.eastshine.auction.product.web.dto.CategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;

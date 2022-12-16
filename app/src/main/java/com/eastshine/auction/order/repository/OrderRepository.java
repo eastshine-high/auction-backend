@@ -1,4 +1,4 @@
-package com.eastshine.auction.order.infra;
+package com.eastshine.auction.order.repository;
 
 import com.eastshine.auction.order.domain.Order;
 import org.springframework.data.jpa.repository.JpaRepository;

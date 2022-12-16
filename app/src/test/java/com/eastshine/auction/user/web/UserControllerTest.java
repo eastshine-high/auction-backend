@@ -5,7 +5,7 @@ import com.eastshine.auction.common.utils.JwtUtil;
 import com.eastshine.auction.user.application.AuthenticationService;
 import com.eastshine.auction.user.application.UserService;
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.domain.UserRepository;
+import com.eastshine.auction.user.repository.UserRepository;
 import com.eastshine.auction.user.web.dto.UserDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

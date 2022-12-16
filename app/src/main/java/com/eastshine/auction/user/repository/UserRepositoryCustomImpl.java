@@ -1,5 +1,6 @@
-package com.eastshine.auction.user.domain;
+package com.eastshine.auction.user.repository;
 
+import com.eastshine.auction.user.domain.QUser;
 import com.eastshine.auction.user.web.dto.UserDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

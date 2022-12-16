@@ -4,7 +4,7 @@ import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.product.domain.item.Item;
 import com.eastshine.auction.product.domain.item.ItemMapper;
-import com.eastshine.auction.product.domain.item.ItemRepository;
+import com.eastshine.auction.product.repository.item.ItemRepository;
 import com.eastshine.auction.product.web.dto.ItemDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

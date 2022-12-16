@@ -1,5 +1,6 @@
-package com.eastshine.auction.user.domain;
+package com.eastshine.auction.user.repository;
 
+import com.eastshine.auction.user.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

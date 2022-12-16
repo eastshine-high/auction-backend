@@ -1,4 +1,4 @@
-package com.eastshine.auction.order.infra;
+package com.eastshine.auction.order.repository;
 
 import com.eastshine.auction.order.domain.Order;
 import com.eastshine.auction.order.domain.item.OrderItem;
@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import static com.eastshine.auction.order.domain.QOrder.order;
 import static com.eastshine.auction.order.domain.item.QOrderItem.orderItem;
-import static com.eastshine.auction.order.domain.item.QOrderItemOption.orderItemOption;
 import static com.eastshine.auction.product.domain.item.QItem.item;
 import static com.eastshine.auction.product.domain.item.option.QItemOption.itemOption;
 
