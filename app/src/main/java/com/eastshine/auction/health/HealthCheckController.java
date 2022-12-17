@@ -13,6 +13,6 @@ public class HealthCheckController {
 
     @GetMapping("/api/health")
     public String healthCheck() {
-        return "A server is on. At : " + LocalDateTime.now().toString();
+        return "Server is on. At : " + LocalDateTime.now().toString();
     }
 }
