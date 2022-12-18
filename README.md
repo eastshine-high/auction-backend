@@ -6,32 +6,32 @@
 - JPA, QueryDsl, Junit5, JWT, Json Merge Patch
 - Spring Boot, Spring Data JPA, Spring REST Docs, Spring Security
 - MariaDB 10, Redis, Kafka
-- Devops : AWS EC2, Github Action, Nginx, Docker
-- Design : HTTP(REST) API, 도메인 주도 설계
+- Devops : AWS EC2, Github Action, Jenkins, Nginx, Docker
+- Design : 도메인 주도 설계, REST API
 
 ## 프로젝트 개요
 
-Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API를 설계하고 구현한 개인 프로젝트입니다. 이 과정에서 고민하고 배운 내용들을 블로그 형식으로 기록해 나가고 있습니다.
+Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API를 설계하고 구현한 개인 프로젝트입니다. 프로젝트 과정에서 고민하고 배운 내용들을 블로그 형식으로 기록해 나가고 있습니다.
 
 ## 목차
-
+- [프로젝트를 통해 무엇을 할 수 있게 되었는가](#i-am-able-to)
 - [프로젝트 문서](#document)
 - [프로젝트 ERD](#entity-relationship-diagram)
 - [테스트](#test)
 - 지속적 통합 및 배포
     - [Github Actions, Docker를 활용한 CI 구축](#ci)
-    - [Jenkins, Docker를 활용한 CD 구축](#cd)
+    - [Jenkins, Docker, Nginx를 활용한 무중단 CD 구축](#cd)
 - 기능 설명 및 설계, 구현 과정에서 배운 내용 정리
     - 공통 기능
         - [REST API의 예외(Exception) 처리](#exception)
         - [API의 보안(Security)](#security)
         - [Auditing](#auditing)
     - 주문
-        - [모델링](#order)
+        - [도메인 모델링](#order)
         - [주문 프로세스(비동기 이벤트)](#order-process)
         - [Hibernate - MultipleBagFetchException 해결하기](#multiple-bag-fetch-exception)
     - 상품
-        - [모델링](#product)
+        - [도메인 모델링](#product)
         - [재고 관리(동시성 이슈)](#stock)
         - [단일 책임 원칙과 URI 설계](#single-responsibility)
         - [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design)
@@ -45,14 +45,24 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
     - [테스트 코드 작성을 통한 올바른 책임의 이해(캡슐화)](#test-responsibility)
     - [관심사의 분리](#separation-of-concern)
 - [기술 사용 배경](#why-use)
-    - Redis
     - Flyway
+    - Redis
     - JSON Merge Patch
     - Kafka
 
+## 프로젝트를 통해 무엇을 할 수 있게 되었는가 <a name = "i-am-able-to"></a>
+
+- 복잡도가 있는 엔터티들을 JPA를 이용해 정의하고 Spring Data JPA와 QueryDsl을 이용하여 조작할 수 있습니다(사례. [Hibernate - MultipleBagFetchException 해결하기](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
+- 데이터 모델링 - [데이터에 대한 접근](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 설계에 정답있는 것은 아니며 Trade off를 하는 과정임을 이해합니다(사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design) ).
+- 기술 사용 - 프로젝트 진행을 통해 문제들을 직접 겪어 보면서, 기술 사용의 이유를 이해하고 도입합니다(사례. [기술 사용 배경](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
+- Config 파일 작성 - Config 파일들을 직접 작성하고 어플리케이션을 빌드해 보면서, Bean의 생명주기를 고려해볼 수 있었습니다( [config 패키지](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/java/com/eastshine/auction/config) ).
+- 테스트 - 도메인이 복잡해 지면서, 테스트 또한 복잡해져가는 것을 경험하였습니다. 추상화를 통해 복잡도에 대응하려 노력하며 구체화 또한 필요하다는 것을 경험하였습니다.
+- 리눅스 활용 - CI/CD를 구축하고 AWS EC2에 Nginx, Redis, Docker를 운영해 보면서 리눅스 활용 능력을 기를 수 있었습니다.
+- HTTP 프로토콜 - REST API 개발, CI/CD를 구축 등 많은 과정에서 [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 큰 도움이 되었습니다.
+
 ## 프로젝트 문서 <a name = "document"></a>
 
-- [API 문서(Spring REST Docs 활용)](http://52.79.43.121/docs/index.html)
+- [API 문서(AWS 배포, Spring REST Docs 활용)](http://52.79.43.121/docs/index.html)
 
 - [API 유스 케이스](https://eastshine.notion.site/5802417b375e474380a1a092e07e79fe?v=65b6e4f02626434597726a247cb3bf2e)
 
@@ -534,7 +544,7 @@ public class ProductService {
    <summary> 본문 확인 (Click)</summary>
 <br />
 
-API는 일부 사용자만 접근을 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 이를 이용해 API의 보안 처리를 합니다.
+API는 일부 사용자만 접근을 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 이를 이용해 API의 보안 처리를 합니다.
 
 먼저 사용자 도메인에서 [로그인을 통한 인증으로 JWT를 발급](https://github.com/eastshine-high/auction-backend#jwt) 하였습니다. API 보안에서는 Spring Security를 이용하여 사용자 도메인에서 발급한 JWT를 인증한 뒤, 인가 처리를 합니다.
 
@@ -722,13 +732,11 @@ ORM에서 Auditing은 영속 엔터티와 관련된 이벤트를 추적하고 �
 
 ## 주문 도메인 <a name = "order"></a>
 
-### 모델링
+### 도메인 모델링
 
 <details>
    <summary> 본문 확인 (Click)</summary>
 <br />
-
-### 도메인 모델링
 
 다음은 도메인 주도 설계 개념을 적용한 **주문 도메인 모델**입니다.
 
@@ -878,7 +886,7 @@ public class OrderItemOption  {
 }
 ```
 
-이제 위에서 정의한 주문 에그리것을 QueryDsl을 이용하여 조회합니다. N + 1 문제를 방지하기 위해 `@OneToMany` 관계는 모두 `fetchJoin` 을 사용해 조회하였습니다.
+위에서 정의한 주문 에그리것을 QueryDsl을 이용하여 조회합니다. N + 1 문제를 방지하기 위해 `@OneToMany` 관계는 모두 `fetchJoin` 을 사용해 조회하였습니다.
 
 ```java
 public class OrderRepositoryCustomImpl implements OrderRepositoryCustom {
@@ -991,13 +999,11 @@ where
 
 ## 상품 도메인 <a name = "product"></a>
 
-### 모델링
+### 도메인 모델링
 
 <details>
    <summary> 본문 확인 (Click)</summary>
 <br />
-
-### 도메인 모델링
 
 다음은 도메인 주도 설계 개념을 적용한 **상품 도메인 모델**입니다.
 
@@ -1017,14 +1023,17 @@ where
    <summary> 본문 확인 (Click)</summary>
 <br />
 
+**관련 정리**
+
+- [재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md)
+- [MySQL을 이용한 동시성 이슈를 해결](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md)
+
 재고 관리는 동시성 이슈를 고려하여 로직을 작성해야 합니다.
 
-[재고 감소 로직에서 발생할 수 있는 동시성 이슈](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-1.md) 와 이를 [MySQL에서 해결하는 방법](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/concurrency-Issue-2.md) 은 Github을 통해 정리하였습니다(Redis를 이용한 해결 방법은 추후 정리하겠습니다).
-
-이 프로젝트에서는 동시성 이슈 문제의 해결을 위해, MySQL의 Named Lock을 이용한 분산 락과 Redis의 Redisson 클라이언트를 이용한 분산 락을 구현하였습니다. 두 코드 모두 템플릿-콜백 패턴을 이용하여 Lock을 획득한 후에, 구현 로직을 호출하도록 설계하였습니다.
+이 프로젝트에서는 동시성 이슈 문제의 해결을 위해 Redis의 Redisson 클라이언트를 이용한 분산 락과 MySQL의 Named Lock을 이용한 분산 락을 구현하였습니다. 두 코드 모두 템플릿-콜백 패턴을 이용하여 Lock을 획득한 후에, 구현 로직을 호출합니다.
 
 - [MariaDbLock](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/common/lock/MariaDbLock.java)
-- RedissonLock
+- [RedissonLock](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/common/lock/RedissonLock.java)
 
 ```java
 @Slf4j
@@ -1053,8 +1062,7 @@ public class RedissonLock {
     }
 }
 ```
-
-아래는 `RedissonLock` 을 활용하여 Lock을 획득한 뒤에, 재고를 차감합니다.
+[ItemStockService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/product/application/ItemStockService.java) 은 RedissonLock 을 활용하여 Lock을 획득한 뒤에, 물품 재고를 차감합니다.
 
 ```java
 @RequiredArgsConstructor
@@ -1488,6 +1496,12 @@ public Category registerCategory(CategoryRegistrationRequest request) {
    <summary> 본문 확인 (Click)</summary>
 <br />
 
+### **Flyway**
+
+도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.
+
+이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
+
 ### **Redis**
 
 1. Cache(Look-aside)
@@ -1526,12 +1540,6 @@ public class CategoryController {
 4. 현재 Redis 사용의 개선점
 
 Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직들에 문제가 생기기 때문입니다. 따라서, 현재 하나의 Redis만 운용중인 서버에 추가적인 백업 Redis 운용이 필요합니다.
-
-### **Flyway**
-
-도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.
-
-이력 관리 디렉토리: [resources/db/migration/**](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/resources/db/migration)
 
 ### **JSON Merge Patch**
 
