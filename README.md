@@ -52,13 +52,13 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 
 ## 프로젝트를 통해 무엇을 할 수 있게 되었는가 <a name = "i-am-able-to"></a>
 
-- 복잡도가 있는 엔터티들을 JPA를 이용해 정의하고 Spring Data JPA와 QueryDsl을 이용하여 조작할 수 있습니다(사례. [Hibernate - MultipleBagFetchException 해결하기](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
-- 데이터 모델링 - [데이터에 대한 접근](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 설계에 정답있는 것은 아니며 Trade off를 하는 과정임을 이해합니다(사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design) ).
-- 기술 사용 - 프로젝트 진행을 통해 문제들을 직접 겪어 보면서, 기술 사용의 이유를 이해하고 도입합니다(사례. [기술 사용 배경](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
-- Config 파일 작성 - Config 파일들을 직접 작성하고 어플리케이션을 빌드해 보면서, Bean의 생명주기를 고려해볼 수 있었습니다( [config 패키지](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/java/com/eastshine/auction/config) ).
-- 테스트 - 도메인이 복잡해 지면서, 테스트 또한 복잡해져가는 것을 경험하였습니다. 추상화를 통해 복잡도에 대응하려 노력하며 구체화 또한 필요하다는 것을 경험하였습니다.
-- 리눅스 활용 - CI/CD를 구축하고 AWS EC2에 Nginx, Redis, Docker를 운영해 보면서 리눅스 활용 능력을 기를 수 있었습니다.
-- HTTP 프로토콜 - REST API 개발, CI/CD를 구축 등 많은 과정에서 [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 큰 도움이 되었습니다.
+- 복잡도가 있는 엔터티들을 **JPA**를 이용해 정의하고 **Spring Data JPA**와 **QueryDsl**을 이용하여 다룰(manage) 수 있습니다(사례. [Hibernate - MultipleBagFetchException 해결하기](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
+- **데이터 모델링** - [데이터에 대한 접근](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 설계에 정답있는 것은 아니며 Trade off를 하는 과정임을 이해합니다(사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design) ).
+- **기술 사용** - 프로젝트 진행을 통해 문제들을 직접 겪어 보면서, 기술 사용의 이유를 이해하고 도입합니다(사례. [기술 사용 배경](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
+- **Config 파일 작성** - Config 파일들을 직접 작성하고 어플리케이션을 빌드해 보면서, Bean의 생명주기를 고려해볼 수 있었습니다( [config 패키지](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/java/com/eastshine/auction/config) ).
+- **테스트** - 도메인이 복잡해 지면서, 테스트 또한 복잡해져가는 것을 경험하였습니다. 추상화를 통해 복잡도에 대응하려 노력하며 구체화 또한 필요하다는 것을 경험하였습니다.
+- **리눅스 활용** - CI/CD를 구축하고 AWS EC2에 Nginx, Redis, Docker를 운영해 보면서 리눅스 활용 능력을 기를 수 있었습니다.
+- **HTTP 프로토콜** - REST API 개발, CI/CD를 구축 등 많은 과정에서 [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 큰 도움이 되었습니다.
 
 ## 프로젝트 문서 <a name = "document"></a>
 
@@ -275,7 +275,7 @@ Dockerfile을 작성했다면, 이제 도커 이미지를 빌드합니다. Githu
 
 </details>
 
-### Jenkins, Docker를 이용한 CD 구축 <a name = "cd"></a>
+### Jenkins, Docker, Nginx를 이용한 무중단 CD 구축 <a name = "cd"></a>
 
 <details>
    <summary> 본문 확인 (Click)</summary>
@@ -418,7 +418,186 @@ auction-backend
 - `-d` : 백그라운드(분리 모드)에서 컨테이너를 시작합니다.
 - `—rm` : 기본적으로 도커 컨테이너를 나가더라도(exit or stop) 컨테이너의 파일 시스템은 영속화 됩니다. `rm` 옵션을 사용하면, 컨테이너를 나갈 때 자동적으로 컨테이너 파일 시스템을 삭제합니다.
 
-이상으로 Jenkins, Docker를 이용한 CD 구축에 대한 설명을 마치겠습니다. 현재 CD에서 개선이 필요한 부분은 무중단 배포입니다. 이 부분도 개선이 진행되면, 설명을 추가해 보겠습니다. 감사합니다.
+## 무중단 배포
+
+위 과정을 통해 CD 구축을 완료하였습니다. 하지만 긴 시간은 아니지만, 배포하는 동안 애플리케이션이 종료된다는 문제가 남아있습니다. 새로운 Docker 컨테이너가 시작되기 전까지 기존 Docker 컨테이너를 종료시켜 놓기 때문에 서비스가 중단됩니다. 따라서 무중단 배포로 CD를 개선합니다.
+
+무중단 배포는 Docker compose와 Nginx를 이용해 구현하였습니다.
+
+### Nginx
+
+Nginx는 웹 서버, 리버스 프록시, 캐싱, 로드 밸런싱, 미디어 스트리밍 등을 위한 오픈소스 소프트웨어입니다. Nginx의 리버스 프록시 기능을 활용하여 무중단 배포를 구현하겠습니다. Nginx의 기초 사용법은 [Github](https://github.com/eastshine-high/til/blob/main/nginx/basic-usage.md) 을 통해 정리하였습니다.
+
+먼저 엔진엑스의 설정 파일 `/etc/nginx/conf.d` 에서 `server` 컨텍스트를 수정합니다.
+
+```purescript
+server {
+    listen 80;
+    server_name {domain};
+
+    include /etc/nginx/conf.d/service-url.inc;
+    location / {
+        proxy_pass          $service_url;
+        proxy_set_header    X-Real-Ip $remote_addr;
+        proxy_set_header    x-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header    Host $host;
+    }
+}
+```
+
+- `proxy_pass` : 리버스 프록시를 통해 외부의 요청을 어플리케이션 서버로 전달합니다.
+- `include /etc/nginx/conf.d/service-url.inc` : `service url` 을 환경변수로 등록합니다.
+
+```purescript
+$ sudo vim /etc/nginx/conf.d/service-url.inc
+
+set $service_url http://127.0.0.1:8081;
+```
+
+- `service url` 는 외부 요청을 전달할 어플리케이션 서버를 변경할 때 사용할 것입니다.
+- `127.0.0.1` 를 `localhost` 처럼 별칭으로 사용하면 프록시 서버가 요청을 전달하지 못합니다.
+
+### Docker compose
+
+총 2개(blue, green)의 Docker compose를 작성합니다. 위에서 작성한 `docker run` 명령어와 크게 다르지는 않습니다.
+
+docker-compose-blue.yml
+
+```yaml
+version: "3.9"
+services:
+  api:
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    image: "eastshine/auction-backend:${AUCTION_BACKEND_TAG}"
+    ports:
+      - "8081:8080"
+    volumes:
+      - "/home/ec2-user/application-prod.yml:/application-prod.yml"
+      - "/home/ec2-user/log/blue:/log"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+```
+
+docker-compose-blue.yml
+
+```yaml
+version: "3.9"
+services:
+  api:
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    image: "eastshine/auction-backend:${AUCTION_BACKEND_TAG}"
+    ports:
+      - "8082:8080"
+    volumes:
+      - "/home/ec2-user/application-prod.yml:/application-prod.yml"
+      - "/home/ec2-user/log/green:/log"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+```
+
+- blue 컨테이너는 8081 포트를 포워딩하고, green 컨테이너는 8082 포트로 포워딩합니다.
+- log 또한 blue, green에 따라 별도의 디렉토리에 기록합니다.
+- `${AUCTION_BACKEND_TAG}` : 서버의 환경변수를 통해 실행할 이미지의 Tag를 지정합니다.
+
+### **배포 스크립트 작성**
+
+이제 배포하는 쉘 스크립트를 작성합니다.
+
+`deploy.sh`
+
+```purescript
+#!/usr/bin/env bash
+
+export
+
+# 1. Start idle docker container
+EXIST_BLUE=$(docker-compose -p app-server-blue -f docker-compose-blue.yml ps | grep running)
+
+if [ -z "$EXIST_BLUE" ]; then
+    docker-compose -p app-server-blue -f ~/docker-compose-blue.yml up -d
+    BEFORE_COMPOSE_COLOR="green"
+    AFTER_COMPOSE_COLOR="blue"
+    BEFORE_PORT_NUMBER=8082
+    AFTER_PORT_NUMBER=8081
+else
+    docker-compose -p app-server-green -f ~/docker-compose-green.yml up -d
+    BEFORE_COMPOSE_COLOR="blue"
+    AFTER_COMPOSE_COLOR="green"
+    BEFORE_PORT_NUMBER=8081
+    AFTER_PORT_NUMBER=8082
+fi
+
+echo "app-server-${AFTER_COMPOSE_COLOR}(port:${AFTER_PORT_NUMBER}) started"
+echo "Start health check"
+
+# 2. Health check
+SUCCESS_COUNT=0
+for RETRY_COUNT in {1..10}
+do
+  sleep 10
+  RESPONSE=$(curl -s http://localhost:${AFTER_PORT_NUMBER}/api/health)
+  SUCCESS_COUNT=$(expr SUCCESS_COUNT + $(echo ${RESPONSE} | grep 'server is on' | wc -l))
+
+  if [ ${SUCCESS_COUNT} -ge 3 ]
+  then # $up_count >= 1 ("server is on" 문자열이 있는지 검증)
+      echo "> Health check 3회 성공!"
+      break
+  fi
+
+  if [ ${RETRY_COUNT} -eq 10 ]
+  then
+    echo "> Health check 실패. ${RESPONSE}"
+    echo "> 엔진엑스에 연결하지 않고 배포를 종료합니다."
+    exit 1
+  fi
+
+  echo "> Health check 시도(${RETRY_COUNT}/10), ${SUCCESS_COUNT}회 성공."
+done
+
+# 3. Switch nginx port
+sudo sed -i "s/${BEFORE_PORT_NUMBER}/${AFTER_PORT_NUMBER}/" /etc/nginx/conf.d/service-url.inc
+sudo nginx -s reload
+echo "Deploy Completed!!"
+
+# 4. Stop idle Docker
+docker-compose -p app-server-${BEFORE_COMPOSE_COLOR} -f docker-compose-${BEFORE_COMPOSE_COLOR}.yml down
+echo "Stop idle Docker(app-server-${BEFORE_COMPOSE_COLOR})"
+```
+
+- `1. Start idle docker container` :  blue container가 실행되고 있는지 확인 후 실행되고 있다면 green container를 생성하고 실행되고 있지 않다면 blue container를 생성합니다.
+- `2. Health check` : 생성한 어플리케이션 컨테이너가 정상적으로 작동하고 있는지 핑을 보내 체크합니다. 10초 단위로 보내는 10번의 핑 중에서, 3번의 health 체크가 성공하면 정상 작동으로 판단합니다.
+- `3. Switch nginx port` : 1. Health 체크가 정상 통과했다면, service-url.inc에 포트를 바꿔주고 Nginx를 reload 시켜 80 port에 새로운 container를 바인딩합니다.
+- `4. Stop idle Docker` : 마지막으로 전에 구동되고 있던 container를 삭제합니다.
+
+쉘 스크립트가 잘 작동하는 지 확인합니다.
+
+![http://dl.dropbox.com/s/lm5j57s9jkji1gq/deploy-test.png](http://dl.dropbox.com/s/lm5j57s9jkji1gq/deploy-test.png)
+
+### Jenkins 파이프라인 수정
+
+```purescript
+node {
+    withCredentials([sshUserPrivateKey(credentialsId: 'eastshine-aws', keyFileVariable: 'identity')]) {
+        def remote = [:]
+        remote.name = "eastshine-aws"
+        remote.host = "ec2-52-79-43-121.ap-northeast-2.compute.amazonaws.com"
+        remote.allowAnyHosts = true
+        remote.user = "ec2-user"
+        remote.identityFile = identity
+
+        stage("Deploy") {
+            sshCommand remote: remote, command: "./deploy.sh ${DOCKER_HUB_TAG}"            
+        }
+    }
+}
+```
+- 작성한 쉘 스크립트로 빌드를 진행합니다.
+
+Jenkins를 이용해 빌드가 잘 수행되는지 확인합니다.
+
+![http://dl.dropbox.com/s/hkk5450cbtf6cox/jenkins-test.png](http://dl.dropbox.com/s/hkk5450cbtf6cox/jenkins-test.png)
 
 </details>
 
