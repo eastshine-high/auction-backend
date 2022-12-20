@@ -11,17 +11,17 @@
 
 ## 프로젝트 개요
 
-Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API를 설계하고 구현한 개인 프로젝트입니다. 프로젝트 과정에서 고민하고 배운 내용들을 블로그 형식으로 기록해 나가고 있습니다.
+Auction backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API를 설계하고 구현한 개인 프로젝트입니다. 서비스가 가능한 REST API를 목표로하여, 프로젝트 과정에서 고민하고 배운 내용들을 블로그 형식으로 기록해 나가고 있습니다.
 
 ## 목차
 - [프로젝트를 통해 무엇을 할 수 있게 되었는가](#i-am-able-to)
 - [프로젝트 문서](#document)
-- [프로젝트 ERD](#entity-relationship-diagram)
 - [테스트](#test)
+- [프로젝트 ERD](#entity-relationship-diagram)
 - 지속적 통합 및 배포
     - [Github Actions, Docker를 활용한 CI 구축](#ci)
     - [Jenkins, Docker, Nginx를 활용한 무중단 CD 구축](#cd)
-- 기능 설명 및 설계, 구현 과정에서 배운 내용 정리
+- 기능 설명과 설계, 구현 과정에서 배운 내용 정리
     - 공통 기능
         - [REST API의 예외(Exception) 처리](#exception)
         - [API의 보안(Security)](#security)
@@ -52,15 +52,25 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 
 ## 프로젝트를 통해 무엇을 할 수 있게 되었는가 <a name = "i-am-able-to"></a>
 
-- 복잡도가 있는 엔터티들을 **JPA**를 이용해 정의하고 **Spring Data JPA**와 **QueryDsl**을 이용하여 다룰(manage) 수 있습니다(사례. [Hibernate - MultipleBagFetchException 해결하기](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
-- **데이터 모델링** - [데이터에 대한 접근](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 설계에 정답있는 것은 아니며 Trade off를 하는 과정임을 이해합니다(사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design) ).
-- **기술 사용** - 프로젝트 진행을 통해 문제들을 직접 겪어 보면서, 기술 사용의 이유를 이해하고 도입합니다(사례. [기술 사용 배경](https://www.notion.so/76a72f3cb30a4f4c9d882f2b3dc8e65d) ).
-- **Config 파일 작성** - Config 파일들을 직접 작성하고 어플리케이션을 빌드해 보면서, Bean의 생명주기를 고려해볼 수 있었습니다( [config 패키지](https://github.com/eastshine-high/auction-backend/tree/main/app/src/main/java/com/eastshine/auction/config) ).
-- **테스트** - 도메인이 복잡해 지면서, 테스트 또한 복잡해져가는 것을 경험하였습니다. 추상화를 통해 복잡도에 대응하려 노력하며 구체화 또한 필요하다는 것을 경험하였습니다.
-- **리눅스 활용** - CI/CD를 구축하고 AWS EC2에 Nginx, Redis, Docker를 운영해 보면서 리눅스 활용 능력을 기를 수 있었습니다.
-- **HTTP 프로토콜** - REST API 개발, CI/CD를 구축 등 많은 과정에서 [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 큰 도움이 되었습니다.
+<details>
+   <summary> 본문 확인 (👈Click)</summary>
+<br />
+
+- **데이터 모델링** - [데이터에 대한 접근](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 설계에 정답있는 것은 아니며 Trade off를 하는 과정임을 이해합니다(사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design)).
+- **ORM** - 복잡도가 있는 엔터티들을 JPA를 이용해 정의하고 Spring Data JPA와 QueryDsl을 이용하여 다룰(manage) 수 있습니다(사례. [Hibernate - MultipleBagFetchException 해결하기](#multiple-bag-fetch-exception)).
+- **기술 사용** - 프로젝트 진행을 통해 문제들을 직접 겪어 보면서, 기술 사용의 이유를 이해하고 도입합니다(사례. [기술 사용 배경](#why-use)).
+- **Config 파일 작성** - Config 파일들을 직접 작성하고 어플리케이션을 빌드해 보면서, Bean의 생명주기 등을 고려해볼 수 있었습니다.
+- **테스트** - 단위, 통합 테스트 작성을 통해 견고한 소프트웨어를 만들고 기능들을 문서화합니다(사례. [테스트](#test)).
+- **리눅스 운영** - CI/CD를 구축하고 AWS EC2에 Nginx, Redis, Docker를 운영해 보면서 리눅스 운영 능력을 기를 수 있었습니다.
+- **HTTP 프로토콜** - [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 REST API 개발, CI/CD를 구축 등의 작업을 스스로 학습하고 진행하는 데 많은 도움이 되었습니다.
+
+</details>
 
 ## 프로젝트 문서 <a name = "document"></a>
+
+<details>
+   <summary> 본문 확인 (👈Click)</summary>
+<br />
 
 - [API 문서(AWS 배포, Spring REST Docs 활용)](http://52.79.43.121/docs/index.html)
 
@@ -68,20 +78,13 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 
 - [도메인 언어 탐구](https://github.com/eastshine-high/auction-backend/wiki/%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%96%B8%EC%96%B4-%ED%83%90%EA%B5%AC)
 
-## 프로젝트 ERD <a name = "entity-relationship-diagram"></a>
-
-<details>
-   <summary> 본문 확인 (Click)</summary>
-<br />
-
-![](http://dl.dropbox.com/s/ocsyfifqx945ere/auction_erd.png)
-
 </details>
+
 
 ## 테스트 <a name = "test"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 ![](http://dl.dropbox.com/s/0s73r805xebz1nd/auction_test.png)
@@ -90,12 +93,22 @@ Auction Backend는 백엔드 개발 학습을 목적으로 쇼핑몰의 REST API
 
 </details>
 
+## 프로젝트 ERD <a name = "entity-relationship-diagram"></a>
+
+<details>
+   <summary> 본문 확인 (👈Click)</summary>
+<br />
+
+![](http://dl.dropbox.com/s/ocsyfifqx945ere/auction_erd.png)
+
+</details>
+
 ## 지속적 통합 및 배포
 
 ### Github Actions, Docker를 활용한 CI 구축 <a name = "ci"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 Auction Backend의 CI/CD 구성도는 다음과 같습니다. 최대한 여러 도구들을 활용해 보는 것을 목표로 두다 보니, 아래와 같은 CI/CD를 구성하게 되었습니다.
@@ -278,7 +291,7 @@ Dockerfile을 작성했다면, 이제 도커 이미지를 빌드합니다. Githu
 ### Jenkins, Docker, Nginx를 이용한 무중단 CD 구축 <a name = "cd"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 Auction Backend의 CI/CD 구성도는 다음과 같습니다. 최대한 여러 도구들을 활용해 보는 것을 목표로 두다 보니, 아래와 같은 CI/CD를 구성하게 되었습니다.
@@ -426,7 +439,7 @@ auction-backend
 
 ### Nginx
 
-Nginx는 웹 서버, 리버스 프록시, 캐싱, 로드 밸런싱, 미디어 스트리밍 등을 위한 오픈소스 소프트웨어입니다. Nginx의 리버스 프록시 기능을 활용하여 무중단 배포를 구현하겠습니다. Nginx의 기초 사용법은 [Github](https://github.com/eastshine-high/til/blob/main/nginx/basic-usage.md) 을 통해 정리하였습니다.
+Nginx는 웹 서버, 리버스 프록시, 캐싱, 로드 밸런싱, 미디어 스트리밍 등을 위한 오픈소스 소프트웨어입니다. Nginx의 리버스 프록시 기능을 활용하여 무중단 배포를 구현합니다. Nginx의 기초 사용법은 [Github](https://github.com/eastshine-high/til/blob/main/nginx/basic-usage.md) 을 통해 정리하였습니다.
 
 먼저 엔진엑스의 설정 파일 `/etc/nginx/conf.d` 에서 `server` 컨텍스트를 수정합니다.
 
@@ -499,7 +512,7 @@ services:
 
 - blue 컨테이너는 8081 포트를 포워딩하고, green 컨테이너는 8082 포트로 포워딩합니다.
 - log 또한 blue, green에 따라 별도의 디렉토리에 기록합니다.
-- `${AUCTION_BACKEND_TAG}` : 서버의 환경변수를 통해 실행할 이미지의 Tag를 지정합니다.
+- `${AUCTION_BACKEND_TAG}` : 서버의 환경변수를 통해 실행할 Docker 이미지의 Tag를 지정합니다.
 
 ### **배포 스크립트 작성**
 
@@ -510,7 +523,7 @@ services:
 ```purescript
 #!/usr/bin/env bash
 
-export
+export AUCTION_BACKEND_TAG=$1 
 
 # 1. Start idle docker container
 EXIST_BLUE=$(docker-compose -p app-server-blue -f docker-compose-blue.yml ps | grep running)
@@ -561,15 +574,15 @@ sudo sed -i "s/${BEFORE_PORT_NUMBER}/${AFTER_PORT_NUMBER}/" /etc/nginx/conf.d/se
 sudo nginx -s reload
 echo "Deploy Completed!!"
 
-# 4. Stop idle Docker
+# 4. Stop idle docker container
 docker-compose -p app-server-${BEFORE_COMPOSE_COLOR} -f docker-compose-${BEFORE_COMPOSE_COLOR}.yml down
 echo "Stop idle Docker(app-server-${BEFORE_COMPOSE_COLOR})"
 ```
 
 - `1. Start idle docker container` :  blue container가 실행되고 있는지 확인 후 실행되고 있다면 green container를 생성하고 실행되고 있지 않다면 blue container를 생성합니다.
-- `2. Health check` : 생성한 어플리케이션 컨테이너가 정상적으로 작동하고 있는지 핑을 보내 체크합니다. 10초 단위로 보내는 10번의 핑 중에서, 3번의 health 체크가 성공하면 정상 작동으로 판단합니다.
-- `3. Switch nginx port` : 1. Health 체크가 정상 통과했다면, service-url.inc에 포트를 바꿔주고 Nginx를 reload 시켜 80 port에 새로운 container를 바인딩합니다.
-- `4. Stop idle Docker` : 마지막으로 전에 구동되고 있던 container를 삭제합니다.
+- `2. Health check` : 생성한 어플리케이션 컨테이너가 정상적으로 작동하고 있는지 핑을 보내 체크합니다. 10초 단위로 보내는 10번의 핑 중에서, 3번의 핑 테스트가 성공하면 정상 작동으로 판단합니다.
+- `3. Switch nginx port` : 1. Health 테스트가 정상 통과했다면, service-url.inc에 포트를 바꿔주고 Nginx를 reload 시켜 80 port에 새로운 container를 바인딩합니다.
+- `4. Stop idle Docker` : 마지막으로 사용하지 않는 컨테이너를 삭제합니다.
 
 쉘 스크립트가 잘 작동하는 지 확인합니다.
 
@@ -608,7 +621,7 @@ Jenkins를 이용해 빌드가 잘 수행되는지 확인합니다.
 ### REST API의 예외(Exception) 처리 <a name = "exception"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 (1) 일관성 있는 오류 표현
@@ -720,7 +733,7 @@ public class ProductService {
 ### API의 보안(Security) <a name = "security"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 API는 일부 사용자만 접근을 허용해야할 때가 있습니다. 이러한 보안을 위해서는 인증(당신은 누구입니까)과 인가(당신은 무엇을 할 수 있습니까) 과정이 필요합니다. Spring Security는 서블릿 애플리케이션에서의 인증(Authentication) 및 인가(Authentication) 처리를 지원하므로 이를 이용해 API의 보안 처리를 합니다.
@@ -899,7 +912,7 @@ public ResponseEntity patchProduct(@PathVariable Long itemId, @RequestBody @Vali
 ### Auditing <a name = "auditing"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 ORM에서 Auditing은 영속 엔터티와 관련된 이벤트를 추적하고 로깅하는 것을 의미합니다. 여기서 이벤트란 SQL 트리거에서 영감을 얻어은 것으로 삽입, 수정, 삭제 작업을 의미합니다.
@@ -914,14 +927,14 @@ ORM에서 Auditing은 영속 엔터티와 관련된 이벤트를 추적하고 �
 ### 도메인 모델링
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 다음은 도메인 주도 설계 개념을 적용한 **주문 도메인 모델**입니다.
 
 ![http://dl.dropbox.com/s/0wfivcgtgx49awf/order_diagram.png](http://dl.dropbox.com/s/0wfivcgtgx49awf/order_diagram.png)
 
-위 모델은 주문에 대한 책임을 가지고 있는 에그리게잇이며 루트 엔터티인 주문(Order), Order의 값 객체(VO)인 배달정보(DeliveryFragment), Order와 일대다 관계인 주문물품(OrderItem), OrderItem과 일대다 관계인 주문물품옵션(OrderItemOption)으로 구성됩니다.
+주문 에그리거트는 루트 엔터티인 주문(Order), Order의 값 객체(VO)인 배달정보(DeliveryFragment), Order와 일대다 관계인 주문물품(OrderItem), OrderItem과 일대다 관계인 주문물품옵션(OrderItemOption)으로 구성됩니다.
 
 ### 데이터 모델링
 
@@ -932,18 +945,18 @@ ORM에서 Auditing은 영속 엔터티와 관련된 이벤트를 추적하고 �
 ### 주문 프로세스(비동기 이벤트)<a name = "order-process"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 **주문하기**
 
-주문하기 업무는 여러 도메인과의 협력을 통해 진행됩니다. 이 때, 이벤트를 활용하면 도메인 간의 결합도를 낮출 수 있습니다. 따라서 주문 성공에 대한 알림 메일은 Kafka를 이용해 비동기 이벤트 처리하였습니다(사실 모놀리틱 아킥텍처에서는 Spring의 비동기 이벤트만으로 충분하므로 Kafka의 사용은 오버 엔지니어링입니다).
-
-재고 차감의 경우, 재고 차감 여부에 따라 주문 결과가 달라지므로 이벤트 처리가 아닌 상품 도메인의 재고 서비스를 의존성 주입 받아 협력하였습니다(MSA 구조에서는 동기 통신으로 협력합니다).
+주문하기 업무는 여러 도메인과의 협력을 통해 진행됩니다. 이 때, 이벤트를 활용하면 도메인 간의 결합도를 낮출 수 있습니다. 따라서 주문 성공에 대한 알림 메일은 Kafka를 이용해 비동기 이벤트 처리하였습니다(사실 MSA가 아닌 모놀리틱 아키텍처에서 비동기 이벤트 처리는 Spring이 지원하는 이벤트 기능만으로 충분합니다. Kafka는 기술 사용 연습 차원에서 사용하였습니다).
 
 ![http://dl.dropbox.com/s/auchgbr2ovvvajd/place_order_flow.png](http://dl.dropbox.com/s/auchgbr2ovvvajd/place_order_flow.png)
 
-주문하기 서비스는 다음과 같이 표현할 수 있습니다 - [PlaceOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/PlaceOrderService.java)
+- 재고 차감은, 재고 차감의 성공 여부에 따라 주문 결과가 달라지므로 이벤트로 처리하지 않고, 상품 도메인의 재고 서비스를 의존성하여 협력하였습니다(MSA 구조에서는 동기 통신으로 협력합니다).
+
+[PlaceOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/PlaceOrderService.java) - 주문하기 서비스는 다음과 같이 표현하였습니다. 
 
 ```java
 @RequiredArgsConstructor
@@ -964,7 +977,8 @@ public class PlaceOrderService {
 }
 ```
 
-- `PlaceOrderService` 는 퍼사드로 표현할 수도 있습니다.
+- [PlaceOrderProducer](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/adaptor/PlaceOrderProducer.java) 는 주문하기 서비스의 이벤트 발행을 담당합니다.
+- `PlaceOrderService` 는 퍼사드로도 표현할 수도 있습니다.
 
 <br>
 
@@ -974,15 +988,15 @@ public class PlaceOrderService {
 
 ![http://dl.dropbox.com/s/3ihq122y08jnulp/cancel_order_flow.png](http://dl.dropbox.com/s/3ihq122y08jnulp/cancel_order_flow.png)
 
-주문 취소 서비스는 다음과 같이 표현할 수 있습니다 - [CancelOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/CancelOrderService.java)
+[CancelOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/CancelOrderService.java) - 주문 취소 서비스는 다음과 같이 표현하였습니다. 
 
 ```java
 @RequiredArgsConstructor
 @Service
 public class CancelOrderService {
     private final OrderRepository orderRepository;
-    private final CancelOrderProducer cancelOrderProducer;
     private final CancelOrderPolicy cancelOrderPolicy;
+    private final CancelOrderProducer cancelOrderProducer;    
 
     @Transactional
     public void cancelOrder(Long orderId, UserInfo userInfo) {
@@ -997,12 +1011,15 @@ public class CancelOrderService {
 }
 ```
 
+- [CancelOrderPolicy](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/domain/policy/CancelOrderPolicy.java) - 주문 취소 정책을 통해, 취소가 가능한 주문인지 확인합니다.
+- [CancelOrderProducer](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/adaptor/CancelOrderProducer.java) - 주문 취소 서비스의 이벤트 발행을 담당합니다.
+
 </details>
 
 ### Hibernate - MultipleBagFetchException 해결하기 <a name = "multiple-bag-fetch-exception"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 `MultipleBagFetchException` 는 JPA의 N+1 문제에 대한 해결책으로 Fetch Join을 사용하다보면 자주 만나는 문제입니다. `MultipleBagFetchException` 는 2개 이상의 ToMany 자식 테이블에 Fetch Join을 선언했을 때 발생합니다.
@@ -1181,7 +1198,7 @@ where
 ### 도메인 모델링
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 다음은 도메인 주도 설계 개념을 적용한 **상품 도메인 모델**입니다.
@@ -1199,7 +1216,7 @@ where
 ### 재고 관리(동시성 이슈) <a name = "stock"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 **관련 정리**
@@ -1241,7 +1258,7 @@ public class RedissonLock {
     }
 }
 ```
-[ItemStockService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/product/application/ItemStockService.java) 은 RedissonLock 을 활용하여 Lock을 획득한 뒤에, 물품 재고를 차감합니다.
+[ItemStockService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/product/application/ItemStockService.java) 은 `RedissonLock` 을 활용하여 Lock을 획득한 뒤에, 물품 재고를 차감합니다.
 
 ```java
 @RequiredArgsConstructor
@@ -1275,7 +1292,7 @@ public class ItemStockService {
 ### 단일 책임 원칙과 URI 설계  <a name = "single-responsibility"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 [REST API 디자인 가이드](https://github.com/eastshine-high/til/blob/main/web/http/rest/api/resource-modeling.md) 를 따라 ‘상품 조회 API’를 설계하면, 일반적으로 다음과 같을 것입니다.
@@ -1309,7 +1326,7 @@ URI 분리와 함께, 클래스 또한 액터에 따라 분리합니다. 이렇�
 ### Main-Sub 엔터티 vs 계층 구조 엔터티 <a name = "entity-design"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 아래의 쇼핑몰 카테고리를 설계할 때는 Main-Sub 엔터티 구조와 자기 자신을 참조하는 계층 구조의 엔터티로의 설계를 고려해 볼 수 있습니다.
@@ -1337,14 +1354,14 @@ URI 분리와 함께, 클래스 또한 액터에 따라 분리합니다. 이렇�
 ### 상품 검색 <a name = "searching-product"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
-상품 검색 API의 문제점
+**상품 검색 API의 문제점**
 
 상품 검색은 RDB의 SQL문 `LIKE '%Keyword%'` 을 사용하여 검색합니다. 이 SQL 문은 Index Range Scan을 할 수 없고, **Index Full Scan을 수행하기 때문에 조회 성능이 좋지 못합니다**. 만약 상품 검색 요청이 자주 발생할 경우, 서비스 성능이 저하될 수 있는 부분입니다.
 
-개선 방안
+**개선 방안**
 
 이러한 문제를 개선하기 위한 방법으로 Elasticsearch를 검색 엔진으로 활용해보는 것을 검토해 볼 수 있습니다. Elasticsearch는 특정 문장을 입력받으면, 파싱을 통해 문장을 단어 단위로 분리하여 저장합니다. 검색을 할 때는 분리된 단어를 기반으로 역으로 인덱스(Reverted Index)를 찾아가는 방식으로 검색을 수행합니다. 따라서 RDB의 Keyword 검색에 수행하는 Index Full Scan 만큼의 시간을 아낄 수 있습니다.
 
@@ -1358,7 +1375,7 @@ URI 분리와 함께, 클래스 또한 액터에 따라 분리합니다. 이렇�
 ### 모델링
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 ### Class diagram
@@ -1377,7 +1394,7 @@ URI 분리와 함께, 클래스 또한 액터에 따라 분리합니다. 이렇�
 ### 인증(JWT) <a name = "jwt"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 사용자가 접근이 제한되어 있는 API의 리소스에 접근할 때는, 먼저 로그인을 통해 자신이 누구인지를 인증하고 리소스 접근에 대한 인가를 받아 리소스에 접근할 수 있습니다.
@@ -1468,7 +1485,7 @@ public class AuthenticationService {
 ### 외래키와 복합키 사용에 대하여 <a name = "constraints"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 개인적으로 참여했던 실무 프로젝트에서는 개발 편의성과 유연성을 이유로 외래키와 복합키를 잘 사용하지 않았습니다. 이번 토이 프로젝트를 기회로 이를 직접 경험해 보고 관련 글들을 읽어보면서, 이에 대한 생각을 정리해 볼 수 있었습니다.
@@ -1493,16 +1510,16 @@ public class AuthenticationService {
 ### 테스트 코드 작성을 통한 올바른 책임의 이해(캡슐화) <a name = "test-responsibility"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 
 
-테스트 코드를 작성하다보면, 객체에 책임을 잘못 할당한 것을 깨닫게 되는 경우가 있습니다. 객체에 할당한 잘못된 책임은 테스트 코드 작성에도 영향을 주기 때문입니다. 이를 고치는 과정에서 객체의 책임을 더 잘 이해할 수 있었습니다.
+테스트 코드를 작성하다보면, 객체에 책임을 잘못 할당한 것을 깨닫게 되는 경우가 있습니다. 잘못 할당한 객체의 책임은 테스트 코드 작성에도 영향을 주기 때문입니다. 이를 고치는 과정에서 객체의 책임을 더 잘 이해할 수 있었습니다.
 
-“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 권한 검사를 예로 들어보겠습니다. 이 책임을 수행하기 좋은 객체는 `컨트롤러` , `서비스` , `도메인 객체` 중에 어디일까요? 먼저, 결론은 ‘물품 정보를 생성한 사용자’ 정보를 알고 있는 `도메인 객체` 입니다.
+“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 권한 검사를 예로 들어보겠습니다. 이 책임을 수행하기 좋은 객체는 `컨트롤러`, `서비스`, `도메인 객체` 중에 `도메인 객체`입니다.
 
-하지만 저는 처음에, 이 권한 검사를 컨트롤러에서 처리하도록 하였습니다. 이렇게 했던 이유로는, 컨트롤러에서 접근 검증을 마친다면 서비스와 도메인 엔터티에서는 이를 신경쓸 필요가 없기 때문입니다. 또한 서비스 메소드에 접근하려는 사용자의 식별자를 전달할 필요가 없으므로, 서비스 메소드의 아규먼트 갯수를 줄일 수 있기 때문입니다(클린코드에서는 메소드의 아규먼트가 적을 수록 좋다고 합니다).
+처음에, 저는 이 권한 검사를 `컨트롤러`에서 처리하도록 하였습니다. 이렇게 했던 이유로는, 컨트롤러에서 접근 검증을 마친다면 서비스와 도메인 엔터티에서는 이를 신경쓸 필요가 없기 때문입니다. 또한 서비스 메소드에 접근하려는 사용자의 정보를 전달할 필요가 없으므로, 서비스 메소드의 아규먼트 갯수를 줄일 수 있습니다(클린코드에서는 메소드의 아규먼트가 적을 수록 좋다고 합니다).
 
 위의 이유로, 아래와 같이 접근 검증을 컨트롤러에서 수행하였습니다.
 
@@ -1529,11 +1546,11 @@ private void validateAccessableUser(Item item, Authentication authentication) {
 }
 ```
 
-하지만 이에 대한 테스트 코드를 작성하는 과정에서 어려움을 겪게 되었습니다. 그 이유는 컨트롤러의 메소드 아규먼트에서는 ‘물품 정보를 생성한 사용자의 식별자’가 없기 때문입니다. 이는 컨트롤러에 너무 많은 책임을 할당했다고 볼 수 있습니다.
+하지만 이에 대한 테스트 코드를 작성하는 과정에서 어려움을 겪게 되었습니다. 그 이유는 컨트롤러의 메소드 아규먼트에서는 ‘물품 정보를 생성한 사용자의 정보’가 없고, 인증 정보(`Authentication`)가 있기 때문입니다. 이는 컨트롤러에 너무 많은 책임을 할당했다고 볼 수 있습니다.
 
 **캡슐화**
 
-“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 책임을 수행하기 가장 적합한 객체는 ‘물품 정보를 생성한 사용자’를 알고 있는 객체에서 수행하는 것이 가장 적합합니다. 따라서 ‘도메인 객체’에서 접근을 검증하는 책임을 수행합니다.
+“물품 정보는 물품 정보를 생성한 사용자만 수정할 수 있다”는 책임을 수행하기 가장 적합한 객체는 ‘물품 정보를 생성한 사용자’를 알고 있는 객체입니다. 따라서 ‘도메인 객체’에서 접근을 검증하는 책임을 수행합니다.
 
 ```java
 @Entity
@@ -1550,9 +1567,9 @@ public class Item {
 }
 ```
 
-이를 통해 캡슐화를 지키며 접근 검증을 수행할 수 있습니다. 사실, 위의 컨트롤러 코드에서 `item.getCreatedBy` 는 `Item` 객체의 `createdBy` 필드를 외부에 노출시킵니다. 따라서 캡슐화를 위배하기도 합니다.
+이를 통해 캡슐화를 지키며 접근 검증을 수행할 수 있습니다. 사실, 초기에 작성한 컨트롤러 코드에서 `item.getCreatedBy` 는 `Item` 객체의 `createdBy` 필드를 외부에 노출시킵니다. 따라서 캡슐화를 위배하기도 합니다.
 
-또한 이에 대한 테스트를 작성하기가 매우 쉬워졌습니다. `validateAccessibleUser` 메소드의 아규먼트인 `userId` 의 값에 변화를 주어 쉽게 테스트가 가능합니다.
+또한 테스트를 작성하기가 매우 쉬워졌습니다.
 
 ```java
 @Nested
@@ -1586,16 +1603,17 @@ class Describe_validateAccessibleUser{
     }
 }
 ```
+- `validateAccessibleUser` 메소드의 아규먼트인 `userId` 의 값에 변화를 주면, 쉽게 테스트가 가능합니다.
 
 </details>
 
 ### 관심사의 분리 <a name = "separation-of-concern"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
-다음은 카테고리( `Category` )를 등록하는 서비스 코드입니다. 단순히 요청 객체(DTO)의 값을 확인하고 도메인 객체로 매핑한 뒤에, 이를 리포지토리에 저장하는 로직입니다.
+다음은 카테고리(`Category`)를 등록하는 서비스 코드입니다. 단순히 요청 객체(DTO)의 값을 확인하고 도메인 객체로 매핑한 뒤에, 이를 리포지토리에 저장하는 로직입니다.
 
 ```java
 @RequiredArgsConstructor
@@ -1672,10 +1690,12 @@ public Category registerCategory(CategoryRegistrationRequest request) {
 ## 기술 사용 배경 <a name = "why-use"></a>
 
 <details>
-   <summary> 본문 확인 (Click)</summary>
+   <summary> 본문 확인 (👈Click)</summary>
 <br />
 
 ### **Flyway**
+
+<img src="http://dl.dropbox.com/s/6xz92p0s6nigdvw/flyway.png" width="30%">
 
 도메인을 개발하면서 변경이 발생하면, 데이터베이스의 스키마 또한 변경 사항에 맞게 반영해 주어야 합니다. 다만 이 과정에서 서비스 운영에서 중요한 부분 중의 하나인 데이터베이스를 수동으로 변경하며 관리하는 것에 불안전함을 느꼈습니다. 따라서 이에 대한 관리 방법을 찾아 보았고, Flyway라는 도구에 대해 알게되었습니다. 그리고 이를 적용하여 **데이터베이스의 변경 사항에 대한 이력을 관리**함으로써 데이터베이스를 좀 더 안정적으로 관리할 수 있었습니다.
 
@@ -1683,13 +1703,13 @@ public Category registerCategory(CategoryRegistrationRequest request) {
 
 ### **Redis**
 
-1. Cache(Look-aside)
+1. 캐시(Look-aside)
 
 카테고리 엔터티는 다음과 같이 재귀 구조로 설계되어 있습니다.
 
 ![https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png](https://velog.velcdn.com/images/eastshine-high/post/d2a217bc-e8cf-4b03-9059-28c3c1a4494d/image.png)
 
-이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰의 메인페이지에서 조회하는 카테고리와 같이, 자주 요청이 들어오는 API의 경우에는 캐싱 처리하여 조회 성능을 개선합니다.
+이는 JPA를 통해 조회를 할 경우 N + 1 문제가 발생할 수 밖에 없는 구조입니다. 따라서 쇼핑몰 메인페이지에서 조회하는 카테고리와 같이, 요청이 자주 들어오는 API에는 캐싱 처리를 하여 조회 성능을 개선하였습니다.
 
 ```java
 @RequiredArgsConstructor
@@ -1710,15 +1730,19 @@ public class CategoryController {
 
 2. 분산락
 
-멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](#stock) 처리를 위해 분산락을 구현할 때, 가장 좋은 저장소로 볼 수 있습니다.
+멀티 쓰레드 구조의 관계형 DB와 달리 Redis는 싱글 쓰레드이면서 In-memory 저장소라는 특징을 가지고 있습니다. 따라서 [동시성 이슈](#stock) 를 처리하기 위한 분산락을 구현하기 좋은 저장소로 볼 수 있습니다.
 
 3. In-memory 저장소
 
-로그인 인증에 성공할 경우, 세션 용도로 JWT를 발급합니다(이는 [좋은 방식이 아님](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 을 이후에 알게되었습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의( [공식 문서](https://jwt.io/introduction) 권장)해야 하기 때문에 JWT의 페이로드에는 사용자의 식별자만 담았습니다. 따라서 보안 처리가 되어있는 API의 모든 HTTP 요청에서 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, API의 성능을 개선하기 위해 인증에 성공한 사용자의 정보를 Redis(In-memory 저장소)에 저장합니다.
+로그인 인증에 성공한 경우, 사용자에게 세션 용도의 JWT를 발급합니다(이는 [좋은 방식이 아닐](https://velog.io/@park2348190/API-서버의-인증-수단으로-JWT를-사용하는-것이-옳은가) 수 있습니다). 이 때, JWT의 페이로드는 모든 사람이 읽을 수 있음에 유의해야 하기 때문에([공식 문서 권장](https://jwt.io/introduction)) JWT의 페이로드에는 사용자의 식별자만 보관하였습니다. 따라서 접근이 제한되어있는 API에 대한 모든 HTTP 요청마다, 사용자 권한을 조회하기 위한 데이터베이스 접근이 발생합니다. 이 때, 인증에 성공한 사용자 정보를 Redis(In-memory 저장소)에 보관하여 API의 성능을 개선합니다.
 
 4. 현재 Redis 사용의 개선점
 
 Redis를 캐시 이외의 용도로 사용한다면, 적절한 데이터 백업이 필요합니다. 그 이유는 하나의 Redis만 사용할 때, Redis가 죽어버리면 Redis를 사용하는 로직들에 문제가 생기기 때문입니다. 따라서, 현재 하나의 Redis만 운용중인 서버에 추가적인 백업 Redis 운용이 필요합니다.
+
+### **Kafka**
+
+주문 도메인은 업무 특성상 다른 도메인과의 협력이 많이 필요합니다. 이 때, 이벤트를 활용하면 도메인 간의 결합도를 낮추며 협력할 수 있습니다. 따라서 [주문 및 주문 취소 업무](#order-process) 에서는 Kafka를 이용한 비동기 이벤트 처리를 통해 도메인 간의 결합도를 낮추었습니다. 사실 MSA가 아닌 모놀리틱 아키텍처에서 비동기 이벤트 처리는 Spring이 지원하는 이벤트 기능만으로 충분합니다. Kafka는 도메인 주도 개발을 공부하면서 관심이 커져, 기술 사용 연습 차원에서 도입하였습니다.
 
 ### **JSON Merge Patch**
 
@@ -1743,11 +1767,11 @@ public class Product
 }
 ```
 
-이 때 위의 메소드 아규먼트 `source` 에 속성 값을 전달하지 않을 경우, 해당 객체의 속성의 값은 `null` 로 변경됩니다. 따라서 위와 같이 구현된 API를 이용해 리소스를 변경할 때는 리소스를 모두 표현(Representation)하여 변경을 요청해야 합니다. 이와 같은 방식을 HTTP에서는 `PUT` 메소드라고 합니다.
+이 때 메소드 아규먼트 `source` 에 속성 값을 전달하지 않을 경우, 해당 객체의 속성의 값은 `null` 로 변경됩니다. 따라서 위와 같이 구현된 API를 이용해 리소스를 변경할 때는 리소스를 모두 표현(Representation)하여 변경을 요청해야 합니다. 이와 같은 방식을 HTTP에서는 `PUT` 메소드라고 합니다.
 
 하지만 HTTP의 `PUT` 메소드를 사용하면 리소스의 단일 필드를 수정해야 하는 경우에도 리소스의 전체 표현을 보내야 하므로 다소 불편합니다. 따라서 `PUT` 이 아닌 `PATCH` HTTP 메소드를 지원하는 API를 구현해 보기로 했습니다.
 
-먼저, 가장 단순한 방법으로 각 속성을 변경하기 전에 `if` 문을 추가하면 `PATCH` HTTP 메소드를 지원하는 API의 구현이 가능할 것 같습니다.
+먼저, 가장 단순한 방법으로 각 속성을 변경하기 전에 `if` 문을 추가하면 `PATCH` HTTP 메소드를 지원하는 API의 구현이 가능합니다.
 
 ```java
 @Entity
@@ -1769,28 +1793,8 @@ public class Product
 }
 ```
 
-혹은 조금 생각을 해서 `Map` 과 `Reflection` 을 활용하는 방법도 있을 것 같습니다.
-
-```java
-public ResponseEntity<Product> patch(Long id, Map<Object, Object> fields) {
-    Optional<Product> product = productService.findById(id);
-    if(product.isPresent()) {
-        fields.forEach((key, value) -> {
-                Field field = ReflectionUtils.findField(Product.class, (String) key);
-                field.setAccessible(true);
-                ReflectionUtils.setField(field, book.get(), value);
-        });
-        Product updatedProduct = productService.saveOrUpdate(product.get());
-    }
-}
-```
-
-하지만 이 방법도 `Reflection` 을 사용한다는 점에서 사용하기가 조금 꺼려집니다.
+하지만 개발자다운 접근은 아닌 것 같습니다.
 
 또 다른 방법을 찾아보면서 JsonPatch([RFC6902](https://datatracker.ietf.org/doc/html/rfc6902)) 와 JsonMergePatch([RFC7396](https://datatracker.ietf.org/doc/html/rfc7386)) 에 대해서 알게 되었습니다. 이에 대해 정리해 보면서 [JsonMergePatch 를 이용해 PATCH API를 구현](https://github.com/eastshine-high/til/blob/main/spring/spring-framework/blog/json-merge-patch.md) 해 볼 수 있었습니다.
-
-### **Kafka**
-
-주문 도메인은 업무 특성상 다른 도메인과의 협력이 많이 필요합니다. 이 때, 이벤트를 활용하면 도메인 간의 결합도를 낮추며 협력할 수 있습니다. 따라서 [주문 및 주문 취소 업무](#order-process) 에서는 Kafka를 이용한 비동기 이벤트 처리를 통해 도메인 간의 결합도를 낮추었습니다. 사실 MSA가 아닌 모놀리틱 아키텍처에서 비동기 이벤트 처리는 Spring이 지원하는 기능만으로 충분합니다. Kafka는 도메인 주도 개발을 공부하면서 관심이 커져, 기술 사용 연습 차원에서 도입하였습니다.
 
 </details>
