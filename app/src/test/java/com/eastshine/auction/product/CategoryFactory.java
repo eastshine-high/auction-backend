@@ -22,7 +22,7 @@ public class CategoryFactory {
     }
 
     public Category createCategory(Integer id, Integer parentId, String name, Integer ordering) {
-        AdminCategoryDto.RegistrationRequest registrationDto = AdminCategoryDto.RegistrationRequest.builder()
+        AdminCategoryDto.Request registrationDto = AdminCategoryDto.Request.builder()
                 .id(id)
                 .parentId(parentId)
                 .name(name)

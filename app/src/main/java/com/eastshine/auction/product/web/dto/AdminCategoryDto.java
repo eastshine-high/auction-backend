@@ -15,7 +15,7 @@ public class AdminCategoryDto {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class RegistrationRequest {
+    public static class Request {
 
         @NotNull
         private Integer id;
