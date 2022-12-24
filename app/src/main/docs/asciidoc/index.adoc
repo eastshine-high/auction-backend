@@ -186,7 +186,7 @@ include::{snippets}/guest-items-id-get-200/http-response.adoc[]
 
 === user 도메인
 
-==== 사용자 등록
+==== 판매자 등록
 
 POST /seller-api/v1/users
 
@@ -201,7 +201,7 @@ include::{snippets}/seller-users-post-201/http-request.adoc[]
 include::{snippets}/seller-users-post-201/http-response.adoc[]
 
 
-==== 사용자 조회
+==== 판매자 조회
 
 GET /seller-api/v1/users/{id}
 
@@ -214,7 +214,7 @@ include::{snippets}/seller-users-id-get-200/http-request.adoc[]
 include::{snippets}/seller-users-id-get-200/http-response.adoc[]
 
 
-==== 사용자 닉네임 변경
+==== 판매자 닉네임 변경
 
 PATCH /seller-api/v1/users/{id}/nickname
 
@@ -231,7 +231,7 @@ include::{snippets}/seller-users-id-nickname-patch-200/http-response.adoc[]
 include::{snippets}/seller-users-id-nickname-patch-401/http-response.adoc[]
 
 
-==== 사용자 삭제
+==== 판매자 삭제
 
 DELETE /seller-api/v1/users/{id}
 
@@ -339,3 +339,56 @@ include::{snippets}/admin-categories-post-201/http-response.adoc[]
 **Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보(JWT)의 요청, Unauthorized 상태를 응답**
 
 include::{snippets}/admin-categories-post-401/http-response.adoc[]
+
+
+==== 카테고리 조회
+
+GET /admin-api/v1/categories/{id}
+
+**Request : Authorization 헤더에 조회 권한이 있는 토큰 정보를 포함하여 요청**
+
+include::{snippets}/admin-categories-id-get-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 조회 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
+
+include::{snippets}/admin-categories-id-get-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/admin-categories-id-get-401/http-response.adoc[]
+
+
+==== 카테고리 수정
+
+PUT /admin-api/v1/categories/{id}
+
+include::{snippets}/admin-categories-id-put-200/request-fields.adoc[]
+
+**Request : Authorization 헤더에 수정 권한이 있는 토큰 정보를 포함하여 요청**
+
+include::{snippets}/admin-categories-id-put-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 수정 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
+
+include::{snippets}/admin-categories-id-put-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/admin-categories-id-put-401/http-response.adoc[]
+
+
+==== 카테고리 삭제
+
+DELETE /admin-api/v1/categories/{id}
+
+**Request : Authorization 헤더에 삭제 권한이 있는 토큰 정보를 포함하여 요청**
+
+include::{snippets}/admin-categories-id-delete-401/http-request.adoc[]
+
+**Response : Authorization 헤더에 삭제 권한이 있는 인증 정보를 포함, 상태 코드 200을 응답**
+
+include::{snippets}/admin-categories-id-delete-200/http-response.adoc[]
+
+**Response : Authorization 헤더 정보가 없거나 유효하지 않은 인증 정보의 요청, Unauthorized 상태를 응답**
+
+include::{snippets}/admin-categories-id-delete-401/http-response.adoc[]
