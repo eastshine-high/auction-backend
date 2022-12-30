@@ -1,23 +1,19 @@
-# 주문 프로세스(비동기 이벤트)
+# 주문 프로세스(도메인 이벤트)
 
 **주문하기**
 
-주문하기 업무는 업무 특성상 여러 도메인과의 협력이 필요합니다.
+주문하기 업무는 업무 특성상 여러 도메인과의 협력이 필요합니다. 이 때, [도메인 이벤트](https://engineering-skcc.github.io/microservice%20modeling/BackEnd-modeling-domainModeling/#%EB%8F%84%EB%A9%94%EC%9D%B8-%EC%9D%B4%EB%B2%A4%ED%8A%B8) 를 활용하여 협력하는 도메인 간의 결합도를 낮추며 비즈니스 로직을 작성할 수 있습니다.
 
-주문하기 업무는 여러 도메인과의 협력을 통해 진행됩니다. 이 때, 이벤트를 활용하면 협력하는 도메인 간의 결합도를 낮출 수 있습니다.
-
-만저, 주문하기 업무는 다음 흐름으로 진행됩니다.
-
-도메인 결합도를 낮춘 것에 대한 의미를 설명해야 한다.
+주문하기 업무는 다음 흐름으로 진행됩니다.
 
 ![http://dl.dropbox.com/s/auchgbr2ovvvajd/place_order_flow.png](http://dl.dropbox.com/s/auchgbr2ovvvajd/place_order_flow.png)
 
-- 주문 성공에 대한 알림 메일은 Kafka를 이용해 비동기 이벤트 처리하였습니다
+- 재고 차감은, 재고 차감의 성공 여부에 따라 주문 결과가 달라지므로 이벤트로 처리하지 않고, 상품 도메인의 재고 서비스를 의존성 주입하여 동기 처리합니다.
+- 주문 성공에 대한 알림 메일은 Kafka를 이용해 비동기 이벤트 처리합니다.
     - 사실 MSA가 아닌 모놀리틱 아키텍처에서의 비동기 이벤트 처리는 Spring이 지원하는 이벤트 기능만으로 충분합니다. Kafka는 기술 사용 연습 차원에서 적용하였습니다.
 
-- 재고 차감은, 재고 차감의 성공 여부에 따라 주문 결과가 달라지므로 이벤트로 처리하지 않고, 상품 도메인의 재고 서비스를 의존성 주입하였습니다.
 
-[PlaceOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/PlaceOrderService.java) - '주문하기' 서비스 코드는 다음과 같습니다.
+[PlaceOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/PlaceOrderService.java) - '주문' 서비스의 코드입니다.
 
 ```java
 @RequiredArgsConstructor
@@ -48,7 +44,7 @@ public class PlaceOrderService {
 
 ![http://dl.dropbox.com/s/3ihq122y08jnulp/cancel_order_flow.png](http://dl.dropbox.com/s/3ihq122y08jnulp/cancel_order_flow.png)
 
-[CancelOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/CancelOrderService.java) - '주문 취소' 서비스 코드는 다음과 같습니다.
+[CancelOrderService](https://github.com/eastshine-high/auction-backend/blob/main/app/src/main/java/com/eastshine/auction/order/application/CancelOrderService.java) - '주문 취소' 서비스의 코드입니다.
 
 ```java
 @RequiredArgsConstructor

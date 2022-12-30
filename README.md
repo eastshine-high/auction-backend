@@ -28,7 +28,7 @@
         - [Auditing](https://github.com/eastshine-high/auction-backend/blob/main/readme/auditing.md)
     - 주문
         - [도메인 모델링](https://github.com/eastshine-high/auction-backend/blob/main/readme/order.md)
-        - [주문 프로세스(비동기 이벤트)](https://github.com/eastshine-high/auction-backend/blob/main/readme/order-process.md)
+        - [주문 프로세스(도메인 이벤트)](https://github.com/eastshine-high/auction-backend/blob/main/readme/order-process.md)
         - [Hibernate - MultipleBagFetchException 해결하기](https://github.com/eastshine-high/auction-backend/blob/main/readme/multiple-bag-fetch-exception.md)
     - 상품
         - [도메인 모델링](https://github.com/eastshine-high/auction-backend/blob/main/readme/product.md)

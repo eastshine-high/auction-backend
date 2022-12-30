@@ -106,7 +106,7 @@ node {
 
 ## Docker
 
-앞서, [CI 과정](https://github.com/eastshine-high/auction-backend/blob/main/readme/ci.md) 에서는 도커 이미지를 빌드하고 Dockerhub(원격 저장소)에 Push하였습니다. 다음으로 Dockerhub(원격 저장소)에 있는 도커 이미지를 서버에 내려(pull)받고 실행(run)합니다. 
+앞서, [CI 과정](https://github.com/eastshine-high/auction-backend/blob/main/readme/ci.md) 에서는 도커 이미지를 빌드하고 Dockerhub(원격 저장소)에 Push하였습니다. 다음으로 Dockerhub(원격 저장소)에 있는 도커 이미지를 서버에 내려(pull)받고 실행(run)합니다. `docker run` 과 옵션에 대해서는 [Github](https://github.com/eastshine-high/til/blob/main/docker/docker-run.md) 에 좀 더 자세히 정리하였습니다.
 
 젠킨스 파이프라인의 `stage("Deploy")` 에 작성한 도커 명령어들을 살펴보겠습니다.
 
@@ -130,16 +130,15 @@ auction-backend
 - `docker tag` : 태그는 이미지에 참조(reference)를 추가합니다.
 - `docker stop server` : 프로세스의 이름이 `server` 인 docker 프로세스를 중지시킵니다.
 - `docker run` : 컨테이너의 리소스들을 런타임에 정의합니다.
-    - `docker run` 과 옵션에 대해서는 [Github](https://github.com/eastshine-high/til/blob/main/docker/docker-run.md) 에 좀 더 자세히 정리하였습니다.
-- `-p` : 컨테이너 내부의 네트워크 포트를 컨테이너 외부에 노출(publish)하기 위해 사용합니다. `-p localhost에서 사용할 포트 번호 : 컨테이너 내부 포트 번호` 로 작성하여 포트를 매핑합니다.
-- `-v` : 도커 컨테이너에서 생성된 데이터를 영속화하기 위해 사용합니다. 또는 외부 파일 시스템에 영속화된 데이터를 컨테이너로 전달하기 위해서 사용합니다.
-    - `-v /home/ec2-user/log:/log` : 컨테이너에서 생성된 로그를 외부 파일 시스템에 영속화합니다.
-    - `-v /home/ec2-user/application-prod.yml:/application-prod.yml` : 외부 파일 시스템에 영속화되어있는 스프링 설정 파일을 컨테이너에 전달합니다.
-- `-e` : 컨테이너 내에서의 환경변수를 설정합니다.
-- `--add-host=host.docker.internal` : 컨테이너 내부와 로컬 호스트가 통신을 하기 위해 Keeper Connection Manager를 의미하는 `host.docker.internal` 를 컨테이너 호스트에 추가합니다. `host-gateway` 는 이 커넥션 매니저의 IP 주소(기본값 172.17.0.1)입니다.
-    - 예를 들어, 도커 컨테이너 안에 있는 스프링 부트와 로컬 호스트에 있는 Redis가 통신을 하기 위해서는 위와 같은 설정이 필요합니다.
-- `-d` : 백그라운드(분리 모드)에서 컨테이너를 시작합니다.
-- `—rm` : 기본적으로 도커 컨테이너를 나가더라도(exit or stop) 컨테이너의 파일 시스템은 영속화 됩니다. `rm` 옵션을 사용하면, 컨테이너를 나갈 때 자동적으로 컨테이너 파일 시스템을 삭제합니다.
+  - `-p` : 컨테이너 내부의 네트워크 포트를 컨테이너 외부에 노출(publish)하기 위해 사용합니다. `-p localhost에서 사용할 포트 번호 : 컨테이너 내부 포트 번호` 로 작성하여 포트를 매핑합니다.
+  - `-v` : 도커 컨테이너에서 생성된 데이터를 영속화하기 위해 사용합니다. 또는 외부 파일 시스템에 영속화된 데이터를 컨테이너로 전달하기 위해서 사용합니다.
+      - `-v /home/ec2-user/log:/log` : 컨테이너에서 생성된 로그를 외부 파일 시스템에 영속화합니다.
+      - `-v /home/ec2-user/application-prod.yml:/application-prod.yml` : 외부 파일 시스템에 영속화되어있는 스프링 설정 파일을 컨테이너에 전달합니다.
+  - `-e` : 컨테이너 내에서의 환경변수를 설정합니다.
+  - `--add-host=host.docker.internal` : 컨테이너 내부와 로컬 호스트가 통신을 하기 위해 Keeper Connection Manager를 의미하는 `host.docker.internal` 를 컨테이너 호스트에 추가합니다. `host-gateway` 는 이 커넥션 매니저의 IP 주소(기본값 172.17.0.1)입니다.
+      - 예를 들어, 도커 컨테이너 안에 있는 스프링 부트와 로컬 호스트에 있는 Redis가 통신을 하기 위해서는 위와 같은 설정이 필요합니다.
+  - `-d` : 백그라운드(분리 모드)에서 컨테이너를 시작합니다.
+  - `—rm` : 기본적으로 도커 컨테이너를 나가더라도(exit or stop) 컨테이너의 파일 시스템은 영속화 됩니다. `rm` 옵션을 사용하면, 컨테이너를 나갈 때 자동적으로 컨테이너 파일 시스템을 삭제합니다.
 
 ## 무중단 배포
 

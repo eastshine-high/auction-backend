@@ -165,7 +165,7 @@ Dockerfile을 작성했다면, 이제 도커 이미지를 빌드합니다. Githu
 ```
 
 - `docker build .`  : Dockerfile과 "context"에서 Docker 이미지를 빌드합니다. context는 현재 디렉토리 `.` 로 지정하였습니다. `Dockerfile` 은 기본적으로 context의 루트에 위치해야 합니다. 그렇지 않은 경우, `-f` 옵션을 이용해 파일 위치를 지정합니다.
-- `-t eastshine/auction-backend:${GITHUB_SHA::7}` : 태그는 생성된 이미지를 참조합니다(refer). 태그의 형식은 `repository/name:tag` 를 의미합니다. `${GITHUB_SHA::7}` 은 깃헙 커밋 ID의 첫 7자리를 의미합니다.
+  - `-t eastshine/auction-backend:${GITHUB_SHA::7}` : 태그는 생성된 이미지를 참조합니다(refer). 태그의 형식은 `repository/name:tag` 를 의미합니다. `${GITHUB_SHA::7}` 은 깃헙 커밋 ID의 첫 7자리를 의미합니다.
 - `docker login` : Docker 저장소에 로그인합니다.
 - `docker push` : Docker 저장소에 빌드한 이미지를 푸시합니다.
 - `secrets` 은 깃헙 저장소 Settings → Security → Secrets → Actions 탭에서 등록하여 사용할 수 있습니다.
