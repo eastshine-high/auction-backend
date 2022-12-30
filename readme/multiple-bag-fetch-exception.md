@@ -1,3 +1,4 @@
+# MultipleBagFetchException 해결하기
 
 `MultipleBagFetchException` 는 JPA의 N+1 문제에 대한 해결책으로 Fetch Join을 사용하다보면 자주 만나는 문제입니다. `MultipleBagFetchException` 는 2개 이상의 ToMany 자식 테이블에 Fetch Join을 선언했을 때 발생합니다.
 
