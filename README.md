@@ -35,7 +35,7 @@
         - [재고 관리(동시성 이슈)](https://github.com/eastshine-high/auction-backend/blob/main/readme/stock.md)
         - [단일 책임 원칙과 URI 설계](https://github.com/eastshine-high/auction-backend/blob/main/readme/single-responsibility.md)
         - [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](https://github.com/eastshine-high/auction-backend/blob/main/readme/entity-design.md)
-        - [상품 검색](https://github.com/eastshine-high/auction-backend/blob/main/readme/searching-product.md)
+        - [상품 검색](#searching-product)
     - 사용자
         - [모델링](https://github.com/eastshine-high/auction-backend/blob/main/readme/user.md)
         - [로그인(JWT 발행하기)](https://github.com/eastshine-high/auction-backend/blob/main/readme/jwt.md)

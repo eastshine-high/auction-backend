@@ -3,7 +3,7 @@
 - **데이터 모델링** 
   - [데이터에 대한 접근 과정](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 
   - 설계에 정답이 있는 것은 아니며, Trade off를 고려해야 함을 이해합니다.
-    - 사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](#entity-design)
+    - 사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](https://github.com/eastshine-high/auction-backend/blob/main/readme/entity-design.md)
 
 - **도메인 주도 설계**
   - 도메인 주도 설계를 통해 객체를 의미있게 표현하고 모델링합니다.
@@ -14,7 +14,7 @@
 
 - **ORM 활용** 
   - JPA, Spring Data JPA, Querydsl를 이용해 여러 기능들을 구현해 보면서, ORM 사용을 숙련합니다.
-    - 사례. [Hibernate - MultipleBagFetchException 해결하기](#multiple-bag-fetch-exception)
+    - 사례. [Hibernate - MultipleBagFetchException 해결하기](https://github.com/eastshine-high/auction-backend/blob/main/readme/multiple-bag-fetch-exception.md)
 
 - **Spring Security**
   - [Spring Security의 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/architecture.md) 와 [Spring Security의 인증 구조](https://github.com/eastshine-high/til/blob/main/spring/spring-security/authentication/servlet-authentication-architecture.md) 를 이해하고 API에 대한 보안 처리를 합니다.
