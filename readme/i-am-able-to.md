@@ -1,4 +1,4 @@
-## 프로젝트를 통해 무엇을 할 수 있게 되었는가
+# 프로젝트를 통해 무엇을 할 수 있게 되었는가
 
 - **데이터 모델링** 
   - [데이터에 대한 접근 과정](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 
