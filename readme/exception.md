@@ -1,6 +1,6 @@
 # REST API의 예외(Exception) 처리
 
-(1) 일관성 있는 오류 표현
+### (1) 일관성 있는 오류 표현
 
 [REST API 디자인 규칙(마크 마세 저)](https://digital.kyobobook.co.kr/digital/ebook/ebookDetail.ink?selectedLargeCategory=001&barcode=480D150507640&orderClick=LAG&Kc=) 에서는 “오류는 일관성 있게 표현하여 응답”하는 것을 권합니다.
 
@@ -58,7 +58,7 @@ public class BaseException extends RuntimeException {
 
 이제 '일관성 있는 오류 표현'을 위한 준비는 마쳤습니다.
 
-(2) HTTP 응답 상태 코드
+### (2) HTTP 응답 상태 코드
 
 REST API는 HTTP 응답 메시지의 Status-Line을 사용하여 클라이언트가 요청한 결과를 알려줍니다. 이 때, 오류의 응답 상태 코드는 ‘4xx’ 또는 ‘5xx’ 중 하나여야 합니다.
 
