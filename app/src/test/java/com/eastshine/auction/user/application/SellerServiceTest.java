@@ -4,9 +4,10 @@ import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.common.test.IntegrationTest;
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.repository.UserRepository;
 import com.eastshine.auction.user.domain.role.Role;
-import com.eastshine.auction.user.domain.role.RoleId;
+import com.eastshine.auction.user.repository.UserRepository;
+import com.eastshine.auction.user.domain.role.UserRole;
+import com.eastshine.auction.user.domain.role.UserRoleId;
 import com.eastshine.auction.user.repository.role.RoleRepository;
 import com.eastshine.auction.user.domain.role.RoleType;
 import com.eastshine.auction.user.domain.seller.Seller;
@@ -85,9 +86,10 @@ class SellerServiceTest extends IntegrationTest {
                 assertThat(passwordEncoder.matches(PASSWORD, signedUpSeller.getPassword())).isTrue();
                 assertThat(signedUpSeller.getStatus()).isEqualTo(User.Status.ACTIVE);
                 assertThat(signedUpSeller.getBusinessNumber()).isEqualTo(businessNumber);
-                assertThat(signedUpSeller.getRoles()).contains(new Role(new RoleId(signedUpSeller, RoleType.SELLER)));
+                assertThat(signedUpSeller.getUserRoles()).contains(new UserRole(new UserRoleId(signedUpSeller, new Role(RoleType.SELLER))));
             }
         }
+
         @Nested
         @DisplayName("이메일이 중복된 경우")
         class Context_with_exsisted_email{

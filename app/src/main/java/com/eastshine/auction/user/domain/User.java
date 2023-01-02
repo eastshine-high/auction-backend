@@ -3,6 +3,9 @@ package com.eastshine.auction.user.domain;
 import com.eastshine.auction.common.model.BaseTimeEntity;
 import com.eastshine.auction.common.model.UserInfo;
 import com.eastshine.auction.user.domain.role.Role;
+import com.eastshine.auction.user.domain.role.RoleType;
+import com.eastshine.auction.user.domain.role.UserRole;
+import com.eastshine.auction.user.domain.role.UserRoleId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,8 +52,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "roleId.user", cascade = CascadeType.ALL)
-    private List<Role> roles = new ArrayList<>();
+    @OneToMany(mappedBy = "userRoleId.user", cascade = CascadeType.ALL)
+    private List<UserRole> userRoles = new ArrayList<>();
 
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
@@ -68,9 +71,9 @@ public class User extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    public void addRole(Role role) {
-        // 복합키(Role) 사용은 setter를 내포.
-        roles.add(role);
+    public void addRole(RoleType roleType) {
+        UserRole userRole = new UserRole(new UserRoleId(this, new Role(roleType)));
+        userRoles.add(userRole);
     }
 
     public void encryptPassword(PasswordEncoder passwordEncoder) {
@@ -96,8 +99,8 @@ public class User extends BaseTimeEntity {
                 .id(id)
                 .email(email)
                 .nickname(nickname)
-                .roles(this.roles.stream()
-                        .map(role -> role.getRoleId().getRole())
+                .roles(this.userRoles.stream()
+                        .map(UserRole::getRoleType)
                         .collect(Collectors.toList()))
                 .build();
     }

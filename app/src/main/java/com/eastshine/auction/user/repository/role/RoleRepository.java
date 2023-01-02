@@ -1,8 +1,8 @@
 package com.eastshine.auction.user.repository.role;
 
-import com.eastshine.auction.user.domain.role.Role;
-import com.eastshine.auction.user.domain.role.RoleId;
+import com.eastshine.auction.user.domain.role.UserRole;
+import com.eastshine.auction.user.domain.role.UserRoleId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoleRepository extends JpaRepository<Role, RoleId> {
+public interface RoleRepository extends JpaRepository<UserRole, UserRoleId> {
 }

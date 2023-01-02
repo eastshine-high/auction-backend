@@ -4,9 +4,10 @@ import com.eastshine.auction.common.exception.EntityNotFoundException;
 import com.eastshine.auction.common.exception.ErrorCode;
 import com.eastshine.auction.common.exception.InvalidArgumentException;
 import com.eastshine.auction.user.domain.User;
-import com.eastshine.auction.user.repository.UserRepository;
 import com.eastshine.auction.user.domain.role.Role;
-import com.eastshine.auction.user.domain.role.RoleId;
+import com.eastshine.auction.user.repository.UserRepository;
+import com.eastshine.auction.user.domain.role.UserRole;
+import com.eastshine.auction.user.domain.role.UserRoleId;
 import com.eastshine.auction.user.domain.role.RoleType;
 import com.eastshine.auction.user.domain.seller.Seller;
 import com.eastshine.auction.user.repository.seller.SellerRepository;
@@ -49,14 +50,8 @@ public class SellerService {
 
         seller.encryptPassword(passwordEncoder);
         sellerRepository.save(seller);
-        addSellerRole(seller);
+        seller.addRole(RoleType.SELLER);
         return seller;
-    }
-
-    private void addSellerRole(User seller) {
-        Role sellerRole = new Role(new RoleId(seller, RoleType.SELLER));
-        sellerRole.setSelfCreation();
-        seller.addRole(sellerRole);
     }
 
     public SellerDto.Info findSellerInfo(Long id) {

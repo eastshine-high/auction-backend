@@ -1,34 +1,26 @@
 package com.eastshine.auction.user.domain.role;
 
-import com.eastshine.auction.common.model.BaseEntity;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
 
-/**
- * 권한
- */
-@EqualsAndHashCode(callSuper=false, of = {"roleId"})
+@EqualsAndHashCode(of = {"roleType"})
 @NoArgsConstructor
 @Entity
-public class Role extends BaseEntity {
+public class Role {
 
-    @EmbeddedId
-    private RoleId roleId;
+    @Id @Enumerated(value = EnumType.STRING)
+    private RoleType roleType;
 
-    public Role(RoleId roleId) {
-        this.roleId = roleId;
+    public Role(RoleType roleType) {
+        this.roleType = roleType;
     }
 
-    public RoleId getRoleId() {
-        return roleId;
-    }
-
-    public void setSelfCreation() {
-        Long userId = roleId.getUser().getId();
-        super.createdBy = userId;
-        super.lastModifiedBy = userId;
+    public RoleType getRoleType() {
+        return roleType;
     }
 }
