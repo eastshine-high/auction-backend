@@ -1,0 +1,55 @@
+spring:
+  messages:
+    encoding: UTF-8
+    basename: messages,errors
+  datasource:
+    # url: jdbc:h2:tcp://localhost/~/data/auction;DB_CLOSE_DELAY=-1
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+        format_sql: true
+    defer-datasource-initialization: true
+
+  cache:
+    type: NONE
+
+  redis:
+    host: localhost
+    port: 6379
+
+  kafka:
+    consumer:
+      bootstrap-servers: 192.168.219.129:9092 # localhost, 192.168.219.129:9092
+      group-id: auction
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    producer:
+      bootstrap-servers: 192.168.219.129:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+logging:
+  level:
+    root: info
+    org.hibernate:
+      SQL: debug
+      type: trace
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+jwt.secret: "12345678901234567890123456789012"
