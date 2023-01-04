@@ -112,7 +112,7 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private Set<OrderItem> orderItems = new HashSet<>();
 
-		public void addOrderItem(OrderItem orderItem) {
+    public void addOrderItem(OrderItem orderItem) {
         orderItem.setOrder(this);
         orderItems.add(orderItem);
     }
@@ -127,13 +127,13 @@ public class Order {
 
 `MultipleBagFetchException` 이라는 예외의 이름처럼 `ToMany` 에 대한 Fetch Join은 한 번만 사용할 수 있습니다. 따라서 또 다른 N + 1 문제의 해결 방법인 **Hibernate default_batch_fetch_size**를 이용합니다.
 
-스프링부트에서는 다음과 같이 옵션을 적용할 수 있습니다 - application.yml
+application.yml - 스프링부트에서는 다음과 같이 옵션을 적용할 수 있습니다. 
 
 ```yaml
-spring:jpa:properties:hibernate.default_batch_fetch_size: 1000
+spring.jpa.properties.hibernate.default_batch_fetch_size: 1000
 ```
 
-위에서 작성한 Querydsl의 조회 문장도 수정하여 `leftJoin` 문 하나를 제거하였습니다.
+위에서 작성한 Querydsl의 조회 문장도 수정하여 `leftJoin.fetchJoin` 문장을 제거합니다.
 
 ```java
 @Override
@@ -147,9 +147,18 @@ public Optional<Order> findByIdWithFetchJoin(Long orderId) {
 }
 ```
 
-수행된 SQL을 확인해 보면 Join으로 처리하지 않은 부분은 `IN` 절로 처리되어 N+1 문제 발생 없이 조회가 되는 것을 확인할 수 있습니다.
+수행된 SQL을 확인해 보면 `leftJoin.fetchJoin` 을 제거한 부분에 N+1 문제가 발생하지 않고 `IN` 절로 처리되어 조회가 되는 것을 확인할 수 있습니다.
 
 ```
+// 1 fetch join 수행
+select * 
+  from orders order0_ 
+ inner join order_item orderitems1_ 
+    on order0_.order_id=orderitems1_.order_id 
+ where order0_.order_id=?
+
+
+// 2 default_batch_fetch_size 설정으로 in 절 수행
 select
     orderitemo0_.order_item_id as order_it8_4_1_,
     orderitemo0_.order_item_option_id as order_it1_4_1_,
@@ -165,6 +174,6 @@ from
     order_item_option orderitemo0_ 
 where
     orderitemo0_.order_item_id in (
-        ?, ?
+        ?, ?, ?
     )
 ```
