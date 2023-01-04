@@ -31,12 +31,17 @@
   - 지속적 통합 및 배포를 구축합니다.
     - 사례. [Github Actions, Docker를 활용한 CI 구축](https://github.com/eastshine-high/auction-backend/blob/main/readme/ci.md)
     - 사례. [Jenkins, Docker, Nginx를 활용한 무중단 CD 구축](https://github.com/eastshine-high/auction-backend/blob/main/readme/cd.md)
-
+    
 - **문서화**
   - Spring REST Docs를 이용해 API를 문서화합니다.
     - 사례. [API 문서(AWS 배포)](http://52.79.43.121/docs/index.html)
   - 유스 케이스를 작성하고 테스트 코드를 작성합니다.
     - 사례. [API 유스 케이스](https://eastshine.notion.site/5802417b375e474380a1a092e07e79fe?v=65b6e4f02626434597726a247cb3bf2e)
+
+- **코드 개선**
+  - 더 좋은 코드를 작성하려 노력합니다.
+    - 사례. [테스트 코드 작성을 통한 올바른 책임의 이해(캡슐화)](https://github.com/eastshine-high/auction-backend/blob/main/readme/test-responsibility.md)
+    - 사례. [관심사의 분리](https://github.com/eastshine-high/auction-backend/blob/main/readme/separation-of-concern.md)
 
 - **HTTP 프로토콜**
   - [HTTP 프로토콜](https://github.com/eastshine-high/til/tree/main/web) 에 대한 이해는 REST API 개발, CI/CD 파이프라인 구축 등의 작업을 스스로 학습하고 진행하는 데 많은 도움이 되었습니다.
