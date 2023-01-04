@@ -3,7 +3,7 @@
 ## 사용 기술
 
 - Java 11, Gradle
-- JPA, QueryDsl, Junit5, MapStruct, JWT
+- JPA, Querydsl, Junit5, MapStruct, JWT
 - Spring Boot, Spring Data JPA, Spring REST Docs, Spring Security
 - MariaDB 10, Redis, Kafka
 - Devops : AWS EC2, Github Action, Jenkins, Nginx, Docker
@@ -68,7 +68,7 @@
    <summary> 본문 확인 (👈Click)</summary>
 <br />
 
-![](http://dl.dropbox.com/s/ocsyfifqx945ere/auction_erd.png)
+![](http://dl.dropbox.com/s/sglg7cini7s8g7s/auction-erd.png)
 
 </details>
 
