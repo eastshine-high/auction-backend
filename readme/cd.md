@@ -1,12 +1,11 @@
 # Jenkins, Docker, Nginx를 이용한 무중단 CD 구축
 
-앞서, **Github Actions, Docker를 이용한 CI 구축** 에서는 변경 사항을 프로덕션에 배포할 준비를 마쳤습니다. 이번 섹션에서는 **Jenkins, Docker, Nginx를 이용한 무중단 CD 구축**에 대해 다루겠습니다.
+앞서, **Github Actions, Docker를 이용한 CI 구축** 에서는 변경 사항을 프로덕션에 배포할 준비를 마쳤습니다. 
+이번 페이지에서는 **Jenkins, Docker, Nginx를 이용한 무중단 CD 구축**에 대해 다뤄 보겠습니다(이 글은 AWS EC2 사용에 대한 기본적인 이해를 전제로 작성하였습니다). 
 
 Auction Backend의 CI/CD 구성도는 다음과 같습니다.
 
 ![http://dl.dropbox.com/s/m5u0e1r8w6uahlc/ci-cd.png](http://dl.dropbox.com/s/m5u0e1r8w6uahlc/ci-cd.png)
-
-이 글은 AWS EC2 사용에 대한 기본적인 이해를 전제로 작성하였습니다.
 
 ## Jenkins
 
