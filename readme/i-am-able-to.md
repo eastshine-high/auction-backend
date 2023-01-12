@@ -1,7 +1,9 @@
 # 프로젝트를 통해 무엇을 할 수 있게 되었는가
 
 - **데이터 모델링** 
-  - [데이터에 대한 접근 과정](https://github.com/eastshine-high/til/blob/main/relational-database/data-access/database-storage-structure.md) 을 고려하여 테이블을 설계합니다. 
+  - 데이터에 대한 접근 과정을 고려하여 테이블을 설계합니다.
+    - Blog. [Oracle - 데이터베이스 저장 구조](https://github.com/eastshine-high/til/blob/main/relational-database/oracle/database-storage-structure.md)
+    - Blog. [MySQL - Clustering index](https://github.com/eastshine-high/til/blob/main/relational-database/my-sql/clustering-index.md) 
   - 설계에 정답이 있는 것은 아니며, Trade off를 고려해야 함을 이해합니다.
     - 사례. [Main-Sub 구조 엔터티 VS 계층(재귀) 구조 엔터티](https://github.com/eastshine-high/auction-backend/blob/main/readme/entity-design.md)
 
